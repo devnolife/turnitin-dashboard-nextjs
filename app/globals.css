@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Main brand colors - Navy as primary */
+    --primary: 217 31% 42%; /* #4A628A - Navy blue */
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary colors */
+    --secondary: 212 48% 65%; /* #7AB2D3 - Medium blue */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Accent colors */
+    --accent: 185 55% 81%; /* #B9E5E8 - Light teal blue */
+    --accent-foreground: 217 31% 42%; /* #4A628A - Navy blue */
+
+    /* UI colors */
+    --background: 0 0% 100%;
+    --foreground: 217 31% 42%; /* #4A628A - Navy for text */
+    --card: 0 0% 100%;
+    --card-foreground: 217 31% 42%; /* #4A628A - Navy for text */
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 31% 42%; /* #4A628A - Navy for text */
+    --muted: 164 39% 91%; /* #DFF2EB - Very light mint */
+    --muted-foreground: 217 31% 60%; /* Lighter version of navy */
+
+    /* Interactive elements */
+    --border: 185 55% 81%; /* #B9E5E8 - Light teal blue */
+    --input: 185 55% 81%; /* #B9E5E8 - Light teal blue */
+    --ring: 217 31% 42%; /* #4A628A - Navy blue */
+
+    /* Status colors - keeping these with slight modifications */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    /* Sidebar colors */
+    --sidebar-background: 164 39% 95%; /* Lighter mint */
+    --sidebar-foreground: 217 31% 42%; /* #4A628A - Navy */
+    --sidebar-accent: 217 31% 42%; /* #4A628A - Navy */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 185 55% 81%; /* #B9E5E8 - Light teal blue */
+
+    /* Animation durations */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+
+    /* Animation easings */
+    --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+
+    /* Radius */
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 217 31% 18%; /* Darker navy */
+    --foreground: 0 0% 98%;
+    --card: 217 31% 20%; /* Slightly lighter than background */
+    --card-foreground: 0 0% 98%;
+    --popover: 217 31% 20%; /* Same as card */
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 31% 42%; /* #4A628A - Navy blue */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 212 48% 55%; /* Darker version of blue */
+    --secondary-foreground: 0 0% 98%;
+    --accent: 185 55% 61%; /* Darker version of teal */
+    --accent-foreground: 0 0% 98%;
+    --muted: 217 31% 25%; /* Darker navy */
+    --muted-foreground: 0 0% 70%;
+    --border: 217 31% 30%; /* Slightly lighter navy */
+    --input: 217 31% 30%; /* Slightly lighter navy */
+    --ring: 217 31% 42%; /* #4A628A - Navy blue */
+
+    /* Sidebar colors */
+    --sidebar-background: 217 31% 25%; /* Darker navy */
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-accent: 217 31% 42%; /* #4A628A - Navy */
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 217 31% 30%; /* Slightly lighter navy */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Modern typography */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  /* Animation utilities */
+  .animate-in {
+    animation-duration: var(--duration-normal);
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation-name: fadeIn;
+  }
+
+  .slide-in-bottom {
+    animation-name: slideInBottom;
+  }
+
+  .slide-in-top {
+    animation-name: slideInTop;
+  }
+
+  .slide-in-left {
+    animation-name: slideInLeft;
+  }
+
+  .slide-in-right {
+    animation-name: slideInRight;
+  }
+
+  .scale-in {
+    animation-name: scaleIn;
+  }
+
+  .bounce-in {
+    animation-timing-function: var(--ease-bounce);
+    animation-name: bounceIn;
+  }
+
+  /* Staggered animations */
+  .stagger-1 {
+    animation-delay: 100ms;
+  }
+
+  .stagger-2 {
+    animation-delay: 200ms;
+  }
+
+  .stagger-3 {
+    animation-delay: 300ms;
+  }
+
+  .stagger-4 {
+    animation-delay: 400ms;
+  }
+
+  .stagger-5 {
+    animation-delay: 500ms;
+  }
+
+  /* Hover animations */
+  .hover-lift {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .hover-scale {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Keyframes */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInBottom {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInTop {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes bounceIn {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Gradient text - using our new colors with navy as primary */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-turnitin-navy via-turnitin-blue to-turnitin-teal;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+
+  /* Blob shapes */
+  .blob {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+
+  .blob-animate {
+    animation: blob-morph 8s ease-in-out infinite;
+  }
+
+  @keyframes blob-morph {
+    0% {
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+    50% {
+      border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    }
+    100% {
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+  }
+}
+
