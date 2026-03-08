@@ -1,9 +1,9 @@
 import type React from "react"
-import { Inter } from "next/font/google"
+import { Outfit } from "next/font/google"
 import { Providers } from "@/components/providers"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata = {
   title: "Turnitin Campus",
@@ -18,13 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={outfit.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
   )
 }
-
-
-
-import './globals.css'
