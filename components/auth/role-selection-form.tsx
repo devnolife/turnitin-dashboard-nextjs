@@ -48,11 +48,10 @@ export function RoleSelectionForm() {
     <StaggerContainer className="grid gap-4">
       <StaggerItem>
         <Card
-          className={`cursor-pointer transition-all hover:border-turnitin-navy ${
-            selectedRole === "student" ? "border-2 border-turnitin-navy" : ""
+          className={`cursor-pointer transition-all duration-300 hover:border-turnitin-navy hover:shadow-lg hover:shadow-turnitin-navy/10 hover:-translate-y-1 ${
+            selectedRole === "student" ? "border-2 border-turnitin-navy shadow-lg shadow-turnitin-navy/20" : ""
           }`}
           onClick={() => !isLoading && handleRoleSelection("student")}
-          hoverEffect="glow"
         >
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn>
@@ -73,11 +72,10 @@ export function RoleSelectionForm() {
 
       <StaggerItem>
         <Card
-          className={`cursor-pointer transition-all hover:border-turnitin-navy ${
-            selectedRole === "instructor" ? "border-2 border-turnitin-navy" : ""
+          className={`cursor-pointer transition-all duration-300 hover:border-turnitin-navy hover:shadow-lg hover:shadow-turnitin-navy/10 hover:-translate-y-1 ${
+            selectedRole === "instructor" ? "border-2 border-turnitin-navy shadow-lg shadow-turnitin-navy/20" : ""
           }`}
           onClick={() => !isLoading && handleRoleSelection("instructor")}
-          hoverEffect="glow"
         >
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn delay={0.1}>
@@ -98,11 +96,10 @@ export function RoleSelectionForm() {
 
       <StaggerItem>
         <Card
-          className={`cursor-pointer transition-all hover:border-turnitin-navy ${
-            selectedRole === "admin" ? "border-2 border-turnitin-navy" : ""
+          className={`cursor-pointer transition-all duration-300 hover:border-turnitin-navy hover:shadow-lg hover:shadow-turnitin-navy/10 hover:-translate-y-1 ${
+            selectedRole === "admin" ? "border-2 border-turnitin-navy shadow-lg shadow-turnitin-navy/20" : ""
           }`}
           onClick={() => !isLoading && handleRoleSelection("admin")}
-          hoverEffect="glow"
         >
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn delay={0.2}>
