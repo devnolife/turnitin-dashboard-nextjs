@@ -46,7 +46,7 @@ export function AdminStudentsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-              <TabsList className="bg-background/50 backdrop-blur-sm">
+              <TabsList className="bg-background/50 backdrop-blur-sm w-full overflow-x-auto flex justify-start">
                 <TabsTrigger
                   value="all"
                   className="transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"

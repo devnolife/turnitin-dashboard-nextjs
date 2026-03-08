@@ -396,7 +396,7 @@ export function AdminInstructorsPage() {
               </FadeIn>
             )}
 
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               {isLoading ? (
                 <div className="p-4">
                   <div className="space-y-4">

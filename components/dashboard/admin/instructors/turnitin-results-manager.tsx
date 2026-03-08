@@ -238,7 +238,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
             </div>
 
             <TabsContent value="all">
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -370,7 +370,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
             </TabsContent>
 
             <TabsContent value="pending">
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -459,7 +459,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
             </TabsContent>
 
             <TabsContent value="reviewed">
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -548,7 +548,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
             </TabsContent>
 
             <TabsContent value="flagged">
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>

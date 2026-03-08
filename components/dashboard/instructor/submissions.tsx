@@ -83,7 +83,7 @@ export function InstructorSubmissions() {
             className="h-9"
           />
         </div>
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

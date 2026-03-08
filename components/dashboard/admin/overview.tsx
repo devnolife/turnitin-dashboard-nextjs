@@ -34,7 +34,7 @@ export function AdminOverview() {
           <CardTitle>User Growth</CardTitle>
           <CardDescription>Monthly user growth by role</CardDescription>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ChartContainer
             config={{
               visitors: {
@@ -42,11 +42,11 @@ export function AdminOverview() {
               },
               students: {
                 label: "Students",
-                color: "hsl(212, 48%, 65%)" /* #7AB2D3 - turnitin-blue */,
+                color: "hsl(212, 48%, 65%)",
               },
               instructors: {
                 label: "Instructors",
-                color: "hsl(217, 31%, 42%)" /* #4A628A - turnitin-navy */,
+                color: "hsl(217, 31%, 42%)",
               },
             }}
           >
@@ -70,7 +70,7 @@ export function AdminOverview() {
           <CardTitle>Revenue</CardTitle>
           <CardDescription>Monthly revenue in USD</CardDescription>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ChartContainer
             config={{
               visitors: {
@@ -101,7 +101,7 @@ export function AdminOverview() {
           <CardTitle>Submissions</CardTitle>
           <CardDescription>Monthly submission count</CardDescription>
         </CardHeader>
-        <CardContent className="h-80">
+        <CardContent className="h-64 sm:h-80">
           <ChartContainer
             config={{
               visitors: {

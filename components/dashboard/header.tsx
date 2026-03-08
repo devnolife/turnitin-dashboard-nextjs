@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Bell, Moon, Sun, User, LogOut } from "lucide-react"
+import { Bell, Moon, Sun, User, LogOut, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -22,9 +22,10 @@ import { FadeIn, SlideInRight } from "@/components/ui/motion"
 
 interface DashboardHeaderProps {
   user: any | null
+  onMenuClick?: () => void
 }
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
   const [notifications, setNotifications] = useState(3)
   const { setTheme, theme } = useTheme()
   const router = useRouter()
@@ -61,14 +62,24 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
   return (
     <FadeIn>
-      <header className="sticky top-0 z-10 border-b bg-turnitin-navy text-white shadow-sm">
-        <div className="flex h-16 items-center justify-between px-6">
+      <header className="sticky top-0 z-30 border-b bg-turnitin-navy text-white shadow-sm dark:bg-turnitin-navy/95">
+        <div className="flex h-16 items-center justify-between px-4 md:px-6">
           <motion.div
             className="flex items-center gap-2 font-semibold"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
           >
+            {/* Mobile hamburger */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-white hover:bg-turnitin-navy/80"
+              onClick={onMenuClick}
+              aria-label="Toggle menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
             <Link href={`/dashboard/${user?.role || ""}`} className="text-xl font-bold">
               Turnitin Campus
             </Link>

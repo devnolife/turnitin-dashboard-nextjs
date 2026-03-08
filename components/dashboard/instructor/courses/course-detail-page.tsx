@@ -743,7 +743,7 @@ export function CourseDetailPage({ courseId }: CourseDetailPageProps) {
               </Dialog>
             </div>
 
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -890,7 +890,7 @@ export function CourseDetailPage({ courseId }: CourseDetailPageProps) {
               </Dialog>
             </div>
 
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1008,7 +1008,7 @@ export function CourseDetailPage({ courseId }: CourseDetailPageProps) {
               </Button>
             </div>
 
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

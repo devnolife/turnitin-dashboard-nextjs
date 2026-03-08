@@ -1,10 +1,6 @@
-... This file was left out
-for brevity. Assume it is correct
-and
-does
-not
-need
-any
-modifications.
-...
+import { InstructorProfile } from "@/components/dashboard/instructor/profile/instructor-profile"
+
+export default function ProfilePage() {
+  return <InstructorProfile />
+}
 

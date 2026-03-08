@@ -606,7 +606,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
                   <TabsContent value="turnitin" className="space-y-4">
                     {student.turnitinResults.length > 0 ? (
-                      <div className="rounded-md border">
+                      <div className="rounded-md border overflow-x-auto">
                         <div className="p-4">
                           <h3 className="text-lg font-medium">Similarity Reports</h3>
                           <p className="text-sm text-muted-foreground">
@@ -667,7 +667,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
                   <TabsContent value="submissions" className="space-y-4">
                     {student.examStage !== "applicant" ? (
-                      <div className="rounded-md border">
+                      <div className="rounded-md border overflow-x-auto">
                         <div className="p-4">
                           <h3 className="text-lg font-medium">Recent Submissions</h3>
                           <p className="text-sm text-muted-foreground">
@@ -713,7 +713,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   </TabsContent>
 
                   <TabsContent value="feedback" className="space-y-4">
-                    <div className="rounded-md border">
+                    <div className="rounded-md border overflow-x-auto">
                       <div className="p-4">
                         <h3 className="text-lg font-medium">Instructor Feedback</h3>
                         <p className="text-sm text-muted-foreground">Feedback provided to the student</p>
@@ -760,7 +760,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   </TabsContent>
 
                   <TabsContent value="activity" className="space-y-4">
-                    <div className="rounded-md border">
+                    <div className="rounded-md border overflow-x-auto">
                       <div className="p-4">
                         <h3 className="text-lg font-medium">Activity Log</h3>
                         <p className="text-sm text-muted-foreground">Recent activity and system interactions</p>

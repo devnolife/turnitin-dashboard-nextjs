@@ -514,7 +514,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
                   <TabsContent value="turnitin" className="space-y-4">
                     {student.turnitinResults.length > 0 ? (
-                      <div className="rounded-md border">
+                      <div className="rounded-md border overflow-x-auto">
                         <div className="p-4">
                           <h3 className="text-lg font-medium">Similarity Reports</h3>
                           <p className="text-sm text-muted-foreground">
@@ -566,7 +566,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   </TabsContent>
 
                   <TabsContent value="feedback" className="space-y-4">
-                    <div className="rounded-md border">
+                    <div className="rounded-md border overflow-x-auto">
                       <div className="p-4">
                         <h3 className="text-lg font-medium">Feedback History</h3>
                         <p className="text-sm text-muted-foreground">Previous feedback provided to the student</p>

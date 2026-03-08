@@ -1,10 +1,6 @@
-... This file was left out
-for brevity. Assume it is correct
-and
-does
-not
-need
-any
-modifications.
-...
+import { InstructorSettings } from "@/components/dashboard/instructor/settings/instructor-settings"
+
+export default function SettingsPage() {
+  return <InstructorSettings />
+}
 

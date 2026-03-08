@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { Sidebar } from "@/app/components/dashboard/sidebar"
@@ -15,11 +15,16 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [loading, setLoading] = useState(true)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const { toast } = useToast()
 
   const { user, isAuthenticated, checkAuth } = useAuthStore()
+
+  const handleMobileOpenChange = useCallback((open: boolean) => {
+    setMobileOpen(open)
+  }, [])
 
   useEffect(() => {
     // Check if user is authenticated
@@ -75,10 +80,10 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <DashboardHeader user={user} />
+      <DashboardHeader user={user} onMenuClick={() => setMobileOpen(true)} />
       <div className="flex flex-1">
-        <Sidebar userRole={user?.role || ""} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <Sidebar mobileOpen={mobileOpen} onMobileOpenChange={handleMobileOpenChange} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>
     </div>
   )

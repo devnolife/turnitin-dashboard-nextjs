@@ -1,14 +1,10 @@
-import type { Metadata } from "next"
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AdminOverview } from "@/components/dashboard/admin/overview"
 import { AdminUsers } from "@/components/dashboard/admin/users"
 import { AdminPayments } from "@/components/dashboard/admin/payments"
-
-export const metadata: Metadata = {
-  title: "Admin Dashboard - Turnitin Campus",
-  description: "Manage users, submissions, and system settings",
-}
 
 export default function AdminDashboardPage() {
   return (
