@@ -100,16 +100,16 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* User Profile - Compact inline */}
-      <div className="px-5 py-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700">
-        <Avatar className="w-11 h-11 shrink-0 border-2 border-primary-lighter dark:border-primary/50">
-          <AvatarImage src="/placeholder.svg?height=44&width=44" alt="User" />
-          <AvatarFallback className="bg-primary text-white text-sm">
+      <div className="px-5 py-4 flex items-center gap-4 border-b border-gray-100 dark:border-gray-700">
+        <Avatar className="w-14 h-14 shrink-0 border-2 border-primary-lighter dark:border-primary/50">
+          <AvatarImage src="/placeholder.svg?height=56&width=56" alt="User" />
+          <AvatarFallback className="bg-primary text-white text-base">
             {getInitials(user?.email)}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="font-medium text-sm truncate">{user?.name || user?.email || "User"}</p>
-          <p className="text-xs text-muted-foreground">{getRoleLabel(role)}</p>
+          <p className="font-medium text-base truncate">{user?.name || user?.email || "User"}</p>
+          <p className="text-sm text-muted-foreground">{getRoleLabel(role)}</p>
         </div>
       </div>
 
