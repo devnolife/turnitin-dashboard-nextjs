@@ -324,7 +324,7 @@ export function InstructorDashboardClient() {
             <CardHeader>
               <div className="flex flex-col items-center">
                 <Avatar className="h-24 w-24">
-                  <AvatarFallback className="bg-turnitin-navy text-white text-xl">
+                  <AvatarFallback className="bg-primary-dark text-white text-xl">
                     {instructor.name
                       .split(" ")
                       .map((n: string) => n[0])
@@ -455,7 +455,7 @@ export function InstructorDashboardClient() {
                     className="flex h-auto flex-col items-center justify-center gap-2 p-4"
                     onClick={() => router.push("/dashboard/instructor/students")}
                   >
-                    <Users className="h-6 w-6 text-turnitin-navy" />
+                    <Users className="h-6 w-6 text-primary-dark" />
                     <span>Manage Students</span>
                   </Button>
                   <Button
@@ -463,7 +463,7 @@ export function InstructorDashboardClient() {
                     className="flex h-auto flex-col items-center justify-center gap-2 p-4"
                     onClick={() => router.push("/dashboard/instructor/courses")}
                   >
-                    <BookOpen className="h-6 w-6 text-turnitin-navy" />
+                    <BookOpen className="h-6 w-6 text-primary-dark" />
                     <span>Manage Courses</span>
                   </Button>
                   <Button
@@ -471,7 +471,7 @@ export function InstructorDashboardClient() {
                     className="flex h-auto flex-col items-center justify-center gap-2 p-4"
                     onClick={() => router.push("/dashboard/instructor/submissions")}
                   >
-                    <FileCheck className="h-6 w-6 text-turnitin-navy" />
+                    <FileCheck className="h-6 w-6 text-primary-dark" />
                     <span>Review Submissions</span>
                   </Button>
                   <Button
@@ -479,7 +479,7 @@ export function InstructorDashboardClient() {
                     className="flex h-auto flex-col items-center justify-center gap-2 p-4"
                     onClick={() => router.push("/dashboard/instructor/grades")}
                   >
-                    <CheckCircle className="h-6 w-6 text-turnitin-navy" />
+                    <CheckCircle className="h-6 w-6 text-primary-dark" />
                     <span>Grade Assignments</span>
                   </Button>
                   <Button
@@ -487,7 +487,7 @@ export function InstructorDashboardClient() {
                     className="flex h-auto flex-col items-center justify-center gap-2 p-4"
                     onClick={() => router.push("/dashboard/instructor/analytics")}
                   >
-                    <BarChart className="h-6 w-6 text-turnitin-navy" />
+                    <BarChart className="h-6 w-6 text-primary-dark" />
                     <span>View Analytics</span>
                   </Button>
                   <Button
@@ -495,7 +495,7 @@ export function InstructorDashboardClient() {
                     className="flex h-auto flex-col items-center justify-center gap-2 p-4"
                     onClick={() => router.push("/dashboard/instructor/messages")}
                   >
-                    <MessageSquare className="h-6 w-6 text-turnitin-navy" />
+                    <MessageSquare className="h-6 w-6 text-primary-dark" />
                     <span>Send Messages</span>
                   </Button>
                 </div>
@@ -612,7 +612,7 @@ export function InstructorDashboardClient() {
                         <span className="text-sm font-medium">18%</span>
                       </div>
                       <div className="h-2 w-full rounded-full bg-muted">
-                        <div className="h-2 rounded-full bg-turnitin-blue" style={{ width: "18%" }}></div>
+                        <div className="h-2 rounded-full bg-primary" style={{ width: "18%" }}></div>
                       </div>
                     </div>
                     <div>
@@ -621,7 +621,7 @@ export function InstructorDashboardClient() {
                         <span className="text-sm font-medium">85%</span>
                       </div>
                       <div className="h-2 w-full rounded-full bg-muted">
-                        <div className="h-2 rounded-full bg-turnitin-navy" style={{ width: "85%" }}></div>
+                        <div className="h-2 rounded-full bg-primary-dark" style={{ width: "85%" }}></div>
                       </div>
                     </div>
                     <div>
@@ -630,7 +630,7 @@ export function InstructorDashboardClient() {
                         <span className="text-sm font-medium">72%</span>
                       </div>
                       <div className="h-2 w-full rounded-full bg-muted">
-                        <div className="h-2 rounded-full bg-turnitin-teal" style={{ width: "72%" }}></div>
+                        <div className="h-2 rounded-full bg-primary" style={{ width: "72%" }}></div>
                       </div>
                     </div>
                     <div>
@@ -661,7 +661,7 @@ export function InstructorDashboardClient() {
                     return (
                       <div key={activity.id} className="flex">
                         <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          <Icon className="h-5 w-5 text-turnitin-navy" />
+                          <Icon className="h-5 w-5 text-primary-dark" />
                         </div>
                         <div className="flex-1 space-y-1">
                           <p className="text-sm font-medium leading-none">{activity.title}</p>
@@ -697,8 +697,8 @@ export function InstructorDashboardClient() {
                   {upcomingEvents.map((event) => (
                     <div key={event.id} className="flex items-start space-x-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-md bg-muted">
-                        {event.type === "defense" && <FileCheck className="h-6 w-6 text-turnitin-navy" />}
-                        {event.type === "meeting" && <Users className="h-6 w-6 text-turnitin-blue" />}
+                        {event.type === "defense" && <FileCheck className="h-6 w-6 text-primary-dark" />}
+                        {event.type === "meeting" && <Users className="h-6 w-6 text-primary" />}
                         {event.type === "deadline" && <Clock className="h-6 w-6 text-amber-500" />}
                         {event.type === "lecture" && <BookOpen className="h-6 w-6 text-green-500" />}
                       </div>

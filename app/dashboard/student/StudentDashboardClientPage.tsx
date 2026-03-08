@@ -43,13 +43,13 @@ export default function StudentDashboardClientPage() {
     <PageTransition>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-turnitin-navy">Student Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary-dark">Student Dashboard</h1>
           <p className="text-muted-foreground">Manage your submissions and view feedback</p>
         </div>
 
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-turnitin-teal/20 transition-all duration-300">
+            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
               </CardHeader>
@@ -63,7 +63,7 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-turnitin-teal/20 transition-all duration-300">
+            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Average Similarity</CardTitle>
               </CardHeader>
@@ -77,7 +77,7 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-turnitin-teal/20 transition-all duration-300">
+            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Pending Feedback</CardTitle>
               </CardHeader>
@@ -91,7 +91,7 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-turnitin-teal/20 transition-all duration-300">
+            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Subscription Status</CardTitle>
               </CardHeader>
@@ -107,19 +107,19 @@ export default function StudentDashboardClientPage() {
           <TabsList className="bg-background/50 backdrop-blur-sm">
             <TabsTrigger
               value="overview"
-              className="transition-all data-[state=active]:bg-turnitin-blue data-[state=active]:text-white"
+              className="transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger
               value="submissions"
-              className="transition-all data-[state=active]:bg-turnitin-blue data-[state=active]:text-white"
+              className="transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Recent Submissions
             </TabsTrigger>
             <TabsTrigger
               value="feedback"
-              className="transition-all data-[state=active]:bg-turnitin-blue data-[state=active]:text-white"
+              className="transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Recent Feedback
             </TabsTrigger>

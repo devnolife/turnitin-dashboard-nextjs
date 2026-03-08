@@ -48,15 +48,15 @@ export function RoleSelectionForm() {
     <StaggerContainer className="grid gap-4">
       <StaggerItem>
         <Card
-          className={`cursor-pointer transition-all duration-300 hover:border-turnitin-navy hover:shadow-lg hover:shadow-turnitin-navy/10 hover:-translate-y-1 ${
-            selectedRole === "student" ? "border-2 border-turnitin-navy shadow-lg shadow-turnitin-navy/20" : ""
+          className={`cursor-pointer transition-all duration-300 hover:border-primary-dark hover:shadow-lg hover:shadow-primary-dark/10 hover:-translate-y-1 ${
+            selectedRole === "student" ? "border-2 border-primary-dark shadow-lg shadow-primary-dark/20" : ""
           }`}
           onClick={() => !isLoading && handleRoleSelection("student")}
         >
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn>
-              <div className="rounded-full bg-turnitin-mint p-3">
-                <GraduationCap className="h-6 w-6 text-turnitin-navy" />
+              <div className="rounded-full bg-primary-lighter p-3">
+                <GraduationCap className="h-6 w-6 text-primary-dark" />
               </div>
             </BounceIn>
             <div className="flex-1">
@@ -72,15 +72,15 @@ export function RoleSelectionForm() {
 
       <StaggerItem>
         <Card
-          className={`cursor-pointer transition-all duration-300 hover:border-turnitin-navy hover:shadow-lg hover:shadow-turnitin-navy/10 hover:-translate-y-1 ${
-            selectedRole === "instructor" ? "border-2 border-turnitin-navy shadow-lg shadow-turnitin-navy/20" : ""
+          className={`cursor-pointer transition-all duration-300 hover:border-primary-dark hover:shadow-lg hover:shadow-primary-dark/10 hover:-translate-y-1 ${
+            selectedRole === "instructor" ? "border-2 border-primary-dark shadow-lg shadow-primary-dark/20" : ""
           }`}
           onClick={() => !isLoading && handleRoleSelection("instructor")}
         >
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn delay={0.1}>
-              <div className="rounded-full bg-turnitin-mint p-3">
-                <BookOpen className="h-6 w-6 text-turnitin-navy" />
+              <div className="rounded-full bg-primary-lighter p-3">
+                <BookOpen className="h-6 w-6 text-primary-dark" />
               </div>
             </BounceIn>
             <div className="flex-1">
@@ -96,15 +96,15 @@ export function RoleSelectionForm() {
 
       <StaggerItem>
         <Card
-          className={`cursor-pointer transition-all duration-300 hover:border-turnitin-navy hover:shadow-lg hover:shadow-turnitin-navy/10 hover:-translate-y-1 ${
-            selectedRole === "admin" ? "border-2 border-turnitin-navy shadow-lg shadow-turnitin-navy/20" : ""
+          className={`cursor-pointer transition-all duration-300 hover:border-primary-dark hover:shadow-lg hover:shadow-primary-dark/10 hover:-translate-y-1 ${
+            selectedRole === "admin" ? "border-2 border-primary-dark shadow-lg shadow-primary-dark/20" : ""
           }`}
           onClick={() => !isLoading && handleRoleSelection("admin")}
         >
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn delay={0.2}>
-              <div className="rounded-full bg-turnitin-mint p-3">
-                <ShieldCheck className="h-6 w-6 text-turnitin-navy" />
+              <div className="rounded-full bg-primary-lighter p-3">
+                <ShieldCheck className="h-6 w-6 text-primary-dark" />
               </div>
             </BounceIn>
             <div className="flex-1">

@@ -101,7 +101,7 @@ export function LoginForm() {
                 <Input
                   placeholder="name@example.com"
                   {...field}
-                  className="focus:ring-2 focus:ring-turnitin-navy/50 transition-all"
+                  className="focus:ring-2 focus:ring-primary-dark/50 transition-all"
                 />
               </FormControl>
               <FormMessage />
@@ -119,14 +119,14 @@ export function LoginForm() {
                   type="password"
                   placeholder="••••••••"
                   {...field}
-                  className="focus:ring-2 focus:ring-turnitin-navy/50 transition-all"
+                  className="focus:ring-2 focus:ring-primary-dark/50 transition-all"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-turnitin-navy hover:bg-turnitin-navy/90" disabled={isLoading}>
+        <Button type="submit" className="w-full bg-primary-dark hover:bg-primary-dark/90" disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

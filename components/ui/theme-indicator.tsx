@@ -30,15 +30,15 @@ export function ThemeIndicator() {
 
   return (
     <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-up">
-      <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 shadow-lg border-2 border-turnitin-mint dark:border-turnitin-blue/50">
+      <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 shadow-lg border-2 border-primary-lighter dark:border-primary/50">
         {currentTheme === "dark" ? (
           <>
-            <Moon className="h-5 w-5 text-turnitin-teal" />
+            <Moon className="h-5 w-5 text-primary" />
             <span className="font-medium">Dark Mode Enabled</span>
           </>
         ) : (
           <>
-            <Sun className="h-5 w-5 text-turnitin-teal" />
+            <Sun className="h-5 w-5 text-primary" />
             <span className="font-medium">Light Mode Enabled</span>
           </>
         )}

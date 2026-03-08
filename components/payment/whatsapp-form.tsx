@@ -89,9 +89,9 @@ export function WhatsAppForm() {
   }
 
   return (
-    <Card className="shadow-lg border border-turnitin-teal/20">
+    <Card className="shadow-lg border border-primary/20">
       <CardHeader>
-        <CardTitle className="text-turnitin-navy">Verifikasi Nomor WhatsApp</CardTitle>
+        <CardTitle className="text-primary-dark">Verifikasi Nomor WhatsApp</CardTitle>
         <CardDescription>Silakan masukkan nomor WhatsApp Anda untuk menyelesaikan pendaftaran</CardDescription>
       </CardHeader>
       <CardContent>
@@ -107,7 +107,7 @@ export function WhatsAppForm() {
                     <Input
                       placeholder="+628123456789"
                       {...field}
-                      className="focus:ring-2 focus:ring-turnitin-blue/50 transition-all"
+                      className="focus:ring-2 focus:ring-primary/50 transition-all"
                     />
                   </FormControl>
                   <FormDescription>
@@ -119,7 +119,7 @@ export function WhatsAppForm() {
             />
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-turnitin-navy to-turnitin-blue"
+              className="w-full bg-gradient-to-r from-primary-dark to-primary"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

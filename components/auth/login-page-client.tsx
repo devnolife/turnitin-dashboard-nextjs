@@ -27,7 +27,7 @@ const itemVariants = {
 
 export default function LoginPageClient() {
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-turnitin-mint/20 dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-primary-lighter/20 dark:bg-gray-900 transition-colors duration-300">
       <FloatingElements />
 
       {/* Left side - Branding */}
@@ -40,9 +40,9 @@ export default function LoginPageClient() {
         >
           <Link href="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white flex items-center justify-center rounded-2xl rotate-12 shadow-md">
-              <ShieldCheck className="h-6 w-6 text-turnitin-navy" />
+              <ShieldCheck className="h-6 w-6 text-primary-dark" />
             </div>
-            <h1 className="text-2xl font-bold text-turnitin-navy dark:text-white">Turnitin Campus</h1>
+            <h1 className="text-2xl font-bold text-primary-dark dark:text-white">Turnitin Campus</h1>
           </Link>
         </motion.div>
 
@@ -58,18 +58,18 @@ export default function LoginPageClient() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <div className="absolute -z-10 inset-0 bg-gradient-to-r from-turnitin-navy/20 to-turnitin-teal/20 rounded-full blur-3xl transform scale-150" />
-            <div className="w-48 h-48 md:w-64 md:h-64 turnitin-gradient rounded-3xl flex items-center justify-center shadow-xl relative overflow-hidden">
+            <div className="absolute -z-10 inset-0 bg-gradient-to-r from-primary-dark/20 to-primary/20 rounded-full blur-3xl transform scale-150" />
+            <div className="w-48 h-48 md:w-64 md:h-64 gen-z-gradient rounded-3xl flex items-center justify-center shadow-xl relative overflow-hidden">
               <div className="absolute w-full h-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
                 <GraduationCap className="h-24 w-24 text-white" />
               </div>
-              <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-turnitin-teal/30 rounded-full" />
-              <div className="absolute -top-8 -left-8 w-24 h-24 bg-turnitin-navy/30 rounded-full" />
+              <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-primary/30 rounded-full" />
+              <div className="absolute -top-8 -left-8 w-24 h-24 bg-primary-dark/30 rounded-full" />
             </div>
           </motion.div>
 
           <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-4 text-turnitin-navy dark:text-white"
+            className="text-3xl md:text-4xl font-bold mb-4 text-primary-dark dark:text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
@@ -97,7 +97,7 @@ export default function LoginPageClient() {
           transition={{ duration: 0.5, delay: 1 }}
         >
           <blockquote className="space-y-2">
-            <p className="text-sm italic text-turnitin-navy/80 dark:text-turnitin-mint/80">
+            <p className="text-sm italic text-primary-dark/80 dark:text-primary-lighter/80">
               &ldquo;Turnitin telah mengubah cara kami memastikan integritas akademik dan memberikan umpan balik berharga kepada mahasiswa.&rdquo;
             </p>
             <footer className="text-xs text-muted-foreground">— Dr. Sarah Johnson, Universitas Pendidikan</footer>
@@ -107,7 +107,7 @@ export default function LoginPageClient() {
         {/* Background gradient blobs */}
         <div className="absolute -z-0 top-0 right-0 w-full h-full overflow-hidden">
           <motion.div
-            className="absolute -top-20 -right-20 w-72 h-72 bg-turnitin-navy/20 rounded-full blur-3xl"
+            className="absolute -top-20 -right-20 w-72 h-72 bg-primary-dark/20 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.5, 0.3],
@@ -119,7 +119,7 @@ export default function LoginPageClient() {
             }}
           />
           <motion.div
-            className="absolute bottom-20 left-20 w-80 h-80 bg-turnitin-teal/20 rounded-full blur-3xl"
+            className="absolute bottom-20 left-20 w-80 h-80 bg-primary/20 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.3, 1],
               opacity: [0.3, 0.4, 0.3],
@@ -142,7 +142,7 @@ export default function LoginPageClient() {
           animate="visible"
         >
           <motion.div variants={itemVariants}>
-            <h2 className="text-3xl font-bold mb-2 text-turnitin-navy dark:text-white">Pilih Peran Anda</h2>
+            <h2 className="text-3xl font-bold mb-2 text-primary-dark dark:text-white">Pilih Peran Anda</h2>
             <p className="text-muted-foreground mb-8">
               Silakan pilih peran untuk masuk ke dashboard Turnitin Campus.
             </p>
@@ -157,14 +157,14 @@ export default function LoginPageClient() {
               Dengan masuk, Anda menyetujui{" "}
               <Link
                 href="/terms"
-                className="text-turnitin-teal hover:text-turnitin-navy hover:underline font-medium"
+                className="text-primary hover:text-primary-dark hover:underline font-medium"
               >
                 Ketentuan Layanan
               </Link>{" "}
               dan{" "}
               <Link
                 href="/privacy"
-                className="text-turnitin-teal hover:text-turnitin-navy hover:underline font-medium"
+                className="text-primary hover:text-primary-dark hover:underline font-medium"
               >
                 Kebijakan Privasi
               </Link>

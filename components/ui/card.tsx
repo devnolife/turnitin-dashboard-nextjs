@@ -21,7 +21,7 @@ const Card = React.forwardRef<
       hoverClass = "transition-transform duration-300 hover:scale-105"
       break
     case "glow":
-      hoverClass = "transition-all duration-300 hover:shadow-lg hover:shadow-turnitin-navy/25"
+      hoverClass = "transition-all duration-300 hover:shadow-lg hover:shadow-primary-dark/25"
       break
     case "none":
     default:

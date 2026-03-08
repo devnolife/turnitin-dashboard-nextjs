@@ -69,10 +69,10 @@ export function PaymentForm() {
   }
 
   return (
-    <Card className="shadow-md border border-turnitin-teal/30">
-      <CardHeader className="bg-turnitin-navy text-white rounded-t-xl">
+    <Card className="shadow-md border border-primary/30">
+      <CardHeader className="bg-primary-dark text-white rounded-t-xl">
         <CardTitle>Detail Pembayaran</CardTitle>
-        <CardDescription className="text-turnitin-teal">Pilih metode pembayaran yang Anda inginkan</CardDescription>
+        <CardDescription className="text-primary">Pilih metode pembayaran yang Anda inginkan</CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <Form {...form}>
@@ -263,7 +263,7 @@ export function PaymentForm() {
               </div>
             )}
 
-            <Button type="submit" className="w-full bg-turnitin-navy" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-primary-dark" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

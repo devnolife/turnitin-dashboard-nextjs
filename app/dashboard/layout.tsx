@@ -80,7 +80,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-turnitin-mint/20 dark:bg-gray-900 transition-colors duration-300">
+    <div className="flex h-screen bg-primary-lighter/20 dark:bg-gray-900 transition-colors duration-300">
       <Sidebar mobileOpen={mobileOpen} onMobileOpenChange={handleMobileOpenChange} />
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <DashboardHeader user={user} onMenuClick={() => setMobileOpen(true)} />

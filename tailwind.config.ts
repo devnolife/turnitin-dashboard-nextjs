@@ -20,29 +20,22 @@ const config = {
     },
     extend: {
       colors: {
-        // Turnitin brand palette
-        turnitin: {
-          navy: "#0F2854",
-          blue: "#1C4D8D",
-          teal: "#4988C4",
-          mint: "#BDE8F5",
-        },
-        // EduGen / ui-dashboard primary palette
-        edugen: {
+        // ui-dashboard primary palette
+        primary: {
           DEFAULT: "#5AB2FF",
           light: "#A0DEFF",
           lighter: "#CAF4FF",
           dark: "#3A92DF",
+          foreground: "#FFFFFF",
         },
-        // EduGen secondary & accent
-        "edugen-secondary": {
+        secondary: {
           DEFAULT: "#FFF9D0",
           foreground: "#525B44",
         },
-        "edugen-accent": {
+        accent: {
           DEFAULT: "#85A98F",
-          dark: "#525B44",
           foreground: "#FFFFFF",
+          dark: "#525B44",
         },
         // Component blues (ui-dashboard inline)
         "edu-blue": {
@@ -56,7 +49,7 @@ const config = {
           "dark-mode": "#2c4c6b",
           "dark-border": "#3a5d7d",
         },
-        // Theme option palettes from ui-dashboard
+        // Theme option palettes
         "theme-purple": {
           DEFAULT: "#8b5cf6",
           light: "#a78bfa",
@@ -87,14 +80,6 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -111,10 +96,6 @@ const config = {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -123,7 +104,6 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Chart colors via CSS variables
         chart: {
           1: "hsl(var(--chart-1))",
           2: "hsl(var(--chart-2))",
@@ -146,6 +126,9 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+        "4xl": "2rem",
       },
       keyframes: {
         "accordion-down": {

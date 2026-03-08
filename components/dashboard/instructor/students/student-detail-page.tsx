@@ -329,8 +329,8 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                                     ? 75
                                     : 100
                           }
-                          className="h-2 bg-turnitin-mint/30"
-                          indicatorColor="bg-gradient-to-r from-turnitin-blue to-turnitin-teal"
+                          className="h-2 bg-primary-lighter/30"
+                          indicatorColor="bg-gradient-to-r from-primary to-primary"
                         />
                       </div>
 
@@ -343,8 +343,8 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                         </div>
                         <Progress
                           value={student.examStage === "applicant" ? 0 : 100}
-                          className="h-1.5 bg-turnitin-mint/30"
-                          indicatorColor="bg-turnitin-blue"
+                          className="h-1.5 bg-primary-lighter/30"
+                          indicatorColor="bg-primary"
                         />
                       </div>
 
@@ -359,8 +359,8 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                         </div>
                         <Progress
                           value={student.examStage === "applicant" || student.examStage === "proposal_exam" ? 0 : 100}
-                          className="h-1.5 bg-turnitin-mint/30"
-                          indicatorColor="bg-turnitin-blue"
+                          className="h-1.5 bg-primary-lighter/30"
+                          indicatorColor="bg-primary"
                         />
                       </div>
 
@@ -375,8 +375,8 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                         </div>
                         <Progress
                           value={student.examStage === "final_exam" || student.examStage === "graduated" ? 100 : 0}
-                          className="h-1.5 bg-turnitin-mint/30"
-                          indicatorColor="bg-turnitin-blue"
+                          className="h-1.5 bg-primary-lighter/30"
+                          indicatorColor="bg-primary"
                         />
                       </div>
                     </div>

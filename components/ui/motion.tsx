@@ -309,7 +309,7 @@ export const HoverCard = ({
       hoverClass = "transition-transform duration-300 hover:scale-105"
       break
     case "glow":
-      hoverClass = "transition-all duration-300 hover:shadow-lg hover:shadow-turnitin-navy/25"
+      hoverClass = "transition-all duration-300 hover:shadow-lg hover:shadow-primary-dark/25"
       break
     case "none":
     default:
@@ -357,14 +357,14 @@ export const AnimatedBlob = ({
 
   switch (color) {
     case "secondary":
-      colorClass = "bg-turnitin-blue/30"
+      colorClass = "bg-primary/30"
       break
     case "accent":
-      colorClass = "bg-turnitin-teal/30"
+      colorClass = "bg-primary/30"
       break
     case "primary":
     default:
-      colorClass = "bg-turnitin-navy/30"
+      colorClass = "bg-primary-dark/30"
   }
 
   return (
@@ -390,7 +390,7 @@ export const AnimatedGradient = ({
 }) => (
   <motion.div
     className={cn(
-      "absolute inset-0 bg-gradient-to-r from-turnitin-navy/20 via-turnitin-blue/20 to-turnitin-teal/20 opacity-50",
+      "absolute inset-0 bg-gradient-to-r from-primary-dark/20 via-primary/20 to-primary/20 opacity-50",
       className,
     )}
     animate={{

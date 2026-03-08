@@ -18,7 +18,7 @@ export function InstructorProfile() {
           <div className="flex flex-col items-center gap-4 sm:flex-row">
             <Avatar className="h-20 w-20">
               <AvatarImage src="" alt={user?.name || "Instructor"} />
-              <AvatarFallback className="bg-turnitin-navy text-white text-xl">
+              <AvatarFallback className="bg-primary-dark text-white text-xl">
                 {user?.email?.substring(0, 2).toUpperCase() || "IN"}
               </AvatarFallback>
             </Avatar>

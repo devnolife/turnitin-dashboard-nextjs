@@ -130,15 +130,15 @@ export function PaymentStatusChecker() {
   }
 
   return (
-    <Card className="shadow-lg border border-turnitin-teal/20">
+    <Card className="shadow-lg border border-primary/20">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Status Pembayaran
           {status === "completed" && (
-            <Badge className="bg-gradient-to-r from-turnitin-blue to-turnitin-teal text-white">Lunas</Badge>
+            <Badge className="bg-gradient-to-r from-primary to-primary text-white">Lunas</Badge>
           )}
           {status === "pending" && (
-            <Badge variant="outline" className="border-turnitin-navy text-turnitin-navy">
+            <Badge variant="outline" className="border-primary-dark text-primary-dark">
               Menunggu Pembayaran
             </Badge>
           )}
@@ -186,8 +186,8 @@ export function PaymentStatusChecker() {
               </div>
               <Progress
                 value={66}
-                className="h-2 bg-turnitin-mint/30"
-                indicatorColor="bg-gradient-to-r from-turnitin-blue to-turnitin-teal"
+                className="h-2 bg-primary-lighter/30"
+                indicatorColor="bg-gradient-to-r from-primary to-primary"
               />
               <p className="text-center text-sm text-muted-foreground">Sedang memeriksa status pembayaran Anda...</p>
             </>

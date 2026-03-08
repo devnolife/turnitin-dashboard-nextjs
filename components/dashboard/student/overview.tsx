@@ -53,15 +53,15 @@ export function StudentOverview() {
   return (
     <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <StaggerItem>
-        <Card className="col-span-1 hover:shadow-md hover:shadow-turnitin-teal/20 transition-all duration-300">
+        <Card className="col-span-1 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-turnitin-navy">Quick Actions</CardTitle>
+            <CardTitle className="text-primary-dark">Quick Actions</CardTitle>
             <CardDescription>Common tasks you might want to perform</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <Button
               asChild
-              className="w-full justify-start bg-gradient-to-r from-turnitin-navy to-turnitin-blue text-white"
+              className="w-full justify-start bg-gradient-to-r from-primary-dark to-primary text-white"
               withRipple
             >
               <Link href="/dashboard/student/submit">
@@ -106,8 +106,8 @@ export function StudentOverview() {
               >
                 <Progress
                   value={50}
-                  className="h-2 bg-turnitin-mint/30"
-                  indicatorColor="bg-gradient-to-r from-turnitin-blue to-turnitin-teal"
+                  className="h-2 bg-primary-lighter/30"
+                  indicatorColor="bg-gradient-to-r from-primary to-primary"
                 />
               </motion.div>
             </div>
@@ -125,8 +125,8 @@ export function StudentOverview() {
               >
                 <Progress
                   value={4.5}
-                  className="h-2 bg-turnitin-mint/30"
-                  indicatorColor="bg-gradient-to-r from-turnitin-blue to-turnitin-teal"
+                  className="h-2 bg-primary-lighter/30"
+                  indicatorColor="bg-gradient-to-r from-primary to-primary"
                 />
               </motion.div>
             </div>
@@ -144,8 +144,8 @@ export function StudentOverview() {
               >
                 <Progress
                   value={58}
-                  className="h-2 bg-turnitin-mint/30"
-                  indicatorColor="bg-gradient-to-r from-turnitin-blue to-turnitin-teal"
+                  className="h-2 bg-primary-lighter/30"
+                  indicatorColor="bg-gradient-to-r from-primary to-primary"
                 />
               </motion.div>
             </div>
@@ -154,7 +154,7 @@ export function StudentOverview() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 md:col-span-2 lg:col-span-1 transition-all duration-300 hover:shadow-md hover:shadow-turnitin-teal/20">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-1 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
           <CardHeader>
             <CardTitle className="gradient-text">Account Information</CardTitle>
             <CardDescription>Your personal information</CardDescription>
