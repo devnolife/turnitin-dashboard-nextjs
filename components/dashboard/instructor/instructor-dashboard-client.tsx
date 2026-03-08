@@ -236,9 +236,9 @@ export function InstructorDashboardClient() {
     })
 
     return [
-      { name: "Proposal", value: examStages.proposal_exam, color: "#7AB2D3" },
-      { name: "Results", value: examStages.results_exam, color: "#4A628A" },
-      { name: "Final", value: examStages.final_exam, color: "#B9E5E8" },
+      { name: "Proposal", value: examStages.proposal_exam, color: "#1C4D8D" },
+      { name: "Results", value: examStages.results_exam, color: "#0F2854" },
+      { name: "Final", value: examStages.final_exam, color: "#4988C4" },
       { name: "Graduated", value: examStages.graduated, color: "#10b981" },
     ]
   }

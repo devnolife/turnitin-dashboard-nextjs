@@ -22,10 +22,10 @@ const config = {
       colors: {
         // Turnitin-inspired color palette with navy as primary
         turnitin: {
-          navy: "#4A628A", // Primary color
-          blue: "#7AB2D3", // Secondary color
-          teal: "#B9E5E8", // Accent color
-          mint: "#DFF2EB", // Background/subtle accent
+          navy: "#0F2854", // Primary color
+          blue: "#1C4D8D", // Secondary color
+          teal: "#4988C4", // Accent color
+          mint: "#BDE8F5", // Background/subtle accent
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

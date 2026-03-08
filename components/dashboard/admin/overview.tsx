@@ -42,11 +42,11 @@ export function AdminOverview() {
               },
               students: {
                 label: "Students",
-                color: "hsl(212, 48%, 65%)",
+                color: "hsl(209, 51%, 53%)",
               },
               instructors: {
                 label: "Instructors",
-                color: "hsl(217, 31%, 42%)",
+                color: "hsl(218, 70%, 19%)",
               },
             }}
           >
@@ -78,7 +78,7 @@ export function AdminOverview() {
               },
               revenue: {
                 label: "Revenue",
-                color: "hsl(212, 48%, 65%)",
+                color: "hsl(209, 51%, 53%)",
               },
             }}
           >
@@ -109,7 +109,7 @@ export function AdminOverview() {
               },
               submissions: {
                 label: "Submissions",
-                color: "hsl(212, 48%, 65%)",
+                color: "hsl(214, 67%, 33%)",
               },
             }}
           >

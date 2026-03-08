@@ -144,7 +144,7 @@ export function AnalyticsPage() {
                   <XAxis dataKey="month" className="text-xs" />
                   <YAxis className="text-xs" />
                   <Tooltip />
-                  <Bar dataKey="submissions" fill="#4A628A" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="submissions" fill="#0F2854" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -199,9 +199,9 @@ export function AnalyticsPage() {
                 <Line
                   type="monotone"
                   dataKey="avgSimilarity"
-                  stroke="#7AB2D3"
+                  stroke="#4988C4"
                   strokeWidth={2}
-                  dot={{ fill: "#4A628A", r: 4 }}
+                  dot={{ fill: "#0F2854", r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -223,8 +223,8 @@ export function AnalyticsPage() {
                 <XAxis type="number" className="text-xs" />
                 <YAxis dataKey="course" type="category" className="text-xs" width={80} />
                 <Tooltip />
-                <Bar dataKey="submissions" fill="#4A628A" radius={[0, 4, 4, 0]} />
-                <Bar dataKey="avgScore" fill="#7AB2D3" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="submissions" fill="#0F2854" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="avgScore" fill="#4988C4" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

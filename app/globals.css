@@ -5,33 +5,33 @@
 @layer base {
   :root {
     /* Main brand colors - Navy as primary */
-    --primary: 217 31% 42%; /* #4A628A - Navy blue */
+    --primary: 218 70% 19%; /* #0F2854 - Deep navy */
     --primary-foreground: 0 0% 100%;
 
     /* Secondary colors */
-    --secondary: 212 48% 65%; /* #7AB2D3 - Medium blue */
+    --secondary: 214 67% 33%; /* #1C4D8D - Medium blue */
     --secondary-foreground: 0 0% 100%;
 
     /* Accent colors */
-    --accent: 185 55% 81%; /* #B9E5E8 - Light teal blue */
-    --accent-foreground: 217 31% 42%; /* #4A628A - Navy blue */
+    --accent: 209 51% 53%; /* #4988C4 - Blue */
+    --accent-foreground: 0 0% 100%;
 
     /* UI colors */
     --background: 0 0% 100%;
-    --foreground: 217 31% 42%; /* #4A628A - Navy for text */
+    --foreground: 218 70% 19%; /* #0F2854 - Navy for text */
     --card: 0 0% 100%;
-    --card-foreground: 217 31% 42%; /* #4A628A - Navy for text */
+    --card-foreground: 218 70% 19%; /* #0F2854 - Navy for text */
     --popover: 0 0% 100%;
-    --popover-foreground: 217 31% 42%; /* #4A628A - Navy for text */
-    --muted: 164 39% 91%; /* #DFF2EB - Very light mint */
-    --muted-foreground: 217 31% 60%; /* Lighter version of navy */
+    --popover-foreground: 218 70% 19%; /* #0F2854 - Navy for text */
+    --muted: 194 74% 93%; /* Lighter version of #BDE8F5 */
+    --muted-foreground: 218 50% 40%; /* Lighter navy */
 
     /* Interactive elements */
-    --border: 185 55% 81%; /* #B9E5E8 - Light teal blue */
-    --input: 185 55% 81%; /* #B9E5E8 - Light teal blue */
-    --ring: 217 31% 42%; /* #4A628A - Navy blue */
+    --border: 209 51% 80%; /* Light version of accent */
+    --input: 209 51% 80%;
+    --ring: 218 70% 19%; /* #0F2854 - Navy */
 
-    /* Status colors - keeping these with slight modifications */
+    /* Status colors */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --success: 142 70% 45%;
@@ -40,11 +40,11 @@
     --warning-foreground: 0 0% 98%;
 
     /* Sidebar colors */
-    --sidebar-background: 164 39% 95%; /* Lighter mint */
-    --sidebar-foreground: 217 31% 42%; /* #4A628A - Navy */
-    --sidebar-accent: 217 31% 42%; /* #4A628A - Navy */
+    --sidebar-background: 194 74% 95%; /* Very light sky blue */
+    --sidebar-foreground: 218 70% 19%; /* #0F2854 - Navy */
+    --sidebar-accent: 218 70% 19%; /* #0F2854 - Navy */
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 185 55% 81%; /* #B9E5E8 - Light teal blue */
+    --sidebar-border: 209 51% 80%;
 
     /* Animation durations */
     --duration-fast: 150ms;
@@ -61,30 +61,30 @@
   }
 
   .dark {
-    --background: 217 31% 18%; /* Darker navy */
+    --background: 218 70% 8%; /* Very dark navy */
     --foreground: 0 0% 98%;
-    --card: 217 31% 20%; /* Slightly lighter than background */
+    --card: 218 70% 11%; /* Slightly lighter */
     --card-foreground: 0 0% 98%;
-    --popover: 217 31% 20%; /* Same as card */
+    --popover: 218 70% 11%;
     --popover-foreground: 0 0% 98%;
-    --primary: 217 31% 42%; /* #4A628A - Navy blue */
+    --primary: 209 51% 53%; /* #4988C4 - Accent as primary in dark */
     --primary-foreground: 0 0% 98%;
-    --secondary: 212 48% 55%; /* Darker version of blue */
+    --secondary: 214 67% 33%; /* #1C4D8D */
     --secondary-foreground: 0 0% 98%;
-    --accent: 185 55% 61%; /* Darker version of teal */
+    --accent: 214 67% 33%; /* #1C4D8D */
     --accent-foreground: 0 0% 98%;
-    --muted: 217 31% 25%; /* Darker navy */
+    --muted: 218 50% 15%;
     --muted-foreground: 0 0% 70%;
-    --border: 217 31% 30%; /* Slightly lighter navy */
-    --input: 217 31% 30%; /* Slightly lighter navy */
-    --ring: 217 31% 42%; /* #4A628A - Navy blue */
+    --border: 218 50% 20%;
+    --input: 218 50% 20%;
+    --ring: 209 51% 53%; /* #4988C4 */
 
     /* Sidebar colors */
-    --sidebar-background: 217 31% 25%; /* Darker navy */
+    --sidebar-background: 218 70% 10%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-accent: 217 31% 42%; /* #4A628A - Navy */
+    --sidebar-accent: 209 51% 53%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 217 31% 30%; /* Slightly lighter navy */
+    --sidebar-border: 218 50% 20%;
   }
 }
 
