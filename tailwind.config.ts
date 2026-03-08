@@ -101,12 +101,27 @@ const config = {
             transform: "translate(0px, 0px) scale(1)",
           },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "pulse-light": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translate(-50%, 20px)" },
+          "100%": { opacity: "1", transform: "translate(-50%, 0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         ripple: "ripple 0.6s linear forwards",
         blob: "blob 7s infinite",
+        float: "float 6s ease-in-out infinite",
+        "pulse-light": "pulse-light 3s ease-in-out infinite",
+        "fade-in-up": "fade-in-up 0.5s ease-out forwards",
       },
     },
   },

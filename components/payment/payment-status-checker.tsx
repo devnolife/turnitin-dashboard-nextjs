@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { usePaymentStore } from "@/lib/store/payment-store"
 import { WhatsAppForm } from "./whatsapp-form"
+import { ConfettiTrigger, SuccessCheckmark } from "@/components/ui/animations"
 
 export function PaymentStatusChecker() {
   const [status, setStatus] = useState<string>("checking")
@@ -194,7 +195,8 @@ export function PaymentStatusChecker() {
 
           {status === "completed" && (
             <div className="flex flex-col items-center justify-center py-6 text-center">
-              <CheckCircle2 className="h-16 w-16 text-green-500" />
+              <ConfettiTrigger />
+              <SuccessCheckmark />
               <h3 className="mt-4 text-xl font-medium">Pembayaran Berhasil!</h3>
               <p className="mt-2 text-muted-foreground">
                 Pembayaran Anda telah dikonfirmasi. Silakan lengkapi data WhatsApp Anda untuk melanjutkan.

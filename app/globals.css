@@ -95,6 +95,7 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   /* Modern typography */
@@ -303,5 +304,63 @@
       border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     }
   }
+}
+
+/* Turnitin gradient patterns (adapted from ui-dashboard) */
+.turnitin-gradient {
+  background: linear-gradient(135deg, #0F2854 0%, #4988C4 100%);
+}
+
+.turnitin-gradient-alt {
+  background: linear-gradient(135deg, #4988C4 0%, #BDE8F5 100%);
+}
+
+.turnitin-gradient-full {
+  background: linear-gradient(135deg, #0F2854 0%, #1C4D8D 33%, #4988C4 66%, #BDE8F5 100%);
+}
+
+/* Premium blob shapes */
+.turnitin-blob {
+  border-radius: 71% 29% 65% 35% / 36% 53% 47% 64%;
+}
+
+.turnitin-blob-alt {
+  border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+}
+
+/* Premium card styles */
+.turnitin-card {
+  @apply rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+.turnitin-button {
+  @apply rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95;
+}
+
+.turnitin-input {
+  @apply rounded-xl border-2 focus:border-primary focus:ring-2 focus:ring-turnitin-teal/50 transition-all duration-300;
+}
+
+/* Theme transition */
+.theme-transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Fade in up animation */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
 }
 

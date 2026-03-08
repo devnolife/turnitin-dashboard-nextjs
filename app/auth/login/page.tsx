@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { RoleSelectionForm } from "@/components/auth/role-selection-form"
 import { AnimatedBlob, AnimatedGradient } from "@/components/ui/motion"
+import { FloatingElements } from "@/components/ui/floating-elements"
 
 export const metadata: Metadata = {
   title: "Login - Turnitin Campus",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="container relative flex h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 overflow-hidden">
+      <FloatingElements />
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex">
         <div className="absolute inset-0 bg-gradient-to-br from-turnitin-navy via-turnitin-blue to-turnitin-teal" />
 
