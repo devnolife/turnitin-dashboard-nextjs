@@ -20,13 +20,68 @@ const config = {
     },
     extend: {
       colors: {
-        // Turnitin-inspired color palette with navy as primary
+        // Turnitin brand palette
         turnitin: {
-          navy: "#0F2854", // Primary color
-          blue: "#1C4D8D", // Secondary color
-          teal: "#4988C4", // Accent color
-          mint: "#BDE8F5", // Background/subtle accent
+          navy: "#0F2854",
+          blue: "#1C4D8D",
+          teal: "#4988C4",
+          mint: "#BDE8F5",
         },
+        // EduGen / ui-dashboard primary palette
+        edugen: {
+          DEFAULT: "#5AB2FF",
+          light: "#A0DEFF",
+          lighter: "#CAF4FF",
+          dark: "#3A92DF",
+        },
+        // EduGen secondary & accent
+        "edugen-secondary": {
+          DEFAULT: "#FFF9D0",
+          foreground: "#525B44",
+        },
+        "edugen-accent": {
+          DEFAULT: "#85A98F",
+          dark: "#525B44",
+          foreground: "#FFFFFF",
+        },
+        // Component blues (ui-dashboard inline)
+        "edu-blue": {
+          DEFAULT: "#5fa2db",
+          light: "#7ab8e6",
+          lighter: "#a8d1f0",
+          dark: "#4a8bc7",
+          medium: "#6aa7d9",
+          bg: "#e6f1fa",
+          "bg-muted": "#d0e4f5",
+          "dark-mode": "#2c4c6b",
+          "dark-border": "#3a5d7d",
+        },
+        // Theme option palettes from ui-dashboard
+        "theme-purple": {
+          DEFAULT: "#8b5cf6",
+          light: "#a78bfa",
+          lighter: "#c4b5fd",
+          bg: "#ede9fe",
+        },
+        "theme-green": {
+          DEFAULT: "#10b981",
+          light: "#34d399",
+          lighter: "#6ee7b7",
+          bg: "#d1fae5",
+        },
+        "theme-orange": {
+          DEFAULT: "#f97316",
+          light: "#fb923c",
+          lighter: "#fdba74",
+          bg: "#ffedd5",
+        },
+        "theme-pink": {
+          DEFAULT: "#ec4899",
+          light: "#f472b6",
+          lighter: "#f9a8d4",
+          bg: "#fce7f3",
+        },
+        // CSS variable-based tokens
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -67,6 +122,24 @@ const config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        // Chart colors via CSS variables
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary, var(--primary)))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground, var(--primary-foreground)))",
+          accent: "hsl(var(--sidebar-accent, var(--accent)))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground, var(--accent-foreground)))",
+          border: "hsl(var(--sidebar-border, var(--border)))",
+          ring: "hsl(var(--sidebar-ring, var(--ring)))",
         },
       },
       borderRadius: {

@@ -39,12 +39,22 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 98%;
 
+    /* Chart colors (from ui-dashboard) */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
     /* Sidebar colors */
-    --sidebar-background: 194 74% 95%; /* Very light sky blue */
-    --sidebar-foreground: 218 70% 19%; /* #0F2854 - Navy */
-    --sidebar-accent: 218 70% 19%; /* #0F2854 - Navy */
+    --sidebar-background: 194 74% 95%;
+    --sidebar-foreground: 218 70% 19%;
+    --sidebar-accent: 218 70% 19%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 209 51% 80%;
+    --sidebar-primary: 218 70% 19%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Animation durations */
     --duration-fast: 150ms;
@@ -79,12 +89,22 @@
     --input: 218 50% 20%;
     --ring: 209 51% 53%; /* #4988C4 */
 
+    /* Chart colors - dark mode (from ui-dashboard) */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
     /* Sidebar colors */
     --sidebar-background: 218 70% 10%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-accent: 209 51% 53%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 218 50% 20%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -306,7 +326,7 @@
   }
 }
 
-/* Turnitin gradient patterns (adapted from ui-dashboard) */
+/* Turnitin gradient patterns */
 .turnitin-gradient {
   background: linear-gradient(135deg, #0F2854 0%, #4988C4 100%);
 }
@@ -317,6 +337,24 @@
 
 .turnitin-gradient-full {
   background: linear-gradient(135deg, #0F2854 0%, #1C4D8D 33%, #4988C4 66%, #BDE8F5 100%);
+}
+
+/* EduGen / ui-dashboard gradient patterns */
+.edugen-gradient {
+  background: linear-gradient(135deg, #5ab2ff 0%, #caf4ff 100%);
+}
+
+.edugen-gradient-alt {
+  background: linear-gradient(135deg, #a0deff 0%, #fff9d0 100%);
+}
+
+.edugen-gradient-blue {
+  background: linear-gradient(135deg, #5fa2db 0%, #a8d1f0 100%);
+}
+
+/* Component gradient (ui-dashboard toast success) */
+.gradient-success {
+  background: linear-gradient(to right, #5fa2db, #7ab8e6);
 }
 
 /* Premium blob shapes */
