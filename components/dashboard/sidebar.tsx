@@ -89,8 +89,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Gradient Header */}
-      <div className="p-6 flex justify-center gen-z-gradient rounded-tr-[2rem]">
+      {/* Header */}
+      <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-white flex items-center justify-center rounded-2xl rotate-12 shadow-md">
             <ShieldCheck className="h-6 w-6 text-primary-dark" />
@@ -137,7 +137,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 <span
                   className={`ml-auto px-2 py-0.5 rounded-full text-xs ${
                     route.badge === "New"
-                      ? "gen-z-gradient"
+                      ? "bg-[#63A6DD]"
                       : "bg-primary"
                   } text-white animate-pulse-light`}
                 >

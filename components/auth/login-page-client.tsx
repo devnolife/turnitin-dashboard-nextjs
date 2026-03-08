@@ -59,7 +59,7 @@ export default function LoginPageClient() {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <div className="absolute -z-10 inset-0 bg-gradient-to-r from-primary-dark/20 to-primary/20 rounded-full blur-3xl transform scale-150" />
-            <div className="w-48 h-48 md:w-64 md:h-64 gen-z-gradient rounded-3xl flex items-center justify-center shadow-xl relative overflow-hidden">
+            <div className="w-48 h-48 md:w-64 md:h-64 bg-[#63A6DD] rounded-3xl flex items-center justify-center shadow-xl relative overflow-hidden">
               <div className="absolute w-full h-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
                 <GraduationCap className="h-24 w-24 text-white" />
               </div>
