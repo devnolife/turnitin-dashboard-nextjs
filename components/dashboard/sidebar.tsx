@@ -90,56 +90,49 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
+      <div className="p-4 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-white flex items-center justify-center rounded-2xl rotate-12 shadow-md">
-            <ShieldCheck className="h-6 w-6 text-primary-dark" />
+          <div className="w-9 h-9 bg-white flex items-center justify-center rounded-xl rotate-12 shadow-md">
+            <ShieldCheck className="h-5 w-5 text-primary-dark" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Turnitin</h1>
+          <h1 className="text-xl font-bold text-white">Turnitin</h1>
         </div>
       </div>
 
-      {/* User Profile */}
-      <div className="p-6 flex flex-col items-center border-b border-gray-100 dark:border-gray-700">
-        <div className="relative">
-          <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-lighter rounded-full flex items-center justify-center shadow-md">
-            <span className="text-xs">✨</span>
-          </div>
-          <Avatar className="w-20 h-20 mb-3 border-4 border-primary-lighter dark:border-primary/50">
-            <AvatarImage src="/placeholder.svg?height=80&width=80" alt="User" />
-            <AvatarFallback className="bg-primary text-white text-lg">
-              {getInitials(user?.email)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <p className="font-medium text-lg">{user?.name || user?.email || "User"}</p>
-        <p className="text-sm text-muted-foreground">{getRoleLabel(role)}</p>
-        <div className="mt-2 px-3 py-1 bg-primary-lighter dark:bg-primary/30 rounded-full text-xs font-medium text-primary-dark dark:text-primary-lighter">
-          {role === "admin" ? "Administrator 🛡️" : role === "instructor" ? "Pro Educator 🏆" : "Mahasiswa 🎓"}
+      {/* User Profile - Compact */}
+      <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700">
+        <Avatar className="w-10 h-10 shrink-0 border-2 border-primary-lighter dark:border-primary/50">
+          <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
+          <AvatarFallback className="bg-primary text-white text-sm">
+            {getInitials(user?.email)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <p className="font-medium text-sm truncate">{user?.name || user?.email || "User"}</p>
+          <p className="text-xs text-muted-foreground">{getRoleLabel(role)}</p>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
         {routes.map((route) => (
           <Link key={route.href} href={route.href} onClick={onNavigate}>
             <Button
               variant={pathname === route.href ? "secondary" : "ghost"}
               className={cn(
-                "w-full justify-start rounded-2xl h-12 text-base",
-                pathname === route.href &&
-                  "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter",
+                "w-full justify-start rounded-xl h-10 text-sm font-normal",
+                pathname === route.href
+                  ? "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter"
+                  : "text-gray-600 dark:text-gray-400",
               )}
             >
-              <route.icon className="mr-3 h-5 w-5" />
+              <route.icon className="mr-3 h-4 w-4 shrink-0" />
               {route.title}
               {"badge" in route && route.badge && (
                 <span
-                  className={`ml-auto px-2 py-0.5 rounded-full text-xs ${
-                    route.badge === "New"
-                      ? "bg-[#63A6DD]"
-                      : "bg-primary"
-                  } text-white animate-pulse-light`}
+                  className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                    route.badge === "New" ? "bg-[#63A6DD]" : "bg-primary"
+                  } text-white`}
                 >
                   {route.badge}
                 </span>
@@ -147,20 +140,22 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             </Button>
           </Link>
         ))}
+      </nav>
 
-        {/* Logout */}
+      {/* Logout */}
+      <div className="px-3 py-3 border-t border-gray-100 dark:border-gray-700">
         <Button
           variant="ghost"
           onClick={() => {
             onNavigate?.()
             logout()
           }}
-          className="w-full justify-start rounded-2xl h-12 text-base text-muted-foreground hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-400 mt-4"
+          className="w-full justify-start rounded-xl h-10 text-sm font-normal text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-950 dark:hover:text-red-400"
         >
-          <LogOut className="mr-3 h-5 w-5" />
+          <LogOut className="mr-3 h-4 w-4" />
           Keluar
         </Button>
-      </nav>
+      </div>
     </div>
   )
 }
