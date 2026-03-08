@@ -2,23 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { BookOpen, Search, Plus, Filter, X, MoreHorizontal, Edit, Trash, Eye, Calendar, Clock } from "lucide-react"
+import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { useFacultyStore } from "@/lib/store/faculty-store"
-import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/motion"
+import { PageTransition } from "@/components/ui/motion"
 import {
   Dialog,
   DialogContent,
@@ -30,9 +21,11 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { CoursesFilters } from "./courses-filters"
+import { CoursesGrid } from "./courses-grid"
 
 // Mock course data
-interface Course {
+export interface Course {
   id: string
   title: string
   code: string
@@ -428,227 +421,26 @@ export function InstructorCoursesPage() {
           </Dialog>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search courses..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-2">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="upcoming">Upcoming</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-              </SelectContent>
-            </Select>
+        <CoursesFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          programFilter={programFilter}
+          onProgramFilterChange={setProgramFilter}
+          availablePrograms={getAvailablePrograms()}
+          getProgramName={getProgramName}
+        />
 
-            <Select value={programFilter} onValueChange={setProgramFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Programs" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Programs</SelectItem>
-                {getAvailablePrograms().map((program) => (
-                  <SelectItem key={program.id} value={program.id}>
-                    {program.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Active filters */}
-        {(statusFilter !== "all" || programFilter !== "all" || searchQuery) && (
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center">
-              <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Active filters:</span>
-            </div>
-
-            {statusFilter !== "all" && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                Status: {statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => setStatusFilter("all")}
-                >
-                  <X className="h-3 w-3" />
-                  <span className="sr-only">Remove status filter</span>
-                </Button>
-              </Badge>
-            )}
-
-            {programFilter !== "all" && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                Program: {getProgramName(programFilter)}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => setProgramFilter("all")}
-                >
-                  <X className="h-3 w-3" />
-                  <span className="sr-only">Remove program filter</span>
-                </Button>
-              </Badge>
-            )}
-
-            {searchQuery && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                Search: {searchQuery}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => setSearchQuery("")}
-                >
-                  <X className="h-3 w-3" />
-                  <span className="sr-only">Remove search filter</span>
-                </Button>
-              </Badge>
-            )}
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs"
-              onClick={() => {
-                setStatusFilter("all")
-                setProgramFilter("all")
-                setSearchQuery("")
-              }}
-            >
-              Clear all
-            </Button>
-          </div>
-        )}
-
-        <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredCourses.length > 0 ? (
-            filteredCourses.map((course) => (
-              <StaggerItem key={course.id}>
-                <Card className="hover-lift">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl">{course.title}</CardTitle>
-                        <CardDescription>{course.code}</CardDescription>
-                      </div>
-                      <Badge
-                        variant={
-                          course.status === "active"
-                            ? "default"
-                            : course.status === "upcoming"
-                              ? "secondary"
-                              : "outline"
-                        }
-                      >
-                        {course.status.charAt(0).toUpperCase() + course.status.slice(1)}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <p className="text-sm text-muted-foreground line-clamp-2">{course.description}</p>
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center">
-                          <BookOpen className="mr-1 h-4 w-4 text-muted-foreground" />
-                          <span>{getProgramName(course.programId)}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Calendar className="mr-1 h-4 w-4 text-muted-foreground" />
-                          <span>
-                            {course.semester} {course.year}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        <div className="rounded-md bg-muted p-2">
-                          <div className="text-lg font-medium">{course.studentCount}</div>
-                          <div className="text-xs text-muted-foreground">Students</div>
-                        </div>
-                        <div className="rounded-md bg-muted p-2">
-                          <div className="text-lg font-medium">{course.materialsCount}</div>
-                          <div className="text-xs text-muted-foreground">Materials</div>
-                        </div>
-                        <div className="rounded-md bg-muted p-2">
-                          <div className="text-lg font-medium">{course.assignmentsCount}</div>
-                          <div className="text-xs text-muted-foreground">Assignments</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex items-center justify-between border-t pt-4">
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Clock className="mr-1 h-3 w-3" />
-                      Updated {course.lastUpdated}
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => handleViewCourse(course.id)}>
-                        <Eye className="mr-1 h-3 w-3" />
-                        View
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleViewCourse(course.id)}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Course
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleEditCourse(course.id)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Course
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => handleDeleteCourse(course.id)}
-                          >
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete Course
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </StaggerItem>
-            ))
-          ) : (
-            <div className="col-span-full flex h-60 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-              <BookOpen className="h-10 w-10 text-muted-foreground/60" />
-              <h3 className="mt-4 text-lg font-medium">No Courses Found</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {courses.length === 0
-                  ? "You haven't created any courses yet."
-                  : "No courses match your current filters."}
-              </p>
-              {courses.length === 0 && (
-                <Button className="mt-4" onClick={() => setNewCourseDialogOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Your First Course
-                </Button>
-              )}
-            </div>
-          )}
-        </StaggerContainer>
+        <CoursesGrid
+          filteredCourses={filteredCourses}
+          totalCourses={courses.length}
+          getProgramName={getProgramName}
+          onViewCourse={handleViewCourse}
+          onEditCourse={handleEditCourse}
+          onDeleteCourse={handleDeleteCourse}
+          onCreateCourse={() => setNewCourseDialogOpen(true)}
+        />
       </div>
     </PageTransition>
   )

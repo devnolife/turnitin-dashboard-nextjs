@@ -1,25 +1,9 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import api from "@/lib/api/mock-api"
+import type { ExamType, ExamDetails, User } from "@/lib/types/auth"
 
-export type ExamType = "proposal_defense" | "results_defense" | "final_defense" | null
-
-interface ExamDetails {
-  thesisTitle: string
-  examType: ExamType
-  submittedAt: string | null
-  approvalStatus: "pending" | "approved" | "rejected" | null
-}
-
-interface User {
-  id: string
-  email: string
-  role: string
-  name: string
-  hasCompletedPayment: boolean
-  whatsappNumber?: string
-  examDetails?: ExamDetails | null
-}
+export type { ExamType, ExamDetails, User } from "@/lib/types/auth"
 
 interface AuthState {
   user: User | null

@@ -1,16 +1,9 @@
 import { create } from "zustand"
 import api from "@/lib/api/mock-api"
 import { useAuthStore } from "./auth-store"
+import type { Submission } from "@/lib/types/submission"
 
-interface Submission {
-  id: string
-  userId: string
-  title: string
-  course: string
-  date: string
-  similarity: number
-  status: string
-}
+export type { Submission } from "@/lib/types/submission"
 
 interface SubmissionState {
   submissions: Submission[]

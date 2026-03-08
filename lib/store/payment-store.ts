@@ -1,16 +1,9 @@
 import { create } from 'zustand'
 import api from '@/lib/api/mock-api'
 import { useAuthStore } from './auth-store'
+import type { Payment } from '@/lib/types/payment'
 
-interface Payment {
-  id: string
-  userId: string
-  amount: number
-  currency: string
-  status: 'pending' | 'processing' | 'completed' | 'failed'
-  createdAt: string
-  updatedAt: string
-}
+export type { Payment } from '@/lib/types/payment'
 
 interface PaymentState {
   payment: Payment | null

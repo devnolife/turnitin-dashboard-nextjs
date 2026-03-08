@@ -1,19 +1,7 @@
 import { create } from "zustand"
+import type { StudyProgram, Faculty } from "@/lib/types/common"
 
-export interface StudyProgram {
-  id: string
-  name: string
-  degree: "bachelor" | "master" | "doctoral"
-  students: number
-}
-
-export interface Faculty {
-  id: string
-  name: string
-  code: string
-  programs: StudyProgram[]
-  students: number
-}
+export type { StudyProgram, Faculty } from "@/lib/types/common"
 
 interface FacultyState {
   faculties: Faculty[]

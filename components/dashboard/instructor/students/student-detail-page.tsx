@@ -5,27 +5,17 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
   Mail,
-  Phone,
-  GraduationCap,
-  BookOpen,
   Calendar,
   FileText,
   CheckCircle,
   XCircle,
   Download,
-  Eye,
   MessageSquare,
-  Clock,
-  AlertCircle,
-  Send,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
 import { type Student, type ExamStage, useStudentStore } from "@/lib/store/student-store"
 import { useFacultyStore } from "@/lib/store/faculty-store"
@@ -42,6 +32,8 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import React from "react"
+import { StudentOverviewCard } from "./student-overview-card"
+import { StudentProgressTabs } from "./student-progress-tabs"
 
 interface StudentDetailPageProps {
   studentId: string
@@ -256,149 +248,13 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
         <div className="grid gap-6 md:grid-cols-3">
           <FadeIn className="md:col-span-1">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col items-center">
-                  <Avatar className="h-24 w-24">
-                    <AvatarFallback className="text-2xl">
-                      {student.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <CardTitle className="mt-4 text-center">{student.name}</CardTitle>
-                  <CardDescription className="text-center">{student.studentId}</CardDescription>
-                  <Badge variant={getExamStageBadgeVariant(student.examStage)} className="mt-2">
-                    {formatExamStage(student.examStage)}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span>{student.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span>{student.whatsappNumber}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                    <span>{getFacultyName(student.facultyId)}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="h-4 w-4 text-muted-foreground" />
-                    <span>{getProgramName(student.facultyId, student.programId)}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>Last active: {student.lastActive}</span>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium">Academic Progress</h3>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Overall Progress</span>
-                          <span className="font-medium">
-                            {student.examStage === "applicant"
-                              ? "0%"
-                              : student.examStage === "proposal_exam"
-                                ? "25%"
-                                : student.examStage === "results_exam"
-                                  ? "50%"
-                                  : student.examStage === "final_exam"
-                                    ? "75%"
-                                    : "100%"}
-                          </span>
-                        </div>
-                        <Progress
-                          value={
-                            student.examStage === "applicant"
-                              ? 0
-                              : student.examStage === "proposal_exam"
-                                ? 25
-                                : student.examStage === "results_exam"
-                                  ? 50
-                                  : student.examStage === "final_exam"
-                                    ? 75
-                                    : 100
-                          }
-                          className="h-2 bg-primary-lighter/30"
-                          indicatorColor="bg-gradient-to-r from-primary to-primary"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Proposal</span>
-                          <span className="font-medium">
-                            {student.examStage === "applicant" ? "Not Started" : "Completed"}
-                          </span>
-                        </div>
-                        <Progress
-                          value={student.examStage === "applicant" ? 0 : 100}
-                          className="h-1.5 bg-primary-lighter/30"
-                          indicatorColor="bg-primary"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Results</span>
-                          <span className="font-medium">
-                            {student.examStage === "applicant" || student.examStage === "proposal_exam"
-                              ? "Not Started"
-                              : "Completed"}
-                          </span>
-                        </div>
-                        <Progress
-                          value={student.examStage === "applicant" || student.examStage === "proposal_exam" ? 0 : 100}
-                          className="h-1.5 bg-primary-lighter/30"
-                          indicatorColor="bg-primary"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Final</span>
-                          <span className="font-medium">
-                            {student.examStage === "final_exam" || student.examStage === "graduated"
-                              ? "Completed"
-                              : "Not Started"}
-                          </span>
-                        </div>
-                        <Progress
-                          value={student.examStage === "final_exam" || student.examStage === "graduated" ? 100 : 0}
-                          className="h-1.5 bg-primary-lighter/30"
-                          indicatorColor="bg-primary"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <div className="flex justify-center w-full border-t pt-4">
-                  <Badge
-                    variant={
-                      student.status === "active"
-                        ? "success"
-                        : student.status === "inactive"
-                          ? "secondary"
-                          : "destructive"
-                    }
-                  >
-                    {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
-                  </Badge>
-                </div>
-              </CardFooter>
-            </Card>
+            <StudentOverviewCard
+              student={student}
+              facultyName={getFacultyName(student.facultyId)}
+              programName={getProgramName(student.facultyId, student.programId)}
+              formatExamStage={formatExamStage}
+              getExamStageBadgeVariant={getExamStageBadgeVariant}
+            />
           </FadeIn>
 
           <SlideUp className="md:col-span-2">
@@ -499,151 +355,11 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           </SlideUp>
 
           <SlideUp className="md:col-span-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Student Progress & Feedback</CardTitle>
-                <CardDescription>Track progress and provide feedback</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="turnitin" className="space-y-4">
-                  <TabsList>
-                    <TabsTrigger value="turnitin">Turnitin Results</TabsTrigger>
-                    <TabsTrigger value="feedback">Feedback History</TabsTrigger>
-                    <TabsTrigger value="notes">Instructor Notes</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="turnitin" className="space-y-4">
-                    {student.turnitinResults.length > 0 ? (
-                      <div className="rounded-md border overflow-x-auto">
-                        <div className="p-4">
-                          <h3 className="text-lg font-medium">Similarity Reports</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Plagiarism check results for submitted documents
-                          </p>
-                        </div>
-
-                        <div className="border-t">
-                          <div className="divide-y">
-                            {student.turnitinResults.map((result) => (
-                              <div key={result.id} className="flex items-center justify-between p-4">
-                                <div>
-                                  <div className="font-medium">{result.documentTitle}</div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {formatExamStage(result.examStage)} • Submitted on {formatDate(result.submittedAt)}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Badge
-                                    variant={
-                                      result.similarityScore < 15
-                                        ? "outline"
-                                        : result.similarityScore < 30
-                                          ? "secondary"
-                                          : "destructive"
-                                    }
-                                  >
-                                    {result.similarityScore}% Similarity
-                                  </Badge>
-                                  <Button variant="outline" size="sm">
-                                    <Eye className="mr-2 h-3 w-3" />
-                                    View Report
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center rounded-md border p-8 text-center">
-                        <FileText className="h-12 w-12 text-muted-foreground/40" />
-                        <h3 className="mt-4 text-lg font-medium">No Turnitin Results</h3>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          No similarity reports are available for this student.
-                        </p>
-                      </div>
-                    )}
-                  </TabsContent>
-
-                  <TabsContent value="feedback" className="space-y-4">
-                    <div className="rounded-md border overflow-x-auto">
-                      <div className="p-4">
-                        <h3 className="text-lg font-medium">Feedback History</h3>
-                        <p className="text-sm text-muted-foreground">Previous feedback provided to the student</p>
-                      </div>
-
-                      <div className="border-t">
-                        <div className="divide-y">
-                          {student.turnitinResults
-                            .filter((result) => result.comments)
-                            .map((result) => (
-                              <div key={result.id} className="p-4">
-                                <div className="flex items-center justify-between">
-                                  <div className="font-medium">{result.documentTitle}</div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {result.reviewedAt ? formatDate(result.reviewedAt) : "Not reviewed"}
-                                  </div>
-                                </div>
-                                <div className="mt-2 text-sm">{result.comments}</div>
-                              </div>
-                            ))}
-
-                          {student.turnitinResults.filter((result) => result.comments).length === 0 && (
-                            <div className="flex flex-col items-center justify-center p-8 text-center">
-                              <MessageSquare className="h-12 w-12 text-muted-foreground/40" />
-                              <h3 className="mt-4 text-lg font-medium">No Feedback Yet</h3>
-                              <p className="mt-2 text-sm text-muted-foreground">
-                                You haven't provided any feedback to this student yet.
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="notes" className="space-y-4">
-                    <div className="rounded-md border p-4">
-                      <h3 className="text-lg font-medium mb-4">Instructor Notes</h3>
-                      <div className="space-y-4">
-                        <div className="rounded-md border p-4 bg-muted/30">
-                          <div className="flex items-center gap-2 mb-2">
-                            <AlertCircle className="h-4 w-4 text-amber-500" />
-                            <span className="font-medium">Progress Note</span>
-                            <span className="text-xs text-muted-foreground ml-auto">Added on April 10, 2025</span>
-                          </div>
-                          <p className="text-sm">
-                            Student is making good progress on their thesis. The literature review section needs more
-                            work, but the methodology is well-developed. Recommended additional sources for the
-                            theoretical framework.
-                          </p>
-                        </div>
-
-                        <div className="rounded-md border p-4 bg-muted/30">
-                          <div className="flex items-center gap-2 mb-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="font-medium">Meeting Note</span>
-                            <span className="text-xs text-muted-foreground ml-auto">Added on March 25, 2025</span>
-                          </div>
-                          <p className="text-sm">
-                            Met with student to discuss research direction. Agreed on timeline for completing the first
-                            draft by end of May. Student seems motivated and has a clear understanding of the research
-                            objectives.
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-6">
-                        <Button className="w-full">
-                          <Send className="mr-2 h-4 w-4" />
-                          Add New Note
-                        </Button>
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+            <StudentProgressTabs
+              student={student}
+              formatExamStage={formatExamStage}
+              formatDate={formatDate}
+            />
           </SlideUp>
         </div>
       </div>

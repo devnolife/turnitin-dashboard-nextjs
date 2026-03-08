@@ -1,24 +1,9 @@
 import { create } from "zustand"
-import type { Student, TurnitinResult } from "@/lib/store/student-store"
+import type { Student, TurnitinResult } from "@/lib/types/student"
+import type { Instructor } from "@/lib/types/instructor"
 import { useStudentStore } from "@/lib/store/student-store"
 
-export interface Instructor {
-  id: string
-  name: string
-  email: string
-  employeeId: string
-  facultyId: string
-  programIds: string[]
-  position: "professor" | "associate_professor" | "assistant_professor" | "lecturer"
-  specialization: string
-  joinDate: string
-  status: "active" | "inactive" | "on_leave"
-  phoneNumber: string
-  officeLocation: string
-  officeHours: string
-  bio: string
-  photoUrl?: string
-}
+export type { Instructor } from "@/lib/types/instructor"
 
 interface InstructorState {
   instructors: Instructor[]

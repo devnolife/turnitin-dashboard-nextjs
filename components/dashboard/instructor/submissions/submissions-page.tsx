@@ -7,43 +7,21 @@ import {
   Filter,
   X,
   FileText,
-  MoreHorizontal,
-  Download,
-  Eye,
-  MessageSquare,
   CheckCircle,
   AlertTriangle,
   Clock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { useInstructorStore } from "@/lib/store/instructor-store"
 import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/motion"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
+import { SubmissionsTable } from "./submissions-table"
+import { SubmissionDetailDialog } from "./submission-detail-dialog"
 
 export function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<any[]>([])
@@ -427,201 +405,23 @@ export function SubmissionsPage() {
           </div>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Submissions</CardTitle>
-            <CardDescription>Review and provide feedback on student submissions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Document</TableHead>
-                    <TableHead>Student</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>Similarity</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredSubmissions.length > 0 ? (
-                    filteredSubmissions.map((submission) => (
-                      <TableRow key={submission.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-primary" />
-                            <div>
-                              <div className="font-medium">{submission.documentTitle}</div>
-                              <div className="text-xs text-muted-foreground">
-                                Submitted on {formatDate(submission.submittedAt)}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback>
-                                {submission.studentName
-                                  .split(" ")
-                                  .map((n: string) => n[0])
-                                  .join("")}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span>{submission.studentName}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>{submission.courseName}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div className="w-24">
-                              <Progress
-                                value={submission.similarityScore}
-                                max={100}
-                                className="h-2"
-                                indicatorColor={
-                                  submission.similarityScore < 15
-                                    ? "bg-green-500"
-                                    : submission.similarityScore < 30
-                                      ? "bg-blue-500"
-                                      : submission.similarityScore < 50
-                                        ? "bg-amber-500"
-                                        : "bg-red-500"
-                                }
-                              />
-                            </div>
-                            <span className="text-sm font-medium">{submission.similarityScore}%</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              submission.status === "reviewed"
-                                ? "default"
-                                : submission.status === "pending"
-                                  ? "secondary"
-                                  : "destructive"
-                            }
-                          >
-                            {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-2">
-                            <Button variant="outline" size="sm" onClick={() => handleViewSubmission(submission.id)}>
-                              <Eye className="mr-1 h-3 w-3" />
-                              View
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleViewSubmission(submission.id)}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  View Report
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleProvideFeedback(submission)}>
-                                  <MessageSquare className="mr-2 h-4 w-4" />
-                                  Provide Feedback
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Download className="mr-2 h-4 w-4" />
-                                  Download
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className={
-                                    submission.status !== "flagged"
-                                      ? "text-amber-500 focus:text-amber-500"
-                                      : "text-muted-foreground"
-                                  }
-                                  disabled={submission.status === "flagged"}
-                                >
-                                  <AlertTriangle className="mr-2 h-4 w-4" />
-                                  Flag Submission
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="h-24 text-center">
-                        <div className="flex flex-col items-center justify-center">
-                          <FileText className="h-8 w-8 text-muted-foreground/60" />
-                          <h3 className="mt-2 text-lg font-medium">No Submissions</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {submissions.length === 0
-                              ? "There are no submissions to review."
-                              : "No submissions match your current filters."}
-                          </p>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+        <SubmissionsTable
+          filteredSubmissions={filteredSubmissions}
+          totalSubmissions={submissions.length}
+          formatDate={formatDate}
+          onViewSubmission={handleViewSubmission}
+          onProvideFeedback={handleProvideFeedback}
+        />
 
-        {/* Feedback Dialog */}
-        <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
-          <DialogContent className="sm:max-w-[525px]">
-            <DialogHeader>
-              <DialogTitle>Provide Feedback</DialogTitle>
-              <DialogDescription>
-                Add your feedback for this submission. The student will be able to view your comments.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {selectedSubmission && (
-                <div className="rounded-md border p-4 bg-muted/30">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium">{selectedSubmission.documentTitle}</div>
-                    <Badge
-                      variant={
-                        selectedSubmission.similarityScore < 15
-                          ? "outline"
-                          : selectedSubmission.similarityScore < 30
-                            ? "secondary"
-                            : "destructive"
-                      }
-                    >
-                      {selectedSubmission.similarityScore}% Similarity
-                    </Badge>
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    Submitted by {selectedSubmission.studentName} on {formatDate(selectedSubmission.submittedAt)}
-                  </div>
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="feedback">Feedback</Label>
-                <Textarea
-                  id="feedback"
-                  placeholder="Enter your feedback here..."
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  rows={6}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setFeedbackDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSubmitFeedback}>Submit Feedback</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <SubmissionDetailDialog
+          open={feedbackDialogOpen}
+          onOpenChange={setFeedbackDialogOpen}
+          selectedSubmission={selectedSubmission}
+          feedbackText={feedbackText}
+          onFeedbackTextChange={setFeedbackText}
+          onSubmitFeedback={handleSubmitFeedback}
+          formatDate={formatDate}
+        />
       </div>
     </PageTransition>
   )
