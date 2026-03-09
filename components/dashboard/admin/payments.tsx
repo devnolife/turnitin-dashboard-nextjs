@@ -71,7 +71,7 @@ export function AdminPayments() {
   )
 
   return (
-    <Card>
+    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
       <CardHeader>
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>

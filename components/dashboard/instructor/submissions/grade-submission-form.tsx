@@ -42,15 +42,15 @@ export function GradeSubmissionForm({
 
       // In a real app, you would save the grade to your backend
       toast({
-        title: "Submission graded",
-        description: `You've graded ${studentName}'s submission with ${score}/${maxPoints} points.`,
+        title: "Pengiriman ditinjau",
+        description: `Anda telah meninjau pengiriman ${studentName} dengan skor ${score}/${maxPoints}.`,
       })
 
       onSuccess()
     } catch (error) {
       toast({
-        title: "Error saving grade",
-        description: "There was an error saving the grade. Please try again.",
+        title: "Error menyimpan review",
+        description: "Terjadi kesalahan saat menyimpan review. Silakan coba lagi.",
         variant: "destructive",
       })
     } finally {
@@ -61,7 +61,7 @@ export function GradeSubmissionForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Grade Submission</CardTitle>
+        <CardTitle>Review Pengiriman</CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -105,7 +105,7 @@ export function GradeSubmissionForm({
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Grade"}
+            {isSubmitting ? "Menyimpan..." : "Simpan Review"}
           </Button>
         </CardFooter>
       </form>

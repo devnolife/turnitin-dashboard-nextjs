@@ -46,7 +46,6 @@ const adminRoutes = [
 const instructorRoutes = [
   { href: "/dashboard/instructor", icon: Home, title: "Dashboard" },
   { href: "/dashboard/instructor/students", icon: Users, title: "Mahasiswa" },
-  { href: "/dashboard/instructor/courses", icon: BookOpen, title: "Mata Kuliah" },
   { href: "/dashboard/instructor/submissions", icon: FileText, title: "Pengiriman" },
   { href: "/dashboard/instructor/messages", icon: MessageSquare, title: "Pesan", badge: "3" },
   { href: "/dashboard/instructor/analytics", icon: BarChart2, title: "Analitik" },

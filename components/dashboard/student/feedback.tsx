@@ -7,56 +7,55 @@ export function StudentFeedback() {
   const feedback = [
     {
       id: "FB-001",
-      document: "Research Paper on AI Ethics",
-      instructor: "Dr. Smith",
-      date: "Apr 12, 2025",
-      type: "Comment",
-      content: "Excellent analysis of ethical implications. Consider expanding on the privacy section.",
+      document: "Skripsi Bab 1 - Pendahuluan",
+      instructor: "Instruktur Ahmad",
+      date: "12 Apr 2025",
+      type: "Hasil",
+      content: "Hasil Turnitin menunjukkan similarity 12%. Dokumen Anda sudah memenuhi standar. Silakan lanjutkan ke bab berikutnya.",
     },
     {
       id: "FB-002",
-      document: "Literary Analysis: Hamlet",
-      instructor: "Prof. Johnson",
-      date: "Apr 7, 2025",
-      type: "Praise",
+      document: "Skripsi Bab 2 - Tinjauan Pustaka",
+      instructor: "Instruktur Ahmad",
+      date: "7 Apr 2025",
+      type: "Revisi",
       content:
-        "Strong thesis statement and well-structured arguments. Your analysis of the character motivations is particularly insightful.",
+        "Similarity masih 35%. Perlu revisi pada bagian kajian teori. Harap parafrasa ulang referensi yang di-highlight.",
     },
     {
       id: "FB-003",
-      document: "Economic Theory Essay",
-      instructor: "Dr. Williams",
-      date: "Mar 18, 2025",
-      type: "Suggestion",
+      document: "Proposal Penelitian",
+      instructor: "Instruktur Budi",
+      date: "18 Mar 2025",
+      type: "Hasil",
       content:
-        "Your application of the theory is correct, but you should include more recent examples to strengthen your argument.",
+        "Similarity 8%. Dokumen sudah baik. Hasil Turnitin sudah dilampirkan, silakan unduh.",
     },
   ]
 
   return (
-    <Card>
+    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
       <CardHeader>
-        <CardTitle>Recent Feedback</CardTitle>
-        <CardDescription>Feedback received on your submissions</CardDescription>
+        <CardTitle>Umpan Balik Terbaru</CardTitle>
+        <CardDescription>Hasil Turnitin dan komentar dari instruktur</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {feedback.map((item) => (
-            <div key={item.id} className="rounded-lg border p-4">
+            <div key={item.id} className="rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4">
               <div className="mb-2 flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
                 <div>
                   <div className="font-medium">{item.document}</div>
                   <div className="text-sm text-muted-foreground">
-                    From {item.instructor} • {item.date}
+                    Dari {item.instructor} • {item.date}
                   </div>
                 </div>
                 <Badge
-                  variant={item.type === "Praise" ? "default" : item.type === "Comment" ? "secondary" : "outline"}
+                  variant={item.type === "Hasil" ? "default" : "secondary"}
                   className="mt-2 sm:mt-0"
                 >
-                  {item.type === "Praise" && <ThumbsUp className="mr-1 h-3 w-3" />}
-                  {item.type === "Comment" && <MessageSquare className="mr-1 h-3 w-3" />}
-                  {item.type === "Suggestion" && <AlertCircle className="mr-1 h-3 w-3" />}
+                  {item.type === "Hasil" && <ThumbsUp className="mr-1 h-3 w-3" />}
+                  {item.type === "Revisi" && <AlertCircle className="mr-1 h-3 w-3" />}
                   {item.type}
                 </Badge>
               </div>
@@ -64,7 +63,7 @@ export function StudentFeedback() {
               <div className="mt-4 flex justify-end">
                 <Button variant="outline" size="sm">
                   <MessageSquare className="mr-2 h-4 w-4" />
-                  Reply
+                  Balas
                 </Button>
               </div>
             </div>

@@ -40,20 +40,19 @@ export function SubmissionsTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Submissions</CardTitle>
-        <CardDescription>Review and provide feedback on student submissions</CardDescription>
+        <CardTitle>Pengiriman</CardTitle>
+        <CardDescription>Tinjau dan upload dokumen mahasiswa ke Turnitin</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Document</TableHead>
-                <TableHead>Student</TableHead>
-                <TableHead>Course</TableHead>
+                <TableHead>Dokumen</TableHead>
+                <TableHead>Mahasiswa</TableHead>
                 <TableHead>Similarity</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,7 +65,7 @@ export function SubmissionsTable({
                         <div>
                           <div className="font-medium">{submission.documentTitle}</div>
                           <div className="text-xs text-muted-foreground">
-                            Submitted on {formatDate(submission.submittedAt)}
+                            Dikirim pada {formatDate(submission.submittedAt)}
                           </div>
                         </div>
                       </div>
@@ -84,7 +83,6 @@ export function SubmissionsTable({
                         <span>{submission.studentName}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{submission.courseName}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="w-24">
@@ -116,14 +114,14 @@ export function SubmissionsTable({
                               : "destructive"
                         }
                       >
-                        {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                        {submission.status === "pending" ? "Menunggu" : submission.status === "reviewed" ? "Ditinjau" : "Ditandai"}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Button variant="outline" size="sm" onClick={() => onViewSubmission(submission.id)}>
                           <Eye className="mr-1 h-3 w-3" />
-                          View
+                          Lihat
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -134,15 +132,15 @@ export function SubmissionsTable({
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => onViewSubmission(submission.id)}>
                               <Eye className="mr-2 h-4 w-4" />
-                              View Report
+                              Lihat Laporan
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onProvideFeedback(submission)}>
                               <MessageSquare className="mr-2 h-4 w-4" />
-                              Provide Feedback
+                              Kirim Hasil
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                               <Download className="mr-2 h-4 w-4" />
-                              Download
+                              Unduh
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -154,7 +152,7 @@ export function SubmissionsTable({
                               disabled={submission.status === "flagged"}
                             >
                               <AlertTriangle className="mr-2 h-4 w-4" />
-                              Flag Submission
+                              Tandai Pengiriman
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -164,14 +162,14 @@ export function SubmissionsTable({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <FileText className="h-8 w-8 text-muted-foreground/60" />
-                      <h3 className="mt-2 text-lg font-medium">No Submissions</h3>
+                      <h3 className="mt-2 text-lg font-medium">Tidak Ada Pengiriman</h3>
                       <p className="text-sm text-muted-foreground">
                         {totalSubmissions === 0
-                          ? "There are no submissions to review."
-                          : "No submissions match your current filters."}
+                          ? "Belum ada pengiriman untuk ditinjau."
+                          : "Tidak ada pengiriman yang sesuai dengan filter."}
                       </p>
                     </div>
                   </TableCell>

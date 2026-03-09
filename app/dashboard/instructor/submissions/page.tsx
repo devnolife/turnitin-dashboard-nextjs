@@ -3,7 +3,7 @@ import { SubmissionsPage } from "@/components/dashboard/instructor/submissions/s
 
 export const metadata: Metadata = {
   title: "Submissions - Instructor Dashboard - Turnitin Campus",
-  description: "Review and grade student submissions",
+  description: "Tinjau dan berikan feedback pada pengiriman mahasiswa",
 }
 
 export default function InstructorSubmissionsPage() {

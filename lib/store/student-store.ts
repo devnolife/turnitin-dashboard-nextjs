@@ -76,7 +76,7 @@ const generateMockTurnitinResults = (studentId: string, examStage: ExamStage): T
       similarityScore,
       submittedAt,
       reviewedAt: status === "reviewed" ? getRandomDate() : null,
-      reviewedBy: status === "reviewed" ? `instructor-${Math.floor(Math.random() * 10) + 1}` : null,
+      reviewedBy: status === "reviewed" ? (Math.random() > 0.5 ? "user-2" : `instructor-${Math.floor(Math.random() * 10) + 1}`) : null,
       status,
       reportUrl: `/reports/${studentId}/${examStage}/${i}`,
       documentUrl: `/documents/${studentId}/${examStage}/${i}`,
@@ -122,7 +122,7 @@ const generateMockStudents = (count: number): Student[] => {
         Math.floor(Math.random() * programs[facultyId as keyof typeof programs].length)
       ]
     const examStage = examStages[Math.floor(Math.random() * examStages.length)]
-    const instructorId = Math.random() > 0.1 ? `instructor-${Math.floor(Math.random() * 50) + 1}` : null
+    const instructorId = Math.random() > 0.1 ? (Math.random() > 0.5 ? "user-2" : `instructor-${Math.floor(Math.random() * 10) + 1}`) : null
 
     const student: Student = {
       id: `student-${i + 1}`,
@@ -147,7 +147,7 @@ const generateMockStudents = (count: number): Student[] => {
 }
 
 export const useStudentStore = create<StudentState>()((set, get) => ({
-  students: generateMockStudents(200),
+  students: generateMockStudents(30),
   filteredStudents: [],
   isLoading: false,
   error: null,

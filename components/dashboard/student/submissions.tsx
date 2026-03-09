@@ -17,10 +17,10 @@ export function StudentSubmissions() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Recent Submissions</CardTitle>
-          <CardDescription>Your recently submitted documents</CardDescription>
+          <CardTitle>Dokumen Saya</CardTitle>
+          <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Turnitin</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -29,7 +29,7 @@ export function StudentSubmissions() {
               .map((_, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-start justify-between gap-2 rounded-lg border p-4 sm:flex-row sm:items-center"
+                  className="flex flex-col items-start justify-between gap-2 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:flex-row sm:items-center"
                 >
                   <div className="grid gap-1 w-full">
                     <div className="flex items-center gap-2">
@@ -57,16 +57,16 @@ export function StudentSubmissions() {
 
   if (error) {
     return (
-      <Card>
+      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Recent Submissions</CardTitle>
-          <CardDescription>Your recently submitted documents</CardDescription>
+          <CardTitle>Dokumen Saya</CardTitle>
+          <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Turnitin</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
+          <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
             <p className="text-red-800 dark:text-red-300">{error}</p>
             <Button variant="outline" size="sm" className="mt-2" onClick={() => fetchUserSubmissions()}>
-              Try Again
+              Coba Lagi
             </Button>
           </div>
         </CardContent>
@@ -75,56 +75,65 @@ export function StudentSubmissions() {
   }
 
   return (
-    <Card>
+    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
       <CardHeader>
-        <CardTitle>Recent Submissions</CardTitle>
-        <CardDescription>Your recently submitted documents</CardDescription>
+        <CardTitle>Dokumen Saya</CardTitle>
+        <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Turnitin</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {submissions.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">You haven't submitted any documents yet.</p>
+            <p className="text-center text-muted-foreground py-8">Anda belum mengirimkan dokumen apapun.</p>
           ) : (
             submissions.map((submission) => (
               <div
                 key={submission.id}
-                className="flex flex-col items-start justify-between gap-2 rounded-lg border p-4 sm:flex-row sm:items-center"
+                className="flex flex-col items-start justify-between gap-2 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:flex-row sm:items-center"
               >
                 <div className="grid gap-1">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">{submission.title}</span>
-                    <Badge variant={submission.status === "Graded" ? "default" : "secondary"}>
-                      {submission.status}
+                    <Badge variant={
+                      submission.status === "Graded" ? "default" :
+                      submission.status === "Menunggu Upload" ? "secondary" :
+                      submission.status === "Diproses Instruktur" ? "outline" :
+                      "secondary"
+                    }>
+                      {submission.status === "Graded" ? "Hasil Diterima" : submission.status}
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {submission.course} • Submitted on {submission.date}
+                    Dikirim pada {submission.date}
                   </div>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-sm">Similarity:</span>
-                    <Badge
-                      variant={
-                        submission.similarity < 15
-                          ? "outline"
-                          : submission.similarity < 30
-                            ? "secondary"
-                            : "destructive"
-                      }
-                    >
-                      {submission.similarity}%
-                    </Badge>
-                  </div>
+                  {submission.similarity > 0 && (
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="text-sm">Similarity:</span>
+                      <Badge
+                        variant={
+                          submission.similarity < 15
+                            ? "outline"
+                            : submission.similarity < 30
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
+                        {submission.similarity}%
+                      </Badge>
+                    </div>
+                  )}
                 </div>
                 <div className="flex w-full gap-2 sm:w-auto">
                   <Button variant="outline" size="sm" className="w-full sm:w-auto">
                     <Eye className="mr-2 h-4 w-4" />
-                    View
+                    Lihat
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </Button>
+                  {submission.status === "Graded" && (
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                      <Download className="mr-2 h-4 w-4" />
+                      Unduh Hasil
+                    </Button>
+                  )}
                 </div>
               </div>
             ))

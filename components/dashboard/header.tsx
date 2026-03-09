@@ -1,11 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Bell, Moon, Sun, Menu, Search, Settings } from "lucide-react"
+import { Bell, Menu, Search, Settings, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useTheme } from "next-themes"
+import { ThemeToggle } from "@/components/dashboard/theme-toggle"
 
 interface DashboardHeaderProps {
   user: any | null
@@ -13,13 +11,6 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
-  const { setTheme, theme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   return (
     <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-3xl p-3 shadow-lg mb-6 theme-transition">
       {/* Left: Mobile menu + Quick actions */}
@@ -37,7 +28,7 @@ export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
         <Button
           variant="outline"
           size="sm"
-          className="rounded-full border-primary-lighter bg-primary-lighter/30 text-primary-dark dark:border-primary/50 dark:bg-primary/20 dark:text-primary-lighter theme-transition hidden sm:flex"
+          className="rounded-full border-primary-lighter bg-primary-lighter/30 text-primary dark:border-primary/50 dark:bg-primary/20 dark:text-primary-lighter theme-transition hidden sm:flex"
         >
           <Search className="h-4 w-4 mr-2" />
           Cari
@@ -59,18 +50,9 @@ export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
         />
       </div>
 
-      {/* Right: Theme + Notifications + Settings */}
+      {/* Right: Theme + Notifications + Settings + Create */}
       <div className="flex items-center gap-3">
-        {mounted && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full theme-transition"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
-        )}
+        <ThemeToggle />
 
         <Button variant="ghost" size="icon" className="rounded-full relative theme-transition">
           <Bell className="h-5 w-5" />
@@ -79,6 +61,11 @@ export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
 
         <Button variant="ghost" size="icon" className="rounded-full theme-transition hidden sm:flex">
           <Settings className="h-5 w-5" />
+        </Button>
+
+        <Button className="rounded-full bg-primary hover:bg-primary-dark text-white shadow-md hover:shadow-lg transition-all duration-300 items-center gap-2 theme-transition hidden sm:flex">
+          <Sparkles className="h-4 w-4" />
+          Buat Baru
         </Button>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { InstructorDashboardClient } from "@/components/dashboard/instructor/ins
 
 export const metadata: Metadata = {
   title: "Instructor Dashboard - Turnitin Campus",
-  description: "Manage your courses, students, and teaching activities",
+  description: "Pantau pengiriman Turnitin dan awasi mahasiswa",
 }
 
 export default function InstructorDashboardPage() {

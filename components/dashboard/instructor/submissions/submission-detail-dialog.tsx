@@ -36,9 +36,9 @@ export function SubmissionDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Provide Feedback</DialogTitle>
+          <DialogTitle>Kirim Hasil Turnitin</DialogTitle>
           <DialogDescription>
-            Add your feedback for this submission. The student will be able to view your comments.
+            Tambahkan komentar untuk pengiriman ini. Mahasiswa akan dapat melihat hasil dan komentar Anda.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -59,15 +59,15 @@ export function SubmissionDetailDialog({
                 </Badge>
               </div>
               <div className="mt-2 text-sm text-muted-foreground">
-                Submitted by {selectedSubmission.studentName} on {formatDate(selectedSubmission.submittedAt)}
+                Dikirim oleh {selectedSubmission.studentName} pada {formatDate(selectedSubmission.submittedAt)}
               </div>
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="feedback">Feedback</Label>
+            <Label htmlFor="feedback">Komentar</Label>
             <Textarea
               id="feedback"
-              placeholder="Enter your feedback here..."
+              placeholder="Masukkan komentar Anda di sini..."
               value={feedbackText}
               onChange={(e) => onFeedbackTextChange(e.target.value)}
               rows={6}
@@ -76,9 +76,9 @@ export function SubmissionDetailDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            Batal
           </Button>
-          <Button onClick={onSubmitFeedback}>Submit Feedback</Button>
+          <Button onClick={onSubmitFeedback}>Kirim Hasil</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

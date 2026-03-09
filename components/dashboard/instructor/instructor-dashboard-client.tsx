@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Upload, MessageSquare, CheckCircle, Bell, FileText } from "lucide-react"
+import dynamic from "next/dynamic"
+import { Upload, MessageSquare, CheckCircle, Bell, FileText, GraduationCap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -12,29 +13,37 @@ import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { useInstructorStore } from "@/lib/store/instructor-store"
 import { useFacultyStore } from "@/lib/store/faculty-store"
-import { PageTransition } from "@/components/ui/motion"
 import { DashboardStatsCards } from "./dashboard-stats-cards"
 import { DashboardQuickActions } from "./dashboard-quick-actions"
 import { DashboardActivityFeed, type Activity } from "./dashboard-activity-feed"
 import { DashboardSchedule, type ScheduleEvent } from "./dashboard-schedule"
-import { DashboardAnalytics } from "./dashboard-analytics"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
+
+const DashboardAnalytics = dynamic(() => import("./dashboard-analytics").then(mod => ({ default: mod.DashboardAnalytics })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-64 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  ),
+})
 
 function generateMockActivities(): Activity[] {
   return [
-    { id: 1, type: "submission", title: "New submission received", description: "Student John Doe submitted 'Research Proposal' for review", timestamp: "2 hours ago", icon: Upload },
-    { id: 2, type: "feedback", title: "Feedback provided", description: "You provided feedback on Sarah Smith's 'Literature Review'", timestamp: "Yesterday", icon: MessageSquare },
-    { id: 3, type: "grade", title: "Assignment graded", description: "You graded 'Methodology Chapter' for 5 students", timestamp: "2 days ago", icon: CheckCircle },
-    { id: 4, type: "announcement", title: "Announcement posted", description: "You posted an announcement to 'Data Science 202' course", timestamp: "3 days ago", icon: Bell },
-    { id: 5, type: "material", title: "Course material uploaded", description: "You uploaded new lecture notes to 'Computer Science 101'", timestamp: "5 days ago", icon: FileText },
+    { id: 1, type: "submission", title: "Pengiriman baru diterima", description: "Mahasiswa John Doe mengirim 'Research Proposal' untuk ditinjau", timestamp: "2 jam lalu", icon: Upload },
+    { id: 2, type: "feedback", title: "Feedback diberikan", description: "Anda memberikan feedback pada 'Literature Review' milik Sarah Smith", timestamp: "Kemarin", icon: MessageSquare },
+    { id: 3, type: "review", title: "Laporan Turnitin ditinjau", description: "Anda meninjau hasil Turnitin untuk 5 mahasiswa", timestamp: "2 hari lalu", icon: CheckCircle },
+    { id: 4, type: "notification", title: "Notifikasi dikirim", description: "Anda mengirim notifikasi ke 3 mahasiswa tentang batas pengiriman", timestamp: "3 hari lalu", icon: Bell },
+    { id: 5, type: "report", title: "Laporan similarity diperiksa", description: "Anda memeriksa laporan similarity untuk pengiriman baru", timestamp: "5 hari lalu", icon: FileText },
   ]
 }
 
 function generateMockEvents(): ScheduleEvent[] {
   return [
-    { id: 1, title: "Thesis Defense: Maria Johnson", description: "Final thesis defense for PhD candidate", date: "Tomorrow, 10:00 AM", location: "Room A-201", type: "defense" },
-    { id: 2, title: "Department Meeting", description: "Monthly faculty meeting", date: "May 15, 2:00 PM", location: "Conference Room B", type: "meeting" },
-    { id: 3, title: "Proposal Review Deadline", description: "Review research proposals for 8 students", date: "May 18", location: "Online", type: "deadline" },
-    { id: 4, title: "Guest Lecture: AI Ethics", description: "Presenting to AI Ethics 301 class", date: "May 20, 1:00 PM", location: "Lecture Hall C", type: "lecture" },
+    { id: 1, title: "Sidang Skripsi: Maria Johnson", description: "Sidang akhir skripsi mahasiswa bimbingan", date: "Besok, 10:00", location: "Ruang A-201", type: "defense" },
+    { id: 2, title: "Rapat Koordinasi", description: "Rapat koordinasi pengawasan bulanan", date: "15 Mei, 14:00", location: "Ruang Rapat B", type: "meeting" },
+    { id: 3, title: "Batas Review Proposal", description: "Review proposal penelitian untuk 8 mahasiswa", date: "18 Mei", location: "Online", type: "deadline" },
+    { id: 4, title: "Konsultasi Mahasiswa", description: "Jadwal konsultasi dengan 5 mahasiswa bimbingan", date: "20 Mei, 13:00", location: "Ruang Konsultasi C", type: "meeting" },
   ]
 }
 
@@ -179,16 +188,15 @@ export function InstructorDashboardClient() {
   const results = getTurnitinResultsByInstructor(user?.id || "")
 
   return (
-    <PageTransition>
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">Instructor Dashboard</h1>
-          <p className="text-muted-foreground">Manage your courses, students, and teaching activities</p>
-        </div>
-
+    <div>
+      <DashboardMainCard
+        title="Instructor Dashboard"
+        subtitle="Pantau pengiriman Turnitin dan awasi mahasiswa Anda 📋"
+        icon={GraduationCap}
+      >
         {/* Instructor Profile */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="md:col-span-1">
+        <div className="grid gap-6 md:grid-cols-3 mb-6">
+          <Card className="md:col-span-1 border-2 border-gray-100 dark:border-gray-700 rounded-3xl">
             <CardHeader>
               <div className="flex flex-col items-center">
                 <Avatar className="h-24 w-24">
@@ -209,11 +217,11 @@ export function InstructorDashboardClient() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Faculty</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Fakultas</h3>
                   <p>{getFacultyName(instructor.facultyId)}</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Programs</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Program Studi</h3>
                   <ul className="list-inside list-disc">
                     {getProgramNames(instructor.programIds).map((program, index) => (
                       <li key={index}>{program}</li>
@@ -221,21 +229,21 @@ export function InstructorDashboardClient() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Specialization</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Spesialisasi</h3>
                   <p>{instructor.specialization}</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Office Location</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Lokasi Kantor</h3>
                   <p>{instructor.officeLocation}</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Office Hours</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Jam Konsultasi</h3>
                   <p>{instructor.officeHours}</p>
                 </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" onClick={() => router.push("/dashboard/instructor/profile")}>
+              <Button className="w-full rounded-full" onClick={() => router.push("/dashboard/instructor/profile")}>
                 Edit Profile
               </Button>
             </CardFooter>
@@ -254,10 +262,25 @@ export function InstructorDashboardClient() {
 
         {/* Analytics and Activities */}
         <Tabs defaultValue="analytics" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="activities">Recent Activities</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming Events</TabsTrigger>
+          <TabsList className="bg-gray-100 dark:bg-gray-700 p-1.5 rounded-full">
+            <TabsTrigger
+              value="analytics"
+              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger
+              value="activities"
+              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Recent Activities
+            </TabsTrigger>
+            <TabsTrigger
+              value="upcoming"
+              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Upcoming Events
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-4">
@@ -276,8 +299,8 @@ export function InstructorDashboardClient() {
             <DashboardSchedule events={upcomingEvents} />
           </TabsContent>
         </Tabs>
-      </div>
-    </PageTransition>
+      </DashboardMainCard>
+    </div>
   )
 }
 

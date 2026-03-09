@@ -55,9 +55,7 @@ export function SubmissionsPage() {
         // Add additional mock data
         const enhancedResults = results.map((result) => ({
           ...result,
-          courseId: `course-${Math.floor(Math.random() * 3) + 1}`,
-          courseName: ["Computer Science 101", "Data Science 202", "AI Ethics 301"][Math.floor(Math.random() * 3)],
-          studentName: result.studentId.replace("student-", "Student "),
+          studentName: result.studentId.replace("student-", "Mahasiswa "),
         }))
 
         setSubmissions(enhancedResults)
@@ -74,7 +72,7 @@ export function SubmissionsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to load submissions. Please try again.",
+          description: "Gagal memuat pengiriman. Silakan coba lagi.",
         })
       } finally {
         setIsLoading(false)
@@ -94,8 +92,7 @@ export function SubmissionsPage() {
       filtered = filtered.filter(
         (submission) =>
           submission.documentTitle.toLowerCase().includes(query) ||
-          submission.studentName.toLowerCase().includes(query) ||
-          submission.courseName.toLowerCase().includes(query),
+          submission.studentName.toLowerCase().includes(query),
       )
     }
 
@@ -104,29 +101,13 @@ export function SubmissionsPage() {
       filtered = filtered.filter((submission) => submission.status === statusFilter)
     }
 
-    // Apply course filter
-    if (courseFilter !== "all") {
-      filtered = filtered.filter((submission) => submission.courseId === courseFilter)
-    }
-
     // Apply student filter
     if (studentFilter !== "all") {
       filtered = filtered.filter((submission) => submission.studentId === studentFilter)
     }
 
     setFilteredSubmissions(filtered)
-  }, [searchQuery, statusFilter, courseFilter, studentFilter, submissions])
-
-  // Get unique courses
-  const getUniqueCourses = () => {
-    const courses = new Map()
-    submissions.forEach((submission) => {
-      if (!courses.has(submission.courseId)) {
-        courses.set(submission.courseId, submission.courseName)
-      }
-    })
-    return Array.from(courses, ([id, name]) => ({ id, name }))
-  }
+  }, [searchQuery, statusFilter, studentFilter, submissions])
 
   // Get unique students
   const getUniqueStudents = () => {
@@ -141,7 +122,7 @@ export function SubmissionsPage() {
 
   // Format date
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -185,8 +166,8 @@ export function SubmissionsPage() {
     setFeedbackText("")
 
     toast({
-      title: "Feedback Submitted",
-      description: "Your feedback has been submitted successfully.",
+      title: "Feedback Terkirim",
+      description: "Feedback Anda telah berhasil dikirim.",
     })
   }
 
@@ -203,20 +184,20 @@ export function SubmissionsPage() {
     <PageTransition>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">Submissions</h1>
-          <p className="text-muted-foreground">Review and grade student submissions</p>
+          <h1 className="text-3xl font-bold tracking-tight gradient-text">Pengiriman</h1>
+          <p className="text-muted-foreground">Tinjau dan berikan feedback pada pengiriman mahasiswa</p>
         </div>
 
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
             <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{submissions.length}</div>
-                <p className="text-xs text-muted-foreground">All submissions</p>
+                <p className="text-xs text-muted-foreground">Semua pengiriman</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -224,14 +205,14 @@ export function SubmissionsPage() {
           <StaggerItem>
             <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+                <CardTitle className="text-sm font-medium">Menunggu Upload</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   {submissions.filter((submission) => submission.status === "pending").length}
                 </div>
-                <p className="text-xs text-muted-foreground">Awaiting your review</p>
+                <p className="text-xs text-muted-foreground">Perlu di-upload ke Turnitin</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -239,14 +220,14 @@ export function SubmissionsPage() {
           <StaggerItem>
             <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Reviewed</CardTitle>
+                <CardTitle className="text-sm font-medium">Sudah Ditinjau</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   {submissions.filter((submission) => submission.status === "reviewed").length}
                 </div>
-                <p className="text-xs text-muted-foreground">Submissions reviewed</p>
+                <p className="text-xs text-muted-foreground">Hasil sudah dikirim</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -254,14 +235,14 @@ export function SubmissionsPage() {
           <StaggerItem>
             <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Flagged</CardTitle>
+                <CardTitle className="text-sm font-medium">Ditandai</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   {submissions.filter((submission) => submission.status === "flagged").length}
                 </div>
-                <p className="text-xs text-muted-foreground">Submissions flagged</p>
+                <p className="text-xs text-muted-foreground">Perlu perhatian</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -272,7 +253,7 @@ export function SubmissionsPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search submissions..."
+              placeholder="Cari pengiriman..."
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -281,36 +262,22 @@ export function SubmissionsPage() {
           <div className="flex flex-wrap gap-2">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="All Statuses" />
+                <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="reviewed">Reviewed</SelectItem>
-                <SelectItem value="flagged">Flagged</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={courseFilter} onValueChange={setCourseFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Courses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Courses</SelectItem>
-                {getUniqueCourses().map((course) => (
-                  <SelectItem key={course.id} value={course.id}>
-                    {course.name}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">Semua Status</SelectItem>
+                <SelectItem value="pending">Menunggu</SelectItem>
+                <SelectItem value="reviewed">Ditinjau</SelectItem>
+                <SelectItem value="flagged">Ditandai</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={studentFilter} onValueChange={setStudentFilter}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Students" />
+                <SelectValue placeholder="Semua Mahasiswa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Students</SelectItem>
+                <SelectItem value="all">Semua Mahasiswa</SelectItem>
                 {getUniqueStudents().map((student) => (
                   <SelectItem key={student.id} value={student.id}>
                     {student.name}
@@ -322,16 +289,16 @@ export function SubmissionsPage() {
         </div>
 
         {/* Active filters */}
-        {(statusFilter !== "all" || courseFilter !== "all" || studentFilter !== "all" || searchQuery) && (
+        {(statusFilter !== "all" || studentFilter !== "all" || searchQuery) && (
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center">
               <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Active filters:</span>
+              <span className="text-sm text-muted-foreground">Filter aktif:</span>
             </div>
 
             {statusFilter !== "all" && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Status: {statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
+                Status: {statusFilter === "pending" ? "Menunggu" : statusFilter === "reviewed" ? "Ditinjau" : "Ditandai"}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -339,29 +306,14 @@ export function SubmissionsPage() {
                   onClick={() => setStatusFilter("all")}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Remove status filter</span>
-                </Button>
-              </Badge>
-            )}
-
-            {courseFilter !== "all" && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                Course: {getUniqueCourses().find((c) => c.id === courseFilter)?.name}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => setCourseFilter("all")}
-                >
-                  <X className="h-3 w-3" />
-                  <span className="sr-only">Remove course filter</span>
+                  <span className="sr-only">Hapus filter status</span>
                 </Button>
               </Badge>
             )}
 
             {studentFilter !== "all" && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Student: {getUniqueStudents().find((s) => s.id === studentFilter)?.name}
+                Mahasiswa: {getUniqueStudents().find((s) => s.id === studentFilter)?.name}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -369,14 +321,14 @@ export function SubmissionsPage() {
                   onClick={() => setStudentFilter("all")}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Remove student filter</span>
+                  <span className="sr-only">Hapus filter mahasiswa</span>
                 </Button>
               </Badge>
             )}
 
             {searchQuery && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Search: {searchQuery}
+                Cari: {searchQuery}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -384,7 +336,7 @@ export function SubmissionsPage() {
                   onClick={() => setSearchQuery("")}
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Remove search filter</span>
+                  <span className="sr-only">Hapus pencarian</span>
                 </Button>
               </Badge>
             )}
@@ -400,7 +352,7 @@ export function SubmissionsPage() {
                 setSearchQuery("")
               }}
             >
-              Clear all
+              Hapus semua
             </Button>
           </div>
         )}

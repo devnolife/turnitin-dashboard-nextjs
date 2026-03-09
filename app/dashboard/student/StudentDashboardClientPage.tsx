@@ -1,5 +1,6 @@
 "use client"
 
+import { BookOpen, FileText, BarChart3, Clock, CheckCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StudentOverview } from "@/components/dashboard/student/overview"
@@ -10,6 +11,7 @@ import { PendingApproval } from "@/components/dashboard/student/pending-approval
 import { useAuthStore } from "@/lib/store/auth-store"
 import { PageTransition } from "@/components/ui/motion"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
 
 export default function StudentDashboardClientPage() {
   const { user } = useAuthStore()
@@ -41,17 +43,17 @@ export default function StudentDashboardClientPage() {
   // If student has submitted exam details and they're approved, show the dashboard
   return (
     <PageTransition>
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-primary-dark">Student Dashboard</h1>
-          <p className="text-muted-foreground">Manage your submissions and view feedback</p>
-        </div>
-
-        <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <DashboardMainCard
+        title="Student Dashboard"
+        subtitle="Manage your submissions and view feedback 📄"
+        icon={BookOpen}
+      >
+        <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+            <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -63,9 +65,10 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+            <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Average Similarity</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -77,9 +80,10 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+            <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Pending Feedback</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -91,9 +95,10 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+            <Card className="hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Subscription Status</CardTitle>
+                <CheckCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">Active</div>
@@ -104,22 +109,22 @@ export default function StudentDashboardClientPage() {
         </StaggerContainer>
 
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="bg-background/50 backdrop-blur-sm">
+          <TabsList className="bg-gray-100 dark:bg-gray-700 p-1.5 rounded-full">
             <TabsTrigger
               value="overview"
-              className="transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
+              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger
               value="submissions"
-              className="transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
+              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Recent Submissions
             </TabsTrigger>
             <TabsTrigger
               value="feedback"
-              className="transition-all data-[state=active]:bg-primary data-[state=active]:text-white"
+              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Recent Feedback
             </TabsTrigger>
@@ -134,7 +139,7 @@ export default function StudentDashboardClientPage() {
             <StudentFeedback />
           </TabsContent>
         </Tabs>
-      </div>
+      </DashboardMainCard>
     </PageTransition>
   )
 }

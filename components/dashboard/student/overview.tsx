@@ -53,7 +53,7 @@ export function StudentOverview() {
   return (
     <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <StaggerItem>
-        <Card className="col-span-1 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+        <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
           <CardHeader>
             <CardTitle className="text-primary-dark">Quick Actions</CardTitle>
             <CardDescription>Common tasks you might want to perform</CardDescription>
@@ -86,7 +86,7 @@ export function StudentOverview() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 hover-lift">
+        <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader>
             <CardTitle className="gradient-text">Submission Quota</CardTitle>
             <CardDescription>Your current usage and limits</CardDescription>
@@ -154,7 +154,7 @@ export function StudentOverview() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 md:col-span-2 lg:col-span-1 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
           <CardHeader>
             <CardTitle className="gradient-text">Account Information</CardTitle>
             <CardDescription>Your personal information</CardDescription>

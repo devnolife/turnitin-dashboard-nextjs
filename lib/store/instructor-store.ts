@@ -99,18 +99,21 @@ const generateMockInstructors = (count: number): Instructor[] => {
       }
     }
 
+    // First instructor matches the mock auth user (user-2)
+    const isAuthUser = i === 0
+
     return {
-      id: `instructor-${i + 1}`,
-      name: `Dr. Instructor ${i + 1}`,
-      email: `instructor${i + 1}@university.edu`,
+      id: isAuthUser ? "user-2" : `instructor-${i + 1}`,
+      name: isAuthUser ? "Jane Instructor" : `Dr. Instructor ${i + 1}`,
+      email: isAuthUser ? "instructor@example.com" : `instructor${i + 1}@university.edu`,
       employeeId: `I${(1000 + i + 1).toString().substring(1)}`,
       facultyId,
       programIds,
       position: positions[Math.floor(Math.random() * positions.length)] as any,
       specialization: specializations[Math.floor(Math.random() * specializations.length)],
       joinDate: getRandomJoinDate(),
-      status: Math.random() > 0.2 ? "active" : Math.random() > 0.5 ? "inactive" : "on_leave",
-      phoneNumber: `+62812${Math.floor(10000000 + Math.random() * 90000000)}`,
+      status: isAuthUser ? "active" as const : (Math.random() > 0.2 ? "active" : Math.random() > 0.5 ? "inactive" : "on_leave"),
+      phoneNumber: isAuthUser ? "+6281234567890" : `+62812${Math.floor(10000000 + Math.random() * 90000000)}`,
       officeLocation: `Building ${String.fromCharCode(65 + Math.floor(Math.random() * 5))}, Room ${Math.floor(Math.random() * 500) + 100}`,
       officeHours: `${Math.floor(Math.random() * 3) + 9}:00 - ${Math.floor(Math.random() * 3) + 13}:00, ${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"][Math.floor(Math.random() * 5)]} & ${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"][Math.floor(Math.random() * 5)]}`,
       bio: `Experienced educator with a focus on ${specializations[Math.floor(Math.random() * specializations.length)]} and ${specializations[Math.floor(Math.random() * specializations.length)]}. Published numerous papers in leading journals and conferences.`,
@@ -119,7 +122,7 @@ const generateMockInstructors = (count: number): Instructor[] => {
 }
 
 export const useInstructorStore = create<InstructorState>()((set, get) => ({
-  instructors: generateMockInstructors(50),
+  instructors: generateMockInstructors(10),
   filteredInstructors: [],
   isLoading: false,
   error: null,
