@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSubmissionStore } from "@/lib/store/submission-store"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
+import { BarChart3 } from "lucide-react"
+import { PageTransition } from "@/components/ui/motion"
 import {
   BarChart,
   Bar,
@@ -42,8 +45,8 @@ const monthlyData = [
 const coursePerformance = [
   { course: "Skripsi A", submissions: 35, avgScore: 22 },
   { course: "Skripsi B", submissions: 28, avgScore: 31 },
-  { course: "Thesis C", submissions: 20, avgScore: 18 },
-  { course: "Research D", submissions: 15, avgScore: 26 },
+  { course: "Skripsi C", submissions: 20, avgScore: 18 },
+  { course: "Penelitian D", submissions: 15, avgScore: 26 },
 ]
 
 export function AnalyticsPage() {
@@ -69,14 +72,10 @@ export function AnalyticsPage() {
   }
 
   return (
+    <PageTransition>
+    <DashboardMainCard title="Analitik" subtitle="Insights tentang pengiriman dan similarity score 📊" icon={BarChart3}>
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Analytics</h2>
-          <p className="text-muted-foreground">
-            Insights tentang submissions dan similarity score
-          </p>
-        </div>
+      <div className="flex justify-end">
         <Select value={timeFilter} onValueChange={setTimeFilter}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Periode" />
@@ -91,16 +90,16 @@ export function AnalyticsPage() {
 
       {/* Summary cards */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription>Total Submissions</CardDescription>
+            <CardDescription>Total Pengiriman</CardDescription>
             <CardTitle className="text-3xl">120</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-xs text-muted-foreground">+12% dari periode lalu</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
             <CardDescription>Rata-rata Similarity</CardDescription>
             <CardTitle className="text-3xl">24%</CardTitle>
@@ -109,7 +108,7 @@ export function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">-3% dari periode lalu</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
             <CardDescription>Mahasiswa Aktif</CardDescription>
             <CardTitle className="text-3xl">68</CardTitle>
@@ -118,20 +117,20 @@ export function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">+5 baru bulan ini</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription>Graded</CardDescription>
+            <CardDescription>Selesai Ditinjau</CardDescription>
             <CardTitle className="text-3xl">98</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">82% completion rate</p>
+            <p className="text-xs text-muted-foreground">82% tingkat penyelesaian</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader>
             <CardTitle>Submissions per Bulan</CardTitle>
             <CardDescription>Jumlah submission dan rata-rata similarity</CardDescription>
@@ -151,7 +150,7 @@ export function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader>
             <CardTitle>Distribusi Similarity Score</CardTitle>
             <CardDescription>Persentase dokumen berdasarkan similarity</CardDescription>
@@ -183,7 +182,7 @@ export function AnalyticsPage() {
       </div>
 
       {/* Trend line chart */}
-      <Card>
+      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
           <CardTitle>Trend Rata-rata Similarity</CardTitle>
           <CardDescription>Perubahan rata-rata similarity score per bulan</CardDescription>
@@ -210,10 +209,10 @@ export function AnalyticsPage() {
       </Card>
 
       {/* Course performance */}
-      <Card>
+      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Performa per Kelas</CardTitle>
-          <CardDescription>Jumlah submissions dan rata-rata score per kelas</CardDescription>
+          <CardTitle>Performa per Mahasiswa</CardTitle>
+          <CardDescription>Jumlah pengiriman dan rata-rata score per mahasiswa</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 sm:h-80">
@@ -231,6 +230,8 @@ export function AnalyticsPage() {
         </CardContent>
       </Card>
     </div>
+    </DashboardMainCard>
+    </PageTransition>
   )
 }
 

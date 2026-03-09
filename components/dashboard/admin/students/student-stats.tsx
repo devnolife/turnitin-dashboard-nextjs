@@ -25,9 +25,9 @@ export function StudentStats() {
   return (
     <>
       <StaggerItem>
-        <Card className="hover-lift">
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
             <UserPlus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -35,16 +35,16 @@ export function StudentStats() {
               <AnimatedCounter value={students.length} />
             </div>
             <p className="text-xs text-muted-foreground">
-              {activeStudents} active ({Math.round((activeStudents / students.length) * 100)}%)
+              {activeStudents} aktif ({Math.round((activeStudents / students.length) * 100)}%)
             </p>
           </CardContent>
         </Card>
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="hover-lift">
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Exam Stages</CardTitle>
+            <CardTitle className="text-sm font-medium">Tahap Ujian</CardTitle>
             <FileCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -53,30 +53,30 @@ export function StudentStats() {
                 value={countByStage("proposal_exam") + countByStage("results_exam") + countByStage("final_exam")}
               />
             </div>
-            <p className="text-xs text-muted-foreground">Students in exam process</p>
+            <p className="text-xs text-muted-foreground">Mahasiswa dalam proses ujian</p>
           </CardContent>
         </Card>
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="hover-lift">
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Faculties & Programs</CardTitle>
+            <CardTitle className="text-sm font-medium">Fakultas & Program</CardTitle>
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               <AnimatedCounter value={totalFaculties} /> / <AnimatedCounter value={totalPrograms} />
             </div>
-            <p className="text-xs text-muted-foreground">Faculties / Study Programs</p>
+            <p className="text-xs text-muted-foreground">Fakultas / Program Studi</p>
           </CardContent>
         </Card>
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="hover-lift">
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Graduated Students</CardTitle>
+            <CardTitle className="text-sm font-medium">Mahasiswa Lulus</CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -84,7 +84,7 @@ export function StudentStats() {
               <AnimatedCounter value={countByStage("graduated")} />
             </div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((countByStage("graduated") / students.length) * 100)}% of total students
+              {Math.round((countByStage("graduated") / students.length) * 100)}% dari total mahasiswa
             </p>
           </CardContent>
         </Card>

@@ -55,8 +55,8 @@ export function StudentOverview() {
       <StaggerItem>
         <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-primary-dark">Quick Actions</CardTitle>
-            <CardDescription>Common tasks you might want to perform</CardDescription>
+            <CardTitle className="text-primary-dark">Aksi Cepat</CardTitle>
+            <CardDescription>Tugas yang sering dilakukan</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <Button
@@ -66,19 +66,19 @@ export function StudentOverview() {
             >
               <Link href="/dashboard/student/submit">
                 <Upload className="mr-2 h-4 w-4" />
-                Submit New Document
+                Kirim Dokumen Baru
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/submissions">
                 <FileText className="mr-2 h-4 w-4" />
-                View Submissions
+                Lihat Pengiriman
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/feedback">
                 <Bell className="mr-2 h-4 w-4" />
-                Check Feedback
+                Cek Hasil Turnitin
               </Link>
             </Button>
           </CardContent>
@@ -88,15 +88,15 @@ export function StudentOverview() {
       <StaggerItem>
         <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader>
-            <CardTitle className="gradient-text">Submission Quota</CardTitle>
-            <CardDescription>Your current usage and limits</CardDescription>
+            <CardTitle className="gradient-text">Kuota Pengiriman</CardTitle>
+            <CardDescription>Penggunaan dan batas Anda saat ini</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span>Documents Submitted</span>
+                <span>Dokumen Terkirim</span>
                 <span className="font-medium">
-                  <AnimatedCounter value={12} /> / Unlimited
+                  <AnimatedCounter value={12} /> / Tidak Terbatas
                 </span>
               </div>
               <motion.div
@@ -113,7 +113,7 @@ export function StudentOverview() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span>Storage Used</span>
+                <span>Penyimpanan Terpakai</span>
                 <span className="font-medium">
                   <AnimatedCounter value={45} /> MB / 1 GB
                 </span>
@@ -132,9 +132,9 @@ export function StudentOverview() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span>Subscription Period</span>
+                <span>Periode Langganan</span>
                 <span className="font-medium">
-                  <AnimatedCounter value={58} />% Complete
+                  <AnimatedCounter value={58} />% Selesai
                 </span>
               </div>
               <motion.div
@@ -156,15 +156,15 @@ export function StudentOverview() {
       <StaggerItem>
         <Card className="col-span-1 md:col-span-2 lg:col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
           <CardHeader>
-            <CardTitle className="gradient-text">Account Information</CardTitle>
-            <CardDescription>Your personal information</CardDescription>
+            <CardTitle className="gradient-text">Informasi Akun</CardTitle>
+            <CardDescription>Informasi pribadi Anda</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{user?.email || "Not available"}</p>
+                  <p className="font-medium">{user?.email || "Tidak tersedia"}</p>
                 </div>
               </div>
               <div className="flex items-start justify-between">
@@ -178,13 +178,13 @@ export function StudentOverview() {
               </div>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Thesis Title</p>
-                  <p className="font-medium">{user?.examDetails?.thesisTitle || "Not available"}</p>
+                  <p className="text-sm text-muted-foreground">Judul Skripsi</p>
+                  <p className="font-medium">{user?.examDetails?.thesisTitle || "Tidak tersedia"}</p>
                 </div>
               </div>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Exam Type</p>
+                  <p className="text-sm text-muted-foreground">Jenis Ujian</p>
                   <p className="font-medium flex items-center">
                     <BookOpen className="mr-1 h-3 w-3 text-primary" />
                     {formatExamType(user?.examDetails?.examType)}
@@ -193,8 +193,8 @@ export function StudentOverview() {
               </div>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Subscription Status</p>
-                  <p className="font-medium">Active until July 31, 2025</p>
+                  <p className="text-sm text-muted-foreground">Status Langganan</p>
+                  <p className="font-medium">Aktif sampai 31 Juli 2025</p>
                 </div>
               </div>
             </div>

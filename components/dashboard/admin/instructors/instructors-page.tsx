@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation"
 import { useInstructorStore } from "@/lib/store/instructor-store"
 import { useFacultyStore } from "@/lib/store/faculty-store"
 import { PageTransition } from "@/components/ui/motion"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
+import { Shield } from "lucide-react"
 import { InstructorsStats } from "./instructors-stats"
 import { InstructorsTable } from "./instructors-table"
 
@@ -110,12 +112,7 @@ export function AdminInstructorsPage() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">Instructor Management</h1>
-          <p className="text-muted-foreground">Manage instructors and view their supervised students</p>
-        </div>
-
+      <DashboardMainCard title="Manajemen Instruktur" subtitle="Kelola instruktur pengawas dan pantau mahasiswa yang diawasi 🛡️" icon={Shield}>
         <InstructorsStats
           totalInstructors={totalInstructors}
           activeInstructors={activeInstructors}
@@ -153,7 +150,7 @@ export function AdminInstructorsPage() {
           onViewInstructor={handleViewInstructor}
           onAddInstructor={handleAddInstructor}
         />
-      </div>
+      </DashboardMainCard>
     </PageTransition>
   )
 }

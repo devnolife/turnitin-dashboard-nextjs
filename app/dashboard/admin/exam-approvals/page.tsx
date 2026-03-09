@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, MoreHorizontal, CheckCircle, XCircle, Eye } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
 import axios from "axios"
 
 export default function ExamApprovalsPage() {
@@ -105,13 +106,8 @@ export default function ExamApprovalsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Persetujuan Detail Ujian</h1>
-        <p className="text-muted-foreground">Kelola dan verifikasi detail ujian mahasiswa</p>
-      </div>
-
-      <Card>
+    <DashboardMainCard title="Persetujuan Detail Ujian" subtitle="Kelola dan verifikasi detail ujian mahasiswa ✅" icon={CheckCircle}>
+      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
           <CardTitle>Detail Ujian Mahasiswa</CardTitle>
           <CardDescription>Verifikasi dan setujui detail ujian yang diajukan oleh mahasiswa</CardDescription>
@@ -204,7 +200,7 @@ export default function ExamApprovalsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </DashboardMainCard>
   )
 }
 

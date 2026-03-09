@@ -41,7 +41,7 @@ export function PendingApproval() {
 
   return (
     <FadeIn>
-      <Card className="shadow-lg border-warning/20">
+      <Card className="shadow-lg border-warning/20 rounded-3xl border-2">
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2 text-2xl">
             <motion.div

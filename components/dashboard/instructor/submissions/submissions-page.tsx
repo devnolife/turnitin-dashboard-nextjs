@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { useInstructorStore } from "@/lib/store/instructor-store"
 import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/motion"
 import { SubmissionsTable } from "./submissions-table"
@@ -182,15 +183,11 @@ export function SubmissionsPage() {
 
   return (
     <PageTransition>
+      <DashboardMainCard title="Pengiriman" subtitle="Kelola dan tinjau pengiriman dokumen mahasiswa 📄" icon={FileText}>
       <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">Pengiriman</h1>
-          <p className="text-muted-foreground">Tinjau dan berikan feedback pada pengiriman mahasiswa</p>
-        </div>
-
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
@@ -203,7 +200,7 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Menunggu Upload</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -218,7 +215,7 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Sudah Ditinjau</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -233,7 +230,7 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Ditandai</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-muted-foreground" />
@@ -375,6 +372,7 @@ export function SubmissionsPage() {
           formatDate={formatDate}
         />
       </div>
+      </DashboardMainCard>
     </PageTransition>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Filter, X, Mail, FileText, Eye } from "lucide-react"
+import { Search, Filter, X, Mail, FileText, Eye, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast"
 import type { ExamStage } from "@/lib/store/student-store"
 import { useInstructorStore } from "@/lib/store/instructor-store"
-import { useFacultyStore } from "@/lib/store/faculty-store"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import React from "react"
@@ -28,7 +28,6 @@ export function InstructorStudentsPage() {
   const { user } = useAuthStore()
   const { getStudentsByInstructor, getStudentsByInstructorAndProgram, getStudentsByInstructorAndExamStage } =
     useInstructorStore()
-  const { faculties } = useFacultyStore()
 
   // Get instructor ID from auth store
   const instructorId = user?.id
@@ -100,15 +99,15 @@ export function InstructorStudentsPage() {
   const formatExamStage = (stage: ExamStage) => {
     switch (stage) {
       case "applicant":
-        return "Applicant"
+        return "Pendaftar"
       case "proposal_exam":
-        return "Proposal Exam"
+        return "Ujian Proposal"
       case "results_exam":
-        return "Results Exam"
+        return "Ujian Hasil"
       case "final_exam":
-        return "Final Exam"
+        return "Ujian Akhir"
       case "graduated":
-        return "Graduated"
+        return "Lulus"
       default:
         return stage
     }
@@ -132,40 +131,21 @@ export function InstructorStudentsPage() {
     }
   }
 
-  // Get faculty and program names
-  const getFacultyName = (facultyId: string) => {
-    return faculties.find((f) => f.id === facultyId)?.name || "Unknown Faculty"
+  // Get program name from student data
+  const getProgramName = (programId: string) => {
+    return programId || "Program Tidak Diketahui"
   }
 
-  const getProgramName = (facultyId: string, programId: string) => {
-    const faculty = faculties.find((f) => f.id === facultyId)
-    return faculty?.programs.find((p) => p.id === programId)?.name || "Unknown Program"
-  }
-
-  // Get available programs for the instructor
+  // Get available programs from student data
   const getAvailablePrograms = React.useCallback(() => {
-    if (!instructorId) return []
-
-    const instructorStore = useInstructorStore.getState()
-    const instructor = instructorStore.getInstructorById(instructorId)
-    if (!instructor) return []
-
-    return instructor.programIds
-      .map((programId) => {
-        for (const faculty of faculties) {
-          const program = faculty.programs.find((p) => p.id === programId)
-          if (program) {
-            return {
-              id: program.id,
-              name: program.name,
-              facultyId: faculty.id,
-            }
-          }
-        }
-        return null
-      })
-      .filter(Boolean) as { id: string; name: string; facultyId: string }[]
-  }, [instructorId, faculties])
+    const programMap = new Map<string, string>()
+    allStudents.forEach((student: any) => {
+      if (student.programId && !programMap.has(student.programId)) {
+        programMap.set(student.programId, student.programId)
+      }
+    })
+    return Array.from(programMap, ([id, name]) => ({ id, name }))
+  }, [allStudents])
 
   // Memoize the available programs
   const availablePrograms = React.useMemo(() => getAvailablePrograms(), [getAvailablePrograms])
@@ -183,8 +163,8 @@ export function InstructorStudentsPage() {
   // Handle email student
   const handleEmailStudent = (email: string) => {
     toast({
-      title: "Email Sent",
-      description: `An email has been sent to ${email}`,
+      title: "Email Terkirim",
+      description: `Email telah dikirim ke ${email}`,
     })
   }
 
@@ -195,74 +175,70 @@ export function InstructorStudentsPage() {
 
   return (
     <PageTransition>
+      <DashboardMainCard title="Daftar Mahasiswa" subtitle="Kelola dan pantau mahasiswa di bawah pengawasan Anda 👥" icon={Users}>
       <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">Student Management</h1>
-          <p className="text-muted-foreground">View and manage students under your supervision</p>
-        </div>
-
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={allStudents.length} />
                 </div>
-                <p className="text-xs text-muted-foreground">Under your supervision</p>
+                <p className="text-xs text-muted-foreground">Di bawah pengawasan Anda</p>
               </CardContent>
             </Card>
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Proposal Exam</CardTitle>
+                <CardTitle className="text-sm font-medium">Ujian Proposal</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={countStudentsByExamStage("proposal_exam")} />
                 </div>
-                <p className="text-xs text-muted-foreground">Students in proposal stage</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa tahap proposal</p>
               </CardContent>
             </Card>
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Results Exam</CardTitle>
+                <CardTitle className="text-sm font-medium">Ujian Hasil</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={countStudentsByExamStage("results_exam")} />
                 </div>
-                <p className="text-xs text-muted-foreground">Students in results stage</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa tahap hasil</p>
               </CardContent>
             </Card>
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Final Exam</CardTitle>
+                <CardTitle className="text-sm font-medium">Ujian Akhir</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={countStudentsByExamStage("final_exam")} />
                 </div>
-                <p className="text-xs text-muted-foreground">Students in final stage</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa tahap akhir</p>
               </CardContent>
             </Card>
           </StaggerItem>
         </StaggerContainer>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Students</CardTitle>
-            <CardDescription>Manage students under your supervision</CardDescription>
+            <CardTitle>Mahasiswa</CardTitle>
+            <CardDescription>Kelola mahasiswa di bawah pengawasan Anda</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -270,7 +246,7 @@ export function InstructorStudentsPage() {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search students..."
+                  placeholder="Cari mahasiswa..."
                   className="pl-8"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -279,10 +255,10 @@ export function InstructorStudentsPage() {
               <div className="flex gap-2">
                 <Select value={programFilter || ""} onValueChange={(value) => setProgramFilter(value || null)}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="All Programs" />
+                    <SelectValue placeholder="Semua Program" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all_programs">All Programs</SelectItem>
+                    <SelectItem value="all_programs">Semua Program</SelectItem>
                     {availablePrograms.map((program) => (
                       <SelectItem key={program.id} value={program.id}>
                         {program.name}
@@ -296,14 +272,14 @@ export function InstructorStudentsPage() {
                   onValueChange={(value) => setExamStageFilter(value as ExamStage | "all")}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="All Stages" />
+                    <SelectValue placeholder="Semua Tahap" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Stages</SelectItem>
-                    <SelectItem value="proposal_exam">Proposal Exam</SelectItem>
-                    <SelectItem value="results_exam">Results Exam</SelectItem>
-                    <SelectItem value="final_exam">Final Exam</SelectItem>
-                    <SelectItem value="graduated">Graduated</SelectItem>
+                    <SelectItem value="all">Semua Tahap</SelectItem>
+                    <SelectItem value="proposal_exam">Ujian Proposal</SelectItem>
+                    <SelectItem value="results_exam">Ujian Hasil</SelectItem>
+                    <SelectItem value="final_exam">Ujian Akhir</SelectItem>
+                    <SelectItem value="graduated">Lulus</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -314,7 +290,7 @@ export function InstructorStudentsPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center">
                   <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Active filters:</span>
+                  <span className="text-sm text-muted-foreground">Filter aktif:</span>
                 </div>
 
                 {programFilter && (
@@ -327,14 +303,14 @@ export function InstructorStudentsPage() {
                       onClick={() => setProgramFilter(null)}
                     >
                       <X className="h-3 w-3" />
-                      <span className="sr-only">Remove program filter</span>
+                      <span className="sr-only">Hapus filter program</span>
                     </Button>
                   </Badge>
                 )}
 
                 {examStageFilter !== "all" && (
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    Stage: {formatExamStage(examStageFilter)}
+                    Tahap: {formatExamStage(examStageFilter)}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -342,14 +318,14 @@ export function InstructorStudentsPage() {
                       onClick={() => setExamStageFilter("all")}
                     >
                       <X className="h-3 w-3" />
-                      <span className="sr-only">Remove stage filter</span>
+                      <span className="sr-only">Hapus filter tahap</span>
                     </Button>
                   </Badge>
                 )}
 
                 {searchQuery && (
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    Search: {searchQuery}
+                    Cari: {searchQuery}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -357,7 +333,7 @@ export function InstructorStudentsPage() {
                       onClick={() => setSearchQuery("")}
                     >
                       <X className="h-3 w-3" />
-                      <span className="sr-only">Remove search filter</span>
+                      <span className="sr-only">Hapus pencarian</span>
                     </Button>
                   </Badge>
                 )}
@@ -372,7 +348,7 @@ export function InstructorStudentsPage() {
                     setSearchQuery("")
                   }}
                 >
-                  Clear all
+                  Hapus semua
                 </Button>
               </div>
             )}
@@ -381,11 +357,11 @@ export function InstructorStudentsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Student</TableHead>
+                    <TableHead>Mahasiswa</TableHead>
                     <TableHead>Program</TableHead>
-                    <TableHead>Exam Stage</TableHead>
-                    <TableHead>Thesis Title</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Tahap Ujian</TableHead>
+                    <TableHead>Judul Skripsi</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -396,20 +372,20 @@ export function InstructorStudentsPage() {
                           <div className="font-medium">{student.name}</div>
                           <div className="text-sm text-muted-foreground">{student.studentId}</div>
                         </TableCell>
-                        <TableCell>{getProgramName(student.facultyId, student.programId)}</TableCell>
+                        <TableCell>{getProgramName(student.programId)}</TableCell>
                         <TableCell>
                           <Badge variant={getExamStageBadgeVariant(student.examStage)}>
                             {formatExamStage(student.examStage)}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="max-w-xs truncate">{student.thesisTitle || "No thesis title yet"}</div>
+                          <div className="max-w-xs truncate">{student.thesisTitle || "Belum ada judul skripsi"}</div>
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleViewStudent(student.id)}>
                               <Eye className="h-4 w-4" />
-                              <span className="sr-only">View</span>
+                              <span className="sr-only">Lihat</span>
                             </Button>
                             <Button variant="ghost" size="icon" onClick={() => handleEmailStudent(student.email)}>
                               <Mail className="h-4 w-4" />
@@ -417,7 +393,7 @@ export function InstructorStudentsPage() {
                             </Button>
                             <Button variant="ghost" size="icon" onClick={() => handleViewSubmissions(student.id)}>
                               <FileText className="h-4 w-4" />
-                              <span className="sr-only">Submissions</span>
+                              <span className="sr-only">Pengiriman</span>
                             </Button>
                           </div>
                         </TableCell>
@@ -427,11 +403,11 @@ export function InstructorStudentsPage() {
                     <TableRow>
                       <TableCell colSpan={5} className="h-24 text-center">
                         <div className="flex flex-col items-center justify-center">
-                          <p className="text-lg font-medium">No students found</p>
+                          <p className="text-lg font-medium">Tidak ada mahasiswa ditemukan</p>
                           <p className="text-sm text-muted-foreground">
                             {allStudents.length === 0
-                              ? "You don't have any students assigned to you yet."
-                              : "Try adjusting your filters to find students."}
+                              ? "Anda belum memiliki mahasiswa yang ditugaskan."
+                              : "Coba sesuaikan filter Anda untuk menemukan mahasiswa."}
                           </p>
                         </div>
                       </TableCell>
@@ -443,6 +419,7 @@ export function InstructorStudentsPage() {
           </CardContent>
         </Card>
       </div>
+      </DashboardMainCard>
     </PageTransition>
   )
 }

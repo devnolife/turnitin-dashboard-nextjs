@@ -76,7 +76,7 @@ export function ExamDetailsForm() {
   if (isSuccess) {
     return (
       <FadeIn>
-        <Card className="shadow-lg border-2 border-success/20">
+        <Card className="shadow-lg border-2 border-success/20 rounded-3xl">
           <CardHeader className="text-center">
             <motion.div
               initial={{ scale: 0 }}
@@ -104,7 +104,7 @@ export function ExamDetailsForm() {
 
   return (
     <SlideUp>
-      <Card className="shadow-lg border-primary/20">
+      <Card className="shadow-lg border-primary/20 rounded-3xl border-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <BookOpen className="h-6 w-6 text-primary" />

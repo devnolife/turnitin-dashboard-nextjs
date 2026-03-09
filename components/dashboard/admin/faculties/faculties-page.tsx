@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/components/ui/use-toast"
 import { useFacultyStore, type Faculty } from "@/lib/store/faculty-store"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
 
 export function AdminFacultiesPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -48,11 +49,11 @@ export function AdminFacultiesPage() {
   const formatDegree = (degree: string) => {
     switch (degree) {
       case "bachelor":
-        return "Bachelor's"
+        return "S1"
       case "master":
-        return "Master's"
+        return "S2"
       case "doctoral":
-        return "Doctoral"
+        return "S3"
       default:
         return degree
     }
@@ -78,90 +79,85 @@ export function AdminFacultiesPage() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">Faculty Management</h1>
-          <p className="text-muted-foreground">Manage faculties and study programs</p>
-        </div>
-
+      <DashboardMainCard title="Manajemen Fakultas" subtitle="Kelola fakultas dan program studi 🏛️" icon={GraduationCap}>
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Faculties</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Fakultas</CardTitle>
                 <GraduationCap className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={faculties.length} />
                 </div>
-                <p className="text-xs text-muted-foreground">Academic faculties</p>
+                <p className="text-xs text-muted-foreground">Fakultas akademik</p>
               </CardContent>
             </Card>
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Study Programs</CardTitle>
+                <CardTitle className="text-sm font-medium">Program Studi</CardTitle>
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={totalPrograms} />
                 </div>
-                <p className="text-xs text-muted-foreground">Across all faculties</p>
+                <p className="text-xs text-muted-foreground">Di seluruh fakultas</p>
               </CardContent>
             </Card>
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={totalStudents} />
                 </div>
-                <p className="text-xs text-muted-foreground">Enrolled students</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa terdaftar</p>
               </CardContent>
             </Card>
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift">
+            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Average per Faculty</CardTitle>
+                <CardTitle className="text-sm font-medium">Rata-rata per Fakultas</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   <AnimatedCounter value={Math.round(totalStudents / faculties.length)} />
                 </div>
-                <p className="text-xs text-muted-foreground">Students per faculty</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa per fakultas</p>
               </CardContent>
             </Card>
           </StaggerItem>
         </StaggerContainer>
 
-        <Card>
+        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Faculties</CardTitle>
-              <CardDescription>Manage faculties and their study programs</CardDescription>
+              <CardTitle>Daftar Fakultas</CardTitle>
+              <CardDescription>Kelola fakultas dan program studi</CardDescription>
             </div>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Add Faculty
+              Tambah Fakultas
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search faculties and programs..."
+                placeholder="Cari fakultas dan program..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-9"
@@ -191,17 +187,17 @@ export function AdminFacultiesPage() {
               ) : filteredFaculties.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-8 text-center">
                   <GraduationCap className="h-12 w-12 text-muted-foreground/40" />
-                  <h3 className="mt-4 text-lg font-medium">No Faculties Found</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">No faculties match your search criteria.</p>
+                  <h3 className="mt-4 text-lg font-medium">Fakultas Tidak Ditemukan</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">Tidak ada fakultas yang sesuai dengan pencarian Anda.</p>
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Faculty</TableHead>
-                      <TableHead>Code</TableHead>
-                      <TableHead>Programs</TableHead>
-                      <TableHead>Students</TableHead>
+                      <TableHead>Fakultas</TableHead>
+                      <TableHead>Kode</TableHead>
+                      <TableHead>Program</TableHead>
+                      <TableHead>Mahasiswa</TableHead>
                       <TableHead className="w-[60px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -228,11 +224,11 @@ export function AdminFacultiesPage() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
                                   <Plus className="mr-2 h-4 w-4" />
-                                  <span>Add Program</span>
+                                  <span>Tambah Program</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive">
                                   <Trash2 className="mr-2 h-4 w-4" />
-                                  <span>Delete</span>
+                                  <span>Hapus</span>
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -250,7 +246,7 @@ export function AdminFacultiesPage() {
                                 {formatDegree(program.degree)}
                               </Badge>
                             </TableCell>
-                            <TableCell colSpan={2}>{program.students} students</TableCell>
+                            <TableCell colSpan={2}>{program.students} mahasiswa</TableCell>
                             <TableCell>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -266,7 +262,7 @@ export function AdminFacultiesPage() {
                                   </DropdownMenuItem>
                                   <DropdownMenuItem className="text-destructive">
                                     <Trash2 className="mr-2 h-4 w-4" />
-                                    <span>Delete</span>
+                                    <span>Hapus</span>
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -281,7 +277,7 @@ export function AdminFacultiesPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </DashboardMainCard>
     </PageTransition>
   )
 }

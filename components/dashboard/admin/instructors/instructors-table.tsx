@@ -102,15 +102,15 @@ export function InstructorsTable({
   onAddInstructor,
 }: InstructorsTableProps) {
   return (
-    <Card>
+    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Instructors</CardTitle>
-          <CardDescription>Manage instructors and view their supervised students</CardDescription>
+          <CardTitle>Daftar Instruktur</CardTitle>
+          <CardDescription>Kelola instruktur dan lihat mahasiswa yang diawasi</CardDescription>
         </div>
         <Button onClick={onAddInstructor}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Instructor
+          Tambah Instruktur
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -118,7 +118,7 @@ export function InstructorsTable({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, ID, or specialization..."
+              placeholder="Cari berdasarkan nama, ID, atau spesialisasi..."
               onChange={onSearch}
               className="pl-10 transition-all focus:ring-2 focus:ring-primary/50"
             />
@@ -148,7 +148,7 @@ export function InstructorsTable({
           <div className="flex flex-wrap gap-2">
             {facultyFilter && (
               <Badge variant="secondary" className="gap-1">
-                Faculty: {getFacultyName(facultyFilter)}
+                Fakultas: {getFacultyName(facultyFilter)}
                 <button
                   onClick={() => onFacultyFilterChange(null)}
                   className="ml-1 rounded-full hover:bg-secondary-foreground/20"
@@ -174,7 +174,7 @@ export function InstructorsTable({
 
             {positionFilter && (
               <Badge variant="secondary" className="gap-1">
-                Position: {formatPosition(positionFilter)}
+                Jabatan: {formatPosition(positionFilter)}
                 <button
                   onClick={() => onPositionFilterChange(null)}
                   className="ml-1 rounded-full hover:bg-secondary-foreground/20"
@@ -204,16 +204,16 @@ export function InstructorsTable({
         {showFilters && (
           <FadeIn className="grid gap-4 rounded-md border p-4 sm:grid-cols-2 md:grid-cols-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Faculty</label>
+              <label className="text-sm font-medium">Fakultas</label>
               <Select
                 value={facultyFilter || "all"}
                 onValueChange={(value) => onFacultyFilterChange(value === "all" ? null : value)}
               >
                 <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
-                  <SelectValue placeholder="All Faculties" />
+                  <SelectValue placeholder="Semua Fakultas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Faculties</SelectItem>
+                  <SelectItem value="all">Semua Fakultas</SelectItem>
                   {faculties.map((faculty) => (
                     <SelectItem key={faculty.id} value={faculty.id}>
                       {faculty.name}
@@ -224,17 +224,17 @@ export function InstructorsTable({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Study Program</label>
+              <label className="text-sm font-medium">Program Studi</label>
               <Select
                 value={programFilter || "all"}
                 onValueChange={(value) => onProgramFilterChange(value === "all" ? null : value)}
                 disabled={!facultyFilter}
               >
                 <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
-                  <SelectValue placeholder={facultyFilter ? "All Programs" : "Select Faculty First"} />
+                  <SelectValue placeholder={facultyFilter ? "Semua Program" : "Pilih Fakultas Dulu"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Programs</SelectItem>
+                  <SelectItem value="all">Semua Program</SelectItem>
                   {availablePrograms.map((program) => (
                     <SelectItem key={program.id} value={program.id}>
                       {program.name}
@@ -245,20 +245,20 @@ export function InstructorsTable({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Position</label>
+              <label className="text-sm font-medium">Jabatan</label>
               <Select
                 value={positionFilter || "all"}
                 onValueChange={(value) => onPositionFilterChange(value === "all" ? null : value)}
               >
                 <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
-                  <SelectValue placeholder="All Positions" />
+                  <SelectValue placeholder="Semua Jabatan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Positions</SelectItem>
-                  <SelectItem value="professor">Professor</SelectItem>
-                  <SelectItem value="associate_professor">Associate Professor</SelectItem>
-                  <SelectItem value="assistant_professor">Assistant Professor</SelectItem>
-                  <SelectItem value="lecturer">Lecturer</SelectItem>
+                  <SelectItem value="all">Semua Jabatan</SelectItem>
+                  <SelectItem value="professor">Profesor</SelectItem>
+                  <SelectItem value="associate_professor">Profesor Madya</SelectItem>
+                  <SelectItem value="assistant_professor">Asisten Profesor</SelectItem>
+                  <SelectItem value="lecturer">Pengawas</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -270,13 +270,13 @@ export function InstructorsTable({
                 onValueChange={(value) => onStatusFilterChange(value === "all" ? null : value)}
               >
                 <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
-                  <SelectValue placeholder="All Statuses" />
+                  <SelectValue placeholder="Semua Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="on_leave">On Leave</SelectItem>
+                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="active">Aktif</SelectItem>
+                  <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                  <SelectItem value="on_leave">Cuti</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -307,29 +307,29 @@ export function InstructorsTable({
           ) : filteredInstructors.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <Users className="h-12 w-12 text-muted-foreground/40" />
-              <h3 className="mt-4 text-lg font-medium">No Instructors Found</h3>
-              <p className="mt-2 text-sm text-muted-foreground">No instructors match your search criteria.</p>
+              <h3 className="mt-4 text-lg font-medium">Instruktur Tidak Ditemukan</h3>
+              <p className="mt-2 text-sm text-muted-foreground">Tidak ada instruktur yang sesuai dengan pencarian Anda.</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Instructor</TableHead>
+                  <TableHead>Instruktur</TableHead>
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("faculty")}>
-                      Faculty
+                      Fakultas
                       <ArrowUpDown className="h-3 w-3" />
                     </div>
                   </TableHead>
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("position")}>
-                      Position
+                      Jabatan
                       <ArrowUpDown className="h-3 w-3" />
                     </div>
                   </TableHead>
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("students")}>
-                      Students
+                      Mahasiswa
                       <ArrowUpDown className="h-3 w-3" />
                     </div>
                   </TableHead>
@@ -380,7 +380,7 @@ export function InstructorsTable({
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => onViewInstructor(instructor.id)}>
                             <Eye className="mr-2 h-4 w-4" />
-                            <span>View Details</span>
+                            <span>Lihat Detail</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Edit className="mr-2 h-4 w-4" />
@@ -388,11 +388,11 @@ export function InstructorsTable({
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Mail className="mr-2 h-4 w-4" />
-                            <span>Email</span>
+                            <span>Kirim Email</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Delete</span>
+                            <span>Hapus</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

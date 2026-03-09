@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Plus } from "lucide-react"
+import { Plus, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { PageTransition } from "@/components/ui/motion"
+import { DashboardMainCard } from "@/components/dashboard/main-card"
 import {
   Dialog,
   DialogContent,
@@ -187,23 +188,20 @@ export function MessagesPage() {
 
   return (
     <PageTransition>
+      <DashboardMainCard title="Pesan" subtitle="Komunikasi dengan mahasiswa Anda 💬" icon={MessageSquare}>
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight gradient-text">Messages</h1>
-            <p className="text-muted-foreground">Communicate with your students and colleagues</p>
-          </div>
+        <div className="flex items-center justify-end">
           <Dialog open={newConversationDialogOpen} onOpenChange={setNewConversationDialogOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                New Message
+                Pesan Baru
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px]">
               <DialogHeader>
-                <DialogTitle>New Message</DialogTitle>
-                <DialogDescription>Create a new conversation or announcement.</DialogDescription>
+                <DialogTitle>Pesan Baru</DialogTitle>
+                <DialogDescription>Buat percakapan baru atau pengumuman.</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
@@ -271,9 +269,9 @@ export function MessagesPage() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setNewConversationDialogOpen(false)}>
-                  Cancel
+                  Batal
                 </Button>
-                <Button onClick={handleCreateConversation}>Send Message</Button>
+                <Button onClick={handleCreateConversation}>Kirim Pesan</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -300,6 +298,7 @@ export function MessagesPage() {
           />
         </div>
       </div>
+      </DashboardMainCard>
     </PageTransition>
   )
 }

@@ -15,6 +15,9 @@ import {
   MessageSquare,
   LogOut,
   ShieldCheck,
+  Shield,
+  CheckSquare,
+  Send,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/lib/store/auth-store"
@@ -23,7 +26,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
 
@@ -36,9 +38,9 @@ interface SidebarProps {
 const adminRoutes = [
   { href: "/dashboard/admin", icon: Home, title: "Dashboard" },
   { href: "/dashboard/admin/students", icon: Users, title: "Mahasiswa" },
-  { href: "/dashboard/admin/instructors", icon: Users, title: "Instruktur" },
+  { href: "/dashboard/admin/instructors", icon: Shield, title: "Instruktur" },
   { href: "/dashboard/admin/faculties", icon: BookOpen, title: "Fakultas" },
-  { href: "/dashboard/admin/exam-approvals", icon: FileText, title: "Persetujuan Ujian", badge: "New" },
+  { href: "/dashboard/admin/exam-approvals", icon: CheckSquare, title: "Persetujuan Ujian", badge: "New" },
   { href: "/dashboard/admin/payments", icon: CreditCard, title: "Pembayaran" },
   { href: "/dashboard/admin/settings", icon: Settings, title: "Pengaturan" },
 ]
@@ -46,7 +48,7 @@ const adminRoutes = [
 const instructorRoutes = [
   { href: "/dashboard/instructor", icon: Home, title: "Dashboard" },
   { href: "/dashboard/instructor/students", icon: Users, title: "Mahasiswa" },
-  { href: "/dashboard/instructor/submissions", icon: FileText, title: "Pengiriman" },
+  { href: "/dashboard/instructor/submissions", icon: Send, title: "Pengiriman" },
   { href: "/dashboard/instructor/messages", icon: MessageSquare, title: "Pesan", badge: "3" },
   { href: "/dashboard/instructor/analytics", icon: BarChart2, title: "Analitik" },
   { href: "/dashboard/instructor/settings", icon: Settings, title: "Pengaturan" },
@@ -54,8 +56,8 @@ const instructorRoutes = [
 
 const studentRoutes = [
   { href: "/dashboard/student", icon: Home, title: "Dashboard" },
-  { href: "/dashboard/student/submissions", icon: FileText, title: "Pengiriman" },
-  { href: "/dashboard/student/feedback", icon: BarChart2, title: "Umpan Balik" },
+  { href: "/dashboard/student/submissions", icon: Send, title: "Pengiriman" },
+  { href: "/dashboard/student/feedback", icon: MessageSquare, title: "Umpan Balik" },
   { href: "/dashboard/student/profile", icon: User, title: "Profil" },
 ]
 
@@ -87,7 +89,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative z-10">
       {/* Header */}
       <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
         <div className="flex items-center gap-2">
@@ -113,45 +115,49 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {routes.map((route) => (
-          <Link key={route.href} href={route.href} onClick={onNavigate}>
-            <Button
-              variant={pathname === route.href ? "secondary" : "ghost"}
-              className={cn(
-                "w-full justify-start rounded-2xl h-12 text-base",
-                pathname === route.href &&
-                  "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter",
-              )}
-            >
-              <route.icon className="mr-3 h-5 w-5" />
-              {route.title}
-              {"badge" in route && route.badge && (
-                <span
-                  className={`ml-auto px-2 py-0.5 rounded-full text-xs ${
-                    route.badge === "New" ? "bg-[#63A6DD]" : "bg-primary"
-                  } text-white animate-pulse-light`}
-                >
-                  {route.badge}
-                </span>
-              )}
-            </Button>
-          </Link>
-        ))}
+      <div className="flex-1 px-4 py-4">
+        <nav className="space-y-1">
+          {routes.map((route) => (
+            <Link key={route.href} href={route.href} onClick={onNavigate}>
+              <Button
+                variant={pathname === route.href ? "secondary" : "ghost"}
+                className={cn(
+                  "w-full justify-start rounded-2xl h-11 text-sm font-normal mb-1",
+                  pathname === route.href &&
+                    "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter",
+                )}
+              >
+                <route.icon className="mr-3 h-[18px] w-[18px] shrink-0" />
+                {route.title}
+                {"badge" in route && route.badge && (
+                  <span
+                    className={`ml-auto px-2 py-0.5 rounded-full text-xs ${
+                      route.badge === "New" ? "bg-[#63A6DD]" : "bg-primary"
+                    } text-white animate-pulse-light`}
+                  >
+                    {route.badge}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          ))}
+        </nav>
+      </div>
 
-        {/* Logout */}
+      {/* Logout */}
+      <div className="px-4 pb-6">
         <Button
           variant="ghost"
           onClick={() => {
             onNavigate?.()
             logout()
           }}
-          className="w-full justify-start rounded-2xl h-12 text-base text-muted-foreground hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-400 mt-4"
+          className="w-full justify-start rounded-2xl h-11 text-sm font-normal text-muted-foreground hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-400"
         >
-          <LogOut className="mr-3 h-5 w-5" />
+          <LogOut className="mr-3 h-[18px] w-[18px] shrink-0" />
           Keluar
         </Button>
-      </nav>
+      </div>
     </div>
   )
 }
@@ -168,7 +174,7 @@ export function Sidebar({ className, mobileOpen, onMobileOpenChange }: SidebarPr
       {/* Desktop sidebar */}
       <div
         className={cn(
-          "hidden md:block w-72 shrink-0 bg-white dark:bg-gray-800 h-screen rounded-r-[2rem] shadow-lg theme-transition",
+          "hidden md:block w-72 shrink-0 bg-white dark:bg-gray-800 h-screen rounded-r-[2rem] shadow-lg theme-transition relative z-20",
           className,
         )}
       >
@@ -177,7 +183,12 @@ export function Sidebar({ className, mobileOpen, onMobileOpenChange }: SidebarPr
 
       {/* Mobile sidebar (Sheet) */}
       <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
-        <SheetContent side="left" className="w-72 p-0 rounded-r-[2rem]">
+        <SheetContent
+          side="left"
+          className="w-72 p-0 rounded-r-[2rem] [&>button]:hidden"
+          aria-describedby={undefined}
+        >
+          <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
           <SidebarContent onNavigate={() => onMobileOpenChange?.(false)} />
         </SheetContent>
       </Sheet>
