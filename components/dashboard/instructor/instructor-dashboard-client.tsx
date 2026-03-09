@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
-import { Upload, MessageSquare, CheckCircle, Bell, FileText, GraduationCap } from "lucide-react"
+import { Upload, MessageSquare, CheckCircle, Bell, FileText, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -12,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { useInstructorStore } from "@/lib/store/instructor-store"
-import { useFacultyStore } from "@/lib/store/faculty-store"
 import { DashboardStatsCards } from "./dashboard-stats-cards"
 import { DashboardQuickActions } from "./dashboard-quick-actions"
 import { DashboardActivityFeed, type Activity } from "./dashboard-activity-feed"
@@ -97,7 +96,6 @@ export function InstructorDashboardClient() {
   const { toast } = useToast()
   const { user } = useAuthStore()
   const { getInstructorById, getStudentsByInstructor, getTurnitinResultsByInstructor } = useInstructorStore()
-  const { faculties } = useFacultyStore()
 
   useEffect(() => {
     const fetchInstructorData = async () => {
@@ -143,27 +141,6 @@ export function InstructorDashboardClient() {
     fetchInstructorData()
   }, [user, getInstructorById, router, toast])
 
-  const getFacultyName = (facultyId: string) => {
-    return faculties.find((f) => f.id === facultyId)?.name || "Unknown Faculty"
-  }
-
-  const getProgramNames = (programIds: string[]) => {
-    return programIds.map((programId) => {
-      for (const faculty of faculties) {
-        const program = faculty.programs.find((p) => p.id === programId)
-        if (program) return program.name
-      }
-      return "Unknown Program"
-    })
-  }
-
-  const formatPosition = (position: string) => {
-    return position
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  }
-
   if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
@@ -190,9 +167,9 @@ export function InstructorDashboardClient() {
   return (
     <div>
       <DashboardMainCard
-        title="Instructor Dashboard"
+        title="Dashboard Instruktur"
         subtitle="Pantau pengiriman Turnitin dan awasi mahasiswa Anda 📋"
-        icon={GraduationCap}
+        icon={Shield}
       >
         {/* Instructor Profile */}
         <div className="grid gap-6 md:grid-cols-3 mb-6">
@@ -210,41 +187,29 @@ export function InstructorDashboardClient() {
                 <CardTitle className="mt-4 text-center">{instructor.name}</CardTitle>
                 <CardDescription className="text-center">{instructor.email}</CardDescription>
                 <Badge variant="outline" className="mt-2">
-                  {formatPosition(instructor.position)}
+                  Pengawas Turnitin
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Fakultas</h3>
-                  <p>{getFacultyName(instructor.facultyId)}</p>
+                  <h3 className="text-sm font-medium text-muted-foreground">Total Mahasiswa</h3>
+                  <p className="text-lg font-semibold">{students.length} mahasiswa</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Program Studi</h3>
-                  <ul className="list-inside list-disc">
-                    {getProgramNames(instructor.programIds).map((program, index) => (
-                      <li key={index}>{program}</li>
-                    ))}
-                  </ul>
+                  <h3 className="text-sm font-medium text-muted-foreground">Pengiriman Pending</h3>
+                  <p className="text-lg font-semibold">{results.filter((r) => r.status === "pending").length} dokumen</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Spesialisasi</h3>
-                  <p>{instructor.specialization}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Lokasi Kantor</h3>
-                  <p>{instructor.officeLocation}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Jam Konsultasi</h3>
-                  <p>{instructor.officeHours}</p>
+                  <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
+                  <Badge variant="success">Aktif</Badge>
                 </div>
               </div>
             </CardContent>
             <CardFooter>
               <Button className="w-full rounded-full" onClick={() => router.push("/dashboard/instructor/profile")}>
-                Edit Profile
+                Edit Profil
               </Button>
             </CardFooter>
           </Card>
@@ -252,9 +217,9 @@ export function InstructorDashboardClient() {
           <div className="md:col-span-2 space-y-6">
             <DashboardStatsCards
               studentCount={students.length}
-              courseCount={instructor.programIds.length}
               submissionCount={results.length}
               pendingReviewCount={results.filter((r) => r.status === "pending").length}
+              reviewedCount={results.filter((r) => r.status === "reviewed").length}
             />
             <DashboardQuickActions onNavigate={(path) => router.push(path)} />
           </div>
@@ -267,19 +232,19 @@ export function InstructorDashboardClient() {
               value="analytics"
               className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
-              Analytics
+              Analitik
             </TabsTrigger>
             <TabsTrigger
               value="activities"
               className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
-              Recent Activities
+              Aktivitas Terbaru
             </TabsTrigger>
             <TabsTrigger
               value="upcoming"
               className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
-              Upcoming Events
+              Jadwal Mendatang
             </TabsTrigger>
           </TabsList>
 

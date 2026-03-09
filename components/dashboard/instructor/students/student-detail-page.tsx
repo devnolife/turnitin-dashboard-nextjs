@@ -18,7 +18,6 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { type Student, type ExamStage, useStudentStore } from "@/lib/store/student-store"
-import { useFacultyStore } from "@/lib/store/faculty-store"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { PageTransition, FadeIn, SlideUp, StaggerContainer, StaggerItem } from "@/components/ui/motion"
 import {
@@ -50,7 +49,6 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   const { toast } = useToast()
   const { user } = useAuthStore()
   const { getStudentById } = useStudentStore()
-  const { faculties } = useFacultyStore()
 
   useEffect(() => {
     // In a real app, this would be an API call
@@ -106,21 +104,20 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   const formatExamStage = (stage: ExamStage) => {
     switch (stage) {
       case "applicant":
-        return "Applicant"
+        return "Pendaftar"
       case "proposal_exam":
-        return "Proposal Exam"
+        return "Sidang Proposal"
       case "results_exam":
-        return "Results Exam"
+        return "Sidang Hasil"
       case "final_exam":
-        return "Final Exam"
+        return "Sidang Akhir"
       case "graduated":
-        return "Graduated"
+        return "Lulus"
       default:
         return stage
     }
   }
 
-  // Get badge variant based on exam stage
   const getExamStageBadgeVariant = (stage: ExamStage) => {
     switch (stage) {
       case "applicant":
@@ -138,21 +135,10 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     }
   }
 
-  // Get faculty and program names
-  const getFacultyName = (facultyId: string) => {
-    return faculties.find((f) => f.id === facultyId)?.name || "Unknown Faculty"
-  }
-
-  const getProgramName = (facultyId: string, programId: string) => {
-    const faculty = faculties.find((f) => f.id === facultyId)
-    return faculty?.programs.find((p) => p.id === programId)?.name || "Unknown Program"
-  }
-
-  // Format date
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Not scheduled"
+    if (!dateString) return "Belum dijadwalkan"
 
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -163,10 +149,9 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   const handleProvideFeedback = React.useCallback(() => {
     if (!selectedSubmissionId || !feedbackText.trim()) return
 
-    // In a real app, this would be an API call to save the feedback
     toast({
-      title: "Feedback Submitted",
-      description: "Your feedback has been submitted successfully.",
+      title: "Feedback Terkirim",
+      description: "Feedback Anda telah berhasil dikirim.",
     })
 
     setFeedbackDialogOpen(false)
@@ -174,20 +159,18 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     setSelectedSubmissionId(null)
   }, [selectedSubmissionId, feedbackText, toast])
 
-  // Handle approve exam
   const handleApproveExam = () => {
     toast({
-      title: "Exam Approved",
-      description: "The student's exam has been approved successfully.",
+      title: "Ujian Disetujui",
+      description: "Ujian mahasiswa telah berhasil disetujui.",
     })
   }
 
-  // Handle reject exam
   const handleRejectExam = () => {
     toast({
       variant: "destructive",
-      title: "Exam Rejected",
-      description: "The student's exam has been rejected.",
+      title: "Ujian Ditolak",
+      description: "Ujian mahasiswa telah ditolak.",
     })
   }
 
@@ -204,11 +187,11 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   if (!student) {
     return (
       <div className="flex h-96 flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold">Student Not Found</h2>
-        <p className="text-muted-foreground">The requested student could not be found.</p>
+        <h2 className="text-2xl font-bold">Mahasiswa Tidak Ditemukan</h2>
+        <p className="text-muted-foreground">Mahasiswa yang diminta tidak dapat ditemukan.</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard/instructor/students")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Students
+          Kembali ke Daftar Mahasiswa
         </Button>
       </div>
     )
@@ -221,25 +204,25 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/instructor/students")}>
               <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Back</span>
+              <span className="sr-only">Kembali</span>
             </Button>
-            <h1 className="text-3xl font-bold tracking-tight gradient-text">Student Details</h1>
+            <h1 className="text-3xl font-bold tracking-tight gradient-text">Detail Mahasiswa</h1>
           </div>
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => (window.location.href = `mailto:${student.email}`)}>
               <Mail className="mr-2 h-4 w-4" />
-              Email Student
+              Email Mahasiswa
             </Button>
             {student.examStage !== "applicant" && student.examStage !== "graduated" && (
               <>
                 <Button variant="success" onClick={handleApproveExam}>
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Approve Exam
+                  Setujui
                 </Button>
                 <Button variant="destructive" onClick={handleRejectExam}>
                   <XCircle className="mr-2 h-4 w-4" />
-                  Reject Exam
+                  Tolak
                 </Button>
               </>
             )}
@@ -250,8 +233,6 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           <FadeIn className="md:col-span-1">
             <StudentOverviewCard
               student={student}
-              facultyName={getFacultyName(student.facultyId)}
-              programName={getProgramName(student.facultyId, student.programId)}
               formatExamStage={formatExamStage}
               getExamStageBadgeVariant={getExamStageBadgeVariant}
             />
@@ -260,18 +241,18 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           <SlideUp className="md:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Thesis Information</CardTitle>
-                <CardDescription>Details about the student's thesis and exam</CardDescription>
+                <CardTitle>Informasi Skripsi</CardTitle>
+                <CardDescription>Detail tentang skripsi dan ujian mahasiswa</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Thesis Title</h3>
-                  <p className="text-lg font-medium">{student.thesisTitle || "No thesis title submitted yet"}</p>
+                  <h3 className="text-sm font-medium text-muted-foreground">Judul Skripsi</h3>
+                  <p className="text-lg font-medium">{student.thesisTitle || "Belum ada judul skripsi"}</p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground">Exam Stage</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground">Tahap Ujian</h3>
                     <div className="flex items-center gap-2">
                       <Badge variant={getExamStageBadgeVariant(student.examStage)}>
                         {formatExamStage(student.examStage)}
@@ -280,7 +261,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground">Exam Date</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground">Tanggal Ujian</h3>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>{formatDate(student.examDate)}</span>
@@ -291,7 +272,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                 <Separator />
 
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Submission History</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Riwayat Pengiriman</h3>
                   <div className="rounded-md border p-4">
                     <StaggerContainer className="space-y-4">
                       {student.examStage !== "applicant" ? (
@@ -316,11 +297,11 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                                     {result.similarityScore}% Similarity
                                   </Badge>
                                   <span className="text-sm text-muted-foreground">
-                                    Submitted on {formatDate(result.submittedAt)}
+                                    Dikirim pada {formatDate(result.submittedAt)}
                                   </span>
                                   <Button variant="outline" size="sm">
                                     <Download className="mr-2 h-3 w-3" />
-                                    Download
+                                    Unduh
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -331,7 +312,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                                     }}
                                   >
                                     <MessageSquare className="mr-2 h-3 w-3" />
-                                    Feedback
+                                    Kirim Hasil
                                   </Button>
                                 </div>
                               </div>
@@ -341,9 +322,9 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                       ) : (
                         <div className="flex flex-col items-center justify-center py-6 text-center">
                           <FileText className="h-12 w-12 text-muted-foreground/40" />
-                          <h3 className="mt-4 text-lg font-medium">No Submissions Yet</h3>
+                          <h3 className="mt-4 text-lg font-medium">Belum Ada Pengiriman</h3>
                           <p className="mt-2 text-sm text-muted-foreground">
-                            This student has not submitted any documents yet.
+                            Mahasiswa ini belum mengirimkan dokumen apapun.
                           </p>
                         </div>
                       )}
@@ -368,17 +349,17 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
       <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Provide Feedback</DialogTitle>
+            <DialogTitle>Kirim Hasil Turnitin</DialogTitle>
             <DialogDescription>
-              Add your feedback for this submission. The student will be able to view your comments.
+              Tambahkan komentar untuk pengiriman ini. Mahasiswa akan dapat melihat hasil dan komentar Anda.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="feedback">Feedback</Label>
+              <Label htmlFor="feedback">Komentar</Label>
               <Textarea
                 id="feedback"
-                placeholder="Enter your feedback here..."
+                placeholder="Masukkan komentar Anda di sini..."
                 value={feedbackText}
                 onChange={(e) => setFeedbackText(e.target.value)}
                 rows={6}
@@ -387,9 +368,9 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setFeedbackDialogOpen(false)}>
-              Cancel
+              Batal
             </Button>
-            <Button onClick={handleProvideFeedback}>Submit Feedback</Button>
+            <Button onClick={handleProvideFeedback}>Kirim Hasil</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

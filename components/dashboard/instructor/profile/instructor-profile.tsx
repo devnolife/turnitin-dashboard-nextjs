@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { useAuthStore } from "@/lib/store/auth-store"
-import { Mail, Phone, BookOpen, Award } from "lucide-react"
+import { Mail, Shield, Users } from "lucide-react"
 
 export function InstructorProfile() {
   const { user } = useAuthStore()
@@ -25,7 +25,7 @@ export function InstructorProfile() {
             <div className="text-center sm:text-left">
               <h3 className="text-xl font-semibold">{user?.name || "Instruktur"}</h3>
               <p className="text-muted-foreground">{user?.email}</p>
-              <Badge className="mt-2" variant="secondary">Instruktur</Badge>
+              <Badge className="mt-2" variant="secondary">Pengawas Turnitin</Badge>
             </div>
           </div>
         </CardContent>
@@ -45,11 +45,11 @@ export function InstructorProfile() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <BookOpen className="h-4 w-4" /> Bidang Keahlian
+              <Shield className="h-4 w-4" /> Peran
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">Computer Science</p>
+            <p className="text-sm text-muted-foreground">Pengawas upload dokumen Turnitin mahasiswa</p>
           </CardContent>
         </Card>
       </div>

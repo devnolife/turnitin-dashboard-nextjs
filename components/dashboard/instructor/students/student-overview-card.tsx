@@ -3,8 +3,6 @@
 import {
   Mail,
   Phone,
-  GraduationCap,
-  BookOpen,
   Clock,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,16 +14,12 @@ import { type Student, type ExamStage } from "@/lib/store/student-store"
 
 interface StudentOverviewCardProps {
   student: Student
-  facultyName: string
-  programName: string
   formatExamStage: (stage: ExamStage) => string
   getExamStageBadgeVariant: (stage: ExamStage) => string
 }
 
 export function StudentOverviewCard({
   student,
-  facultyName,
-  programName,
   formatExamStage,
   getExamStageBadgeVariant,
 }: StudentOverviewCardProps) {
@@ -59,26 +53,18 @@ export function StudentOverviewCard({
             <span>{student.whatsappNumber}</span>
           </div>
           <div className="flex items-center gap-3">
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            <span>{facultyName}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            <span>{programName}</span>
-          </div>
-          <div className="flex items-center gap-3">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span>Last active: {student.lastActive}</span>
+            <span>Terakhir aktif: {student.lastActive}</span>
           </div>
 
           <Separator />
 
           <div className="space-y-2">
-            <h3 className="text-sm font-medium">Academic Progress</h3>
+            <h3 className="text-sm font-medium">Progres Pengiriman</h3>
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Overall Progress</span>
+                  <span>Progres Keseluruhan</span>
                   <span className="font-medium">
                     {student.examStage === "applicant"
                       ? "0%"
@@ -112,7 +98,7 @@ export function StudentOverviewCard({
                 <div className="flex items-center justify-between text-sm">
                   <span>Proposal</span>
                   <span className="font-medium">
-                    {student.examStage === "applicant" ? "Not Started" : "Completed"}
+                    {student.examStage === "applicant" ? "Belum" : "Selesai"}
                   </span>
                 </div>
                 <Progress
@@ -124,11 +110,11 @@ export function StudentOverviewCard({
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Results</span>
+                  <span>Hasil</span>
                   <span className="font-medium">
                     {student.examStage === "applicant" || student.examStage === "proposal_exam"
-                      ? "Not Started"
-                      : "Completed"}
+                      ? "Belum"
+                      : "Selesai"}
                   </span>
                 </div>
                 <Progress
@@ -140,11 +126,11 @@ export function StudentOverviewCard({
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Final</span>
+                  <span>Akhir</span>
                   <span className="font-medium">
                     {student.examStage === "final_exam" || student.examStage === "graduated"
-                      ? "Completed"
-                      : "Not Started"}
+                      ? "Selesai"
+                      : "Belum"}
                   </span>
                 </div>
                 <Progress
@@ -168,7 +154,7 @@ export function StudentOverviewCard({
                   : "destructive"
             }
           >
-            {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+            {student.status === "active" ? "Aktif" : student.status === "inactive" ? "Tidak Aktif" : "Ditangguhkan"}
           </Badge>
         </div>
       </CardFooter>
