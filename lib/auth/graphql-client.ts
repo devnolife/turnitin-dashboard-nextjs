@@ -21,7 +21,7 @@ export async function fetchMahasiswaByNim(nim: string): Promise<MahasiswaData | 
   }
 
   const query = `
-    query MahasiswaUser($nim: String) {
+    query MahasiswaUser($nim: String!) {
       mahasiswaUser(nim: $nim) {
         nim
         nama

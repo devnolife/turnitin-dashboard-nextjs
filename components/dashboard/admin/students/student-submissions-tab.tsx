@@ -27,9 +27,9 @@ export function TurnitinResultsContent({ student, formatExamStage, formatDate }:
       {student.turnitinResults.length > 0 ? (
         <div className="rounded-md border overflow-x-auto">
           <div className="p-4">
-            <h3 className="text-lg font-medium">Similarity Reports</h3>
+            <h3 className="text-lg font-medium">Laporan Kemiripan</h3>
             <p className="text-sm text-muted-foreground">
-              Plagiarism check results for submitted documents
+              Hasil pemeriksaan plagiarisme untuk dokumen yang diajukan
             </p>
           </div>
 
@@ -40,7 +40,7 @@ export function TurnitinResultsContent({ student, formatExamStage, formatDate }:
                   <div>
                     <div className="font-medium">{result.documentTitle}</div>
                     <div className="text-sm text-muted-foreground">
-                      {formatExamStage(result.examStage)} • Submitted on {formatDate(result.submittedAt)}
+                      {formatExamStage(result.examStage)} • Diajukan pada {formatDate(result.submittedAt)}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -53,17 +53,17 @@ export function TurnitinResultsContent({ student, formatExamStage, formatDate }:
                             : "destructive"
                       }
                     >
-                      {result.similarityScore}% Similarity
+                      {result.similarityScore}% Kemiripan
                     </Badge>
                     <Button variant="outline" size="sm">
                       <Eye className="mr-2 h-3 w-3" />
-                      View Report
+                      Lihat Laporan
                     </Button>
 
                     {result.examStage === "proposal_exam" && student.examStage === "final_exam" && (
                       <Button variant="outline" size="sm">
                         <ArrowLeft className="mr-2 h-3 w-3" />
-                        Transfer to Final
+                        Transfer ke Akhir
                       </Button>
                     )}
                   </div>
@@ -75,9 +75,9 @@ export function TurnitinResultsContent({ student, formatExamStage, formatDate }:
       ) : (
         <div className="flex flex-col items-center justify-center rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground/40" />
-          <h3 className="mt-4 text-lg font-medium">No Perpusmu results</h3>
+          <h3 className="mt-4 text-lg font-medium">Belum ada hasil Perpusmu</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            No similarity reports are available for this student.
+            Belum ada laporan kemiripan untuk mahasiswa ini.
           </p>
         </div>
       )}
@@ -91,9 +91,9 @@ export function SubmissionsContent({ student }: { student: Student }) {
       {student.examStage !== "applicant" ? (
         <div className="rounded-md border overflow-x-auto">
           <div className="p-4">
-            <h3 className="text-lg font-medium">Recent Submissions</h3>
+            <h3 className="text-lg font-medium">Pengajuan Terbaru</h3>
             <p className="text-sm text-muted-foreground">
-              The student&apos;s most recent document submissions
+              Pengajuan dokumen terbaru dari mahasiswa
             </p>
           </div>
 
@@ -103,19 +103,19 @@ export function SubmissionsContent({ student }: { student: Student }) {
                 <div key={i} className="flex items-center justify-between p-4">
                   <div>
                     <div className="font-medium">
-                      {["Chapter Draft", "Literature Review", "Methodology Section"][i]}
+                      {["Draf Bab", "Tinjauan Pustaka", "Bagian Metodologi"][i]}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Submitted {["2 days ago", "1 week ago", "2 weeks ago"][i]}
+                      Diajukan {["2 hari lalu", "1 minggu lalu", "2 minggu lalu"][i]}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={["success", "secondary", "outline"][i] as any}>
-                      {["Graded", "Pending", "Draft"][i]}
+                      {["Dinilai", "Menunggu", "Draf"][i]}
                     </Badge>
                     <Button variant="outline" size="sm">
                       <Download className="mr-2 h-3 w-3" />
-                      Download
+                      Unduh
                     </Button>
                   </div>
                 </div>
@@ -126,9 +126,9 @@ export function SubmissionsContent({ student }: { student: Student }) {
       ) : (
         <div className="flex flex-col items-center justify-center rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground/40" />
-          <h3 className="mt-4 text-lg font-medium">No Submissions Yet</h3>
+          <h3 className="mt-4 text-lg font-medium">Belum Ada Pengajuan</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            This student has not submitted any documents yet.
+            Mahasiswa ini belum mengajukan dokumen apapun.
           </p>
         </div>
       )}
@@ -145,8 +145,8 @@ export function FeedbackContent({ student, formatDate }: FeedbackContentProps) {
   return (
     <div className="rounded-md border overflow-x-auto">
       <div className="p-4">
-        <h3 className="text-lg font-medium">Instructor Feedback</h3>
-        <p className="text-sm text-muted-foreground">Feedback provided to the student</p>
+        <h3 className="text-lg font-medium">Umpan Balik Instruktur</h3>
+        <p className="text-sm text-muted-foreground">Umpan balik yang diberikan kepada mahasiswa</p>
       </div>
 
       {student.examStage !== "applicant" ? (
@@ -159,7 +159,7 @@ export function FeedbackContent({ student, formatDate }: FeedbackContentProps) {
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{result.documentTitle}</div>
                     <div className="text-sm text-muted-foreground">
-                      {result.reviewedAt ? formatDate(result.reviewedAt) : "Not reviewed"}
+                      {result.reviewedAt ? formatDate(result.reviewedAt) : "Belum ditinjau"}
                     </div>
                   </div>
                   <div className="mt-2 text-sm">{result.comments}</div>
@@ -169,9 +169,9 @@ export function FeedbackContent({ student, formatDate }: FeedbackContentProps) {
             {student.turnitinResults.filter((result) => result.comments).length === 0 && (
               <div className="flex flex-col items-center justify-center p-8 text-center">
                 <MessageSquare className="h-12 w-12 text-muted-foreground/40" />
-                <h3 className="mt-4 text-lg font-medium">No Feedback Yet</h3>
+                <h3 className="mt-4 text-lg font-medium">Belum Ada Umpan Balik</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  No feedback has been provided to this student yet.
+                  Belum ada umpan balik yang diberikan kepada mahasiswa ini.
                 </p>
               </div>
             )}
@@ -180,9 +180,9 @@ export function FeedbackContent({ student, formatDate }: FeedbackContentProps) {
       ) : (
         <div className="flex flex-col items-center justify-center p-8 text-center">
           <MessageSquare className="h-12 w-12 text-muted-foreground/40" />
-          <h3 className="mt-4 text-lg font-medium">No Feedback Yet</h3>
+          <h3 className="mt-4 text-lg font-medium">Belum Ada Umpan Balik</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            No feedback has been provided to this student yet.
+            Belum ada umpan balik yang diberikan kepada mahasiswa ini.
           </p>
         </div>
       )}
@@ -201,18 +201,18 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Exam Information</CardTitle>
-        <CardDescription>Details about the student&apos;s thesis and exam</CardDescription>
+        <CardTitle>Informasi Ujian</CardTitle>
+        <CardDescription>Detail tentang skripsi dan ujian mahasiswa</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Thesis Title</h3>
-          <p className="text-lg font-medium">{student.thesisTitle || "No thesis title submitted yet"}</p>
+          <h3 className="text-sm font-medium text-muted-foreground">Judul Skripsi</h3>
+          <p className="text-lg font-medium">{student.thesisTitle || "Belum ada judul skripsi"}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Exam Stage</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">Tahap Ujian</h3>
             <div className="flex items-center gap-2">
               <Badge variant={getExamStageBadgeVariant(student.examStage) as any}>
                 {formatExamStage(student.examStage)}
@@ -221,7 +221,7 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Exam Date</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">Tanggal Ujian</h3>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <span>{formatDate(student.examDate)}</span>
@@ -232,7 +232,7 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
         <Separator />
 
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Submission History</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">Riwayat Pengajuan</h3>
           <div className="rounded-md border p-4">
             <StaggerContainer className="space-y-4">
               {student.examStage !== "applicant" ? (
@@ -241,15 +241,15 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Thesis Draft</span>
+                        <span className="font-medium">Draf Skripsi</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">
-                          Submitted on {formatDate(student.submittedAt)}
+                          Diajukan pada {formatDate(student.submittedAt)}
                         </span>
                         <Button variant="outline" size="sm">
                           <Download className="mr-2 h-3 w-3" />
-                          Download
+                          Unduh
                         </Button>
                       </div>
                     </div>
@@ -259,15 +259,15 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-primary" />
-                        <span className="font-medium">Research Proposal</span>
+                        <span className="font-medium">Proposal Penelitian</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">
-                          Submitted on {formatDate(student.submittedAt)}
+                          Diajukan pada {formatDate(student.submittedAt)}
                         </span>
                         <Button variant="outline" size="sm">
                           <Download className="mr-2 h-3 w-3" />
-                          Download
+                          Unduh
                         </Button>
                       </div>
                     </div>
@@ -280,15 +280,15 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <FileText className="h-4 w-4 text-primary" />
-                          <span className="font-medium">Research Results</span>
+                          <span className="font-medium">Hasil Penelitian</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground">
-                            Submitted on {formatDate(student.submittedAt)}
+                            Diajukan pada {formatDate(student.submittedAt)}
                           </span>
                           <Button variant="outline" size="sm">
                             <Download className="mr-2 h-3 w-3" />
-                            Download
+                            Unduh
                           </Button>
                         </div>
                       </div>
@@ -300,15 +300,15 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <FileText className="h-4 w-4 text-primary" />
-                          <span className="font-medium">Final Thesis</span>
+                          <span className="font-medium">Skripsi Akhir</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground">
-                            Submitted on {formatDate(student.submittedAt)}
+                            Diajukan pada {formatDate(student.submittedAt)}
                           </span>
                           <Button variant="outline" size="sm">
                             <Download className="mr-2 h-3 w-3" />
-                            Download
+                            Unduh
                           </Button>
                         </div>
                       </div>
@@ -318,9 +318,9 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
               ) : (
                 <div className="flex flex-col items-center justify-center py-6 text-center">
                   <FileText className="h-12 w-12 text-muted-foreground/40" />
-                  <h3 className="mt-4 text-lg font-medium">No Submissions Yet</h3>
+                  <h3 className="mt-4 text-lg font-medium">Belum Ada Pengajuan</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    This student has not submitted any documents yet.
+                    Mahasiswa ini belum mengajukan dokumen apapun.
                   </p>
                 </div>
               )}

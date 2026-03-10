@@ -51,16 +51,16 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
         } else {
           toast({
             variant: "destructive",
-            title: "Student not found",
-            description: "The requested student could not be found.",
+            title: "Mahasiswa tidak ditemukan",
+            description: "Mahasiswa yang diminta tidak dapat ditemukan.",
           })
           router.push("/dashboard/admin/students")
         }
       } catch (error) {
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to fetch student details. Please try again.",
+          title: "Kesalahan",
+          description: "Gagal mengambil detail mahasiswa. Silakan coba lagi.",
         })
       } finally {
         setIsLoading(false)
@@ -72,15 +72,15 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   const formatExamStage = (stage: ExamStage) => {
     switch (stage) {
       case "applicant":
-        return "Applicant"
+        return "Pendaftar"
       case "proposal_exam":
-        return "Proposal Exam"
+        return "Sidang Proposal"
       case "results_exam":
-        return "Results Exam"
+        return "Sidang Hasil"
       case "final_exam":
-        return "Final Exam"
+        return "Sidang Akhir"
       case "graduated":
-        return "Graduated"
+        return "Lulus"
       default:
         return stage
     }
@@ -104,17 +104,17 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   }
 
   const getFacultyName = (facultyId: string) => {
-    return faculties.find((f) => f.id === facultyId)?.name || "Unknown Faculty"
+    return faculties.find((f) => f.id === facultyId)?.name || "Fakultas Tidak Diketahui"
   }
 
   const getProgramName = (facultyId: string, programId: string) => {
     const faculty = faculties.find((f) => f.id === facultyId)
-    return faculty?.programs.find((p) => p.id === programId)?.name || "Unknown Program"
+    return faculty?.programs.find((p) => p.id === programId)?.name || "Program Tidak Diketahui"
   }
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Not scheduled"
-    return new Date(dateString).toLocaleDateString("en-US", {
+    if (!dateString) return "Belum dijadwalkan"
+    return new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -130,7 +130,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     if (!student || !selectedInstructorId) return
     assignInstructorToStudent(student.id, selectedInstructorId)
     setStudent({ ...student, instructorId: selectedInstructorId })
-    toast({ title: "Instructor Assigned", description: "The instructor has been assigned to this student successfully." })
+    toast({ title: "Instruktur Ditugaskan", description: "Instruktur berhasil ditugaskan ke mahasiswa ini." })
     setInstructorDialogOpen(false)
   }
 
@@ -138,15 +138,15 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     if (!student || !student.instructorId) return
     removeInstructorFromStudent(student.id)
     setStudent({ ...student, instructorId: null })
-    toast({ title: "Instructor Removed", description: "The instructor has been removed from this student." })
+    toast({ title: "Instruktur Dihapus", description: "Instruktur telah dihapus dari mahasiswa ini." })
   }
 
   const handleApproveExam = () => {
-    toast({ title: "Exam Approved", description: "The student's exam has been approved successfully." })
+    toast({ title: "Ujian Disetujui", description: "Ujian mahasiswa berhasil disetujui." })
   }
 
   const handleRejectExam = () => {
-    toast({ variant: "destructive", title: "Exam Rejected", description: "The student's exam has been rejected." })
+    toast({ variant: "destructive", title: "Ujian Ditolak", description: "Ujian mahasiswa telah ditolak." })
   }
 
   if (isLoading) {
@@ -160,11 +160,11 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   if (!student) {
     return (
       <div className="flex h-96 flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold">Student Not Found</h2>
-        <p className="text-muted-foreground">The requested student could not be found.</p>
+        <h2 className="text-2xl font-bold">Mahasiswa Tidak Ditemukan</h2>
+        <p className="text-muted-foreground">Mahasiswa yang diminta tidak dapat ditemukan.</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard/admin/students")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Students
+          Kembali ke Daftar Mahasiswa
         </Button>
       </div>
     )
@@ -179,25 +179,25 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/admin/students")}>
               <ArrowLeft className="h-4 w-4" />
-              <span className="sr-only">Back</span>
+              <span className="sr-only">Kembali</span>
             </Button>
-            <h1 className="text-3xl font-bold tracking-tight gradient-text">Student Details</h1>
+            <h1 className="text-3xl font-bold tracking-tight gradient-text">Detail Mahasiswa</h1>
           </div>
 
           <div className="flex gap-2">
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              Ubah
             </Button>
             {student.examStage !== "applicant" && student.examStage !== "graduated" && (
               <>
                 <Button variant="success" onClick={handleApproveExam}>
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Approve Exam
+                  Setujui Ujian
                 </Button>
                 <Button variant="destructive" onClick={handleRejectExam}>
                   <XCircle className="mr-2 h-4 w-4" />
-                  Reject Exam
+                  Tolak Ujian
                 </Button>
               </>
             )}
@@ -236,16 +236,16 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           <SlideUp className="md:col-span-3">
             <Card>
               <CardHeader>
-                <CardTitle>Perpusmu Results & Submissions</CardTitle>
-                <CardDescription>View the student&apos;s Perpusmu results and submissions</CardDescription>
+                <CardTitle>Hasil & Pengajuan Perpusmu</CardTitle>
+                <CardDescription>Lihat hasil Perpusmu dan pengajuan mahasiswa</CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="turnitin" className="space-y-4">
                   <TabsList>
-                    <TabsTrigger value="turnitin">Perpusmu Results</TabsTrigger>
-                    <TabsTrigger value="submissions">Submissions</TabsTrigger>
-                    <TabsTrigger value="feedback">Feedback</TabsTrigger>
-                    <TabsTrigger value="activity">Activity Log</TabsTrigger>
+                    <TabsTrigger value="turnitin">Hasil Perpusmu</TabsTrigger>
+                    <TabsTrigger value="submissions">Pengajuan</TabsTrigger>
+                    <TabsTrigger value="feedback">Umpan Balik</TabsTrigger>
+                    <TabsTrigger value="activity">Log Aktivitas</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="turnitin" className="space-y-4">

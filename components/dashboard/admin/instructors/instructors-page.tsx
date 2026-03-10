@@ -75,7 +75,7 @@ export function AdminInstructorsPage() {
 
   // Get faculty name
   const getFacultyName = (facultyId: string) => {
-    return faculties.find((f) => f.id === facultyId)?.name || "Unknown Faculty"
+    return faculties.find((f) => f.id === facultyId)?.name || "Fakultas Tidak Diketahui"
   }
 
   // Handle search input

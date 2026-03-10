@@ -1,131 +1,78 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Users, GraduationCap, FileText, ClipboardCheck } from "lucide-react"
+
+interface Stats {
+  totalUsers: number
+  totalStudents: number
+  totalInstructors: number
+  totalSubmissions: number
+  totalRevenue: number
+  pendingExamApprovals: number
+}
 
 export function AdminOverview() {
-  const userGrowthData = [
-    { month: "Jan", students: 2100, instructors: 180 },
-    { month: "Feb", students: 2200, instructors: 190 },
-    { month: "Mar", students: 2350, instructors: 205 },
-    { month: "Apr", students: 2450, instructors: 215 },
-    { month: "May", students: 2584, instructors: 225 },
-  ]
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const revenueData = [
-    { month: "Jan", revenue: 110000 },
-    { month: "Feb", revenue: 118000 },
-    { month: "Mar", revenue: 125000 },
-    { month: "Apr", revenue: 134500 },
-    { month: "May", revenue: 142384 },
-  ]
+  useEffect(() => {
+    fetch("/api/admin/stats")
+      .then(res => res.json())
+      .then(data => { setStats(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
 
-  const submissionData = [
-    { month: "Jan", submissions: 15200 },
-    { month: "Feb", submissions: 16100 },
-    { month: "Mar", submissions: 16800 },
-    { month: "Apr", submissions: 17550 },
-    { month: "May", submissions: 18392 },
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    )
+  }
+
+  const summaryItems = [
+    {
+      title: "Total Pengguna",
+      value: stats?.totalUsers ?? 0,
+      description: `${stats?.totalStudents ?? 0} mahasiswa, ${stats?.totalInstructors ?? 0} instruktur`,
+      icon: Users,
+    },
+    {
+      title: "Total Mahasiswa",
+      value: stats?.totalStudents ?? 0,
+      description: `${stats?.totalUsers ? Math.round(((stats?.totalStudents ?? 0) / stats.totalUsers) * 100) : 0}% dari total pengguna`,
+      icon: GraduationCap,
+    },
+    {
+      title: "Total Pengajuan",
+      value: stats?.totalSubmissions ?? 0,
+      description: "Dokumen yang telah dikirim",
+      icon: FileText,
+    },
+    {
+      title: "Menunggu Persetujuan",
+      value: stats?.pendingExamApprovals ?? 0,
+      description: "Ujian yang perlu diverifikasi",
+      icon: ClipboardCheck,
+    },
   ]
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card className="col-span-1 md:col-span-2">
-        <CardHeader>
-          <CardTitle>User Growth</CardTitle>
-          <CardDescription>Monthly user growth by role</CardDescription>
-        </CardHeader>
-        <CardContent className="h-64 sm:h-80">
-          <ChartContainer
-            config={{
-              visitors: {
-                label: "Visitors",
-              },
-              students: {
-                label: "Students",
-                color: "hsl(209, 51%, 53%)",
-              },
-              instructors: {
-                label: "Instructors",
-                color: "hsl(218, 70%, 19%)",
-              },
-            }}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={userGrowthData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Line type="monotone" dataKey="students" stroke="var(--color-students)" strokeWidth={2} />
-                <Line type="monotone" dataKey="instructors" stroke="var(--color-instructors)" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-
-      <Card className="col-span-1">
-        <CardHeader>
-          <CardTitle>Revenue</CardTitle>
-          <CardDescription>Monthly revenue in USD</CardDescription>
-        </CardHeader>
-        <CardContent className="h-64 sm:h-80">
-          <ChartContainer
-            config={{
-              visitors: {
-                label: "Visitors",
-              },
-              revenue: {
-                label: "Revenue",
-                color: "hsl(209, 51%, 53%)",
-              },
-            }}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent formatter={(value) => `$${value.toLocaleString()}`} />} />
-                <Legend />
-                <Bar dataKey="revenue" fill="var(--color-revenue)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-
-      <Card className="col-span-1">
-        <CardHeader>
-          <CardTitle>Submissions</CardTitle>
-          <CardDescription>Monthly submission count</CardDescription>
-        </CardHeader>
-        <CardContent className="h-64 sm:h-80">
-          <ChartContainer
-            config={{
-              visitors: {
-                label: "Visitors",
-              },
-              submissions: {
-                label: "Submissions",
-                color: "hsl(214, 67%, 33%)",
-              },
-            }}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={submissionData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Bar dataKey="submissions" fill="var(--color-submissions)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+      {summaryItems.map((item) => (
+        <Card key={item.title}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
+            <item.icon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{item.value.toLocaleString("id-ID")}</div>
+            <p className="text-xs text-muted-foreground">{item.description}</p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }

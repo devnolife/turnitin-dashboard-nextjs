@@ -4,8 +4,8 @@ export function StudentActivityTab() {
   return (
     <div className="rounded-md border overflow-x-auto">
       <div className="p-4">
-        <h3 className="text-lg font-medium">Activity Log</h3>
-        <p className="text-sm text-muted-foreground">Recent activity and system interactions</p>
+        <h3 className="text-lg font-medium">Log Aktivitas</h3>
+        <p className="text-sm text-muted-foreground">Aktivitas terbaru dan interaksi sistem</p>
       </div>
 
       <div className="border-t">
@@ -16,20 +16,20 @@ export function StudentActivityTab() {
                 <div className="font-medium">
                   {
                     [
-                      "Logged in",
-                      "Viewed submission guidelines",
-                      "Downloaded feedback",
-                      "Updated profile information",
+                      "Masuk ke sistem",
+                      "Melihat panduan pengajuan",
+                      "Mengunduh umpan balik",
+                      "Memperbarui informasi profil",
                     ][i]
                   }
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {
                     [
-                      "Today, 10:23 AM",
-                      "Yesterday, 3:45 PM",
-                      "3 days ago, 11:30 AM",
-                      "1 week ago, 2:15 PM",
+                      "Hari ini, 10:23",
+                      "Kemarin, 15:45",
+                      "3 hari lalu, 11:30",
+                      "1 minggu lalu, 14:15",
                     ][i]
                   }
                 </div>

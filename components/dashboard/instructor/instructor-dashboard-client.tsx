@@ -106,32 +106,29 @@ export function InstructorDashboardClient() {
         if (!user?.id) {
           toast({
             variant: "destructive",
-            title: "Authentication error",
-            description: "Please log in to access the instructor dashboard.",
+            title: "Kesalahan autentikasi",
+            description: "Silakan masuk untuk mengakses dashboard instruktur.",
           })
           router.push("/auth/login")
           return
         }
 
-        const instructorData = getInstructorById(user.id)
-        if (!instructorData) {
-          toast({
-            variant: "destructive",
-            title: "Access denied",
-            description: "You don't have instructor privileges.",
-          })
-          router.push("/dashboard")
-          return
+        // Build instructor profile from auth user data (real DB)
+        // instead of looking up mock store which uses different IDs
+        const instructorProfile = {
+          id: user.id,
+          name: user.name,
+          email: user.email || user.username,
         }
 
-        setInstructor(instructorData)
+        setInstructor(instructorProfile)
         setRecentActivities(generateMockActivities())
         setUpcomingEvents(generateMockEvents())
       } catch (error) {
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to load instructor data. Please try again.",
+          title: "Kesalahan",
+          description: "Gagal memuat data instruktur. Silakan coba lagi.",
         })
       } finally {
         setIsLoading(false)
@@ -139,7 +136,7 @@ export function InstructorDashboardClient() {
     }
 
     fetchInstructorData()
-  }, [user, getInstructorById, router, toast])
+  }, [user, router, toast])
 
   if (isLoading) {
     return (
@@ -152,10 +149,10 @@ export function InstructorDashboardClient() {
   if (!instructor) {
     return (
       <div className="flex h-96 flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold">Instructor Not Found</h2>
-        <p className="text-muted-foreground">Your instructor profile could not be found.</p>
+        <h2 className="text-2xl font-bold">Instruktur Tidak Ditemukan</h2>
+        <p className="text-muted-foreground">Profil instruktur Anda tidak dapat ditemukan.</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard")}>
-          Back to Dashboard
+          Kembali ke Dashboard
         </Button>
       </div>
     )

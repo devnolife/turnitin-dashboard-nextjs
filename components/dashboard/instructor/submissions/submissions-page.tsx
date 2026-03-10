@@ -19,57 +19,74 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
-import { useInstructorStore } from "@/lib/store/instructor-store"
 import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/motion"
 import { SubmissionsTable } from "./submissions-table"
 import { SubmissionDetailDialog } from "./submission-detail-dialog"
 
+interface SubmissionData {
+  id: string
+  userId: string
+  documentTitle: string
+  documentUrl: string
+  similarityScore: number | null
+  status: string
+  reportUrl: string | null
+  reviewedBy: string | null
+  reviewedAt: string | null
+  createdAt: string
+  updatedAt: string
+  user: {
+    id: string
+    name: string
+    username: string
+    nim: string | null
+    prodi: string | null
+  }
+  // Computed fields
+  studentId: string
+  studentName: string
+  comments: string | null
+}
+
 export function SubmissionsPage() {
-  const [submissions, setSubmissions] = useState<any[]>([])
-  const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>([])
+  const [submissions, setSubmissions] = useState<SubmissionData[]>([])
+  const [filteredSubmissions, setFilteredSubmissions] = useState<SubmissionData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
-  const [courseFilter, setCourseFilter] = useState<string>("all")
   const [studentFilter, setStudentFilter] = useState<string>("all")
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
-  const [selectedSubmission, setSelectedSubmission] = useState<any>(null)
+  const [selectedSubmission, setSelectedSubmission] = useState<SubmissionData | null>(null)
   const [feedbackText, setFeedbackText] = useState("")
 
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
   const { user } = useAuthStore()
-  const { getTurnitinResultsByInstructor } = useInstructorStore()
 
   useEffect(() => {
     const fetchSubmissions = async () => {
       setIsLoading(true)
-
       try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 800))
+        const res = await fetch("/api/instructor/submissions")
+        if (!res.ok) throw new Error("Failed to fetch")
+        const data = await res.json()
 
-        // Get submissions from instructor store
-        const results = user?.id ? getTurnitinResultsByInstructor(user.id) : []
-
-        // Add additional mock data
-        const enhancedResults = results.map((result) => ({
-          ...result,
-          studentName: result.studentId.replace("student-", "Mahasiswa "),
+        const enhanced: SubmissionData[] = (data.submissions || []).map((s: any) => ({
+          ...s,
+          studentId: s.user.id,
+          studentName: s.user.name || s.user.username,
+          comments: s.reportUrl,
+          status: s.status.toLowerCase(),
         }))
 
-        setSubmissions(enhancedResults)
+        setSubmissions(enhanced)
 
-        // Check if there's a studentId in the URL params
         const studentId = searchParams.get("studentId")
         if (studentId) {
           setStudentFilter(studentId)
-          setFilteredSubmissions(enhancedResults.filter((submission) => submission.studentId === studentId))
-        } else {
-          setFilteredSubmissions(enhancedResults)
         }
-      } catch (error) {
+      } catch {
         toast({
           variant: "destructive",
           title: "Error",
@@ -81,47 +98,42 @@ export function SubmissionsPage() {
     }
 
     fetchSubmissions()
-  }, [user?.id, getTurnitinResultsByInstructor, searchParams, toast])
+  }, [searchParams, toast])
 
   // Apply filters
   useEffect(() => {
     let filtered = [...submissions]
 
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
-        (submission) =>
-          submission.documentTitle.toLowerCase().includes(query) ||
-          submission.studentName.toLowerCase().includes(query),
+        (s) =>
+          s.documentTitle.toLowerCase().includes(query) ||
+          s.studentName.toLowerCase().includes(query),
       )
     }
 
-    // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter((submission) => submission.status === statusFilter)
+      filtered = filtered.filter((s) => s.status === statusFilter)
     }
 
-    // Apply student filter
     if (studentFilter !== "all") {
-      filtered = filtered.filter((submission) => submission.studentId === studentFilter)
+      filtered = filtered.filter((s) => s.studentId === studentFilter)
     }
 
     setFilteredSubmissions(filtered)
   }, [searchQuery, statusFilter, studentFilter, submissions])
 
-  // Get unique students
   const getUniqueStudents = () => {
     const students = new Map()
-    submissions.forEach((submission) => {
-      if (!students.has(submission.studentId)) {
-        students.set(submission.studentId, submission.studentName)
+    submissions.forEach((s) => {
+      if (!students.has(s.studentId)) {
+        students.set(s.studentId, s.studentName)
       }
     })
     return Array.from(students, ([id, name]) => ({ id, name }))
   }
 
-  // Format date
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
@@ -130,49 +142,62 @@ export function SubmissionsPage() {
     })
   }
 
-  // Handle view submission
   const handleViewSubmission = (submissionId: string) => {
     router.push(`/dashboard/instructor/submissions/${submissionId}`)
   }
 
-  // Handle provide feedback
-  const handleProvideFeedback = (submission: any) => {
+  const handleProvideFeedback = (submission: SubmissionData) => {
     setSelectedSubmission(submission)
     setFeedbackText(submission.comments || "")
     setFeedbackDialogOpen(true)
   }
 
-  // Handle submit feedback
-  const handleSubmitFeedback = () => {
+  const handleSubmitFeedback = async () => {
     if (!selectedSubmission || !feedbackText.trim()) return
 
-    // Update submission in state
-    const updatedSubmissions = submissions.map((submission) =>
-      submission.id === selectedSubmission.id
-        ? {
-            ...submission,
-            comments: feedbackText,
-            status: "reviewed",
-            reviewedAt: new Date().toISOString(),
-            reviewedBy: user?.id || "instructor-1",
-          }
-        : submission,
-    )
+    try {
+      const res = await fetch(`/api/instructor/submissions/${selectedSubmission.id}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feedback: feedbackText,
+          status: "REVIEWED",
+        }),
+      })
 
-    setSubmissions(updatedSubmissions)
+      if (!res.ok) throw new Error("Failed")
 
-    // Close dialog and reset state
-    setFeedbackDialogOpen(false)
-    setSelectedSubmission(null)
-    setFeedbackText("")
+      // Update local state
+      const updatedSubmissions = submissions.map((s) =>
+        s.id === selectedSubmission.id
+          ? {
+              ...s,
+              comments: feedbackText,
+              status: "reviewed",
+              reviewedAt: new Date().toISOString(),
+              reviewedBy: user?.id || "",
+            }
+          : s,
+      )
 
-    toast({
-      title: "Feedback Terkirim",
-      description: "Feedback Anda telah berhasil dikirim.",
-    })
+      setSubmissions(updatedSubmissions)
+      setFeedbackDialogOpen(false)
+      setSelectedSubmission(null)
+      setFeedbackText("")
+
+      toast({
+        title: "Feedback Terkirim",
+        description: "Feedback Anda telah berhasil disimpan ke database.",
+      })
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Gagal",
+        description: "Gagal menyimpan feedback. Silakan coba lagi.",
+      })
+    }
   }
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
@@ -207,7 +232,7 @@ export function SubmissionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {submissions.filter((submission) => submission.status === "pending").length}
+                  {submissions.filter((s) => s.status === "pending").length}
                 </div>
                 <p className="text-xs text-muted-foreground">Perlu di-upload ke Perpusmu</p>
               </CardContent>
@@ -222,7 +247,7 @@ export function SubmissionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {submissions.filter((submission) => submission.status === "reviewed").length}
+                  {submissions.filter((s) => s.status === "reviewed").length}
                 </div>
                 <p className="text-xs text-muted-foreground">Hasil sudah dikirim</p>
               </CardContent>
@@ -237,7 +262,7 @@ export function SubmissionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {submissions.filter((submission) => submission.status === "flagged").length}
+                  {submissions.filter((s) => s.status === "flagged").length}
                 </div>
                 <p className="text-xs text-muted-foreground">Perlu perhatian</p>
               </CardContent>
@@ -344,7 +369,6 @@ export function SubmissionsPage() {
               className="h-7 px-2 text-xs"
               onClick={() => {
                 setStatusFilter("all")
-                setCourseFilter("all")
                 setStudentFilter("all")
                 setSearchQuery("")
               }}

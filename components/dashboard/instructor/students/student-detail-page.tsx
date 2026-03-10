@@ -69,24 +69,24 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           } else {
             toast({
               variant: "destructive",
-              title: "Access denied",
-              description: "You don't have permission to view this student's details.",
+              title: "Akses ditolak",
+              description: "Anda tidak memiliki izin untuk melihat detail mahasiswa ini.",
             })
             router.push("/dashboard/instructor/students")
           }
         } else {
           toast({
             variant: "destructive",
-            title: "Student not found",
-            description: "The requested student could not be found.",
+            title: "Mahasiswa tidak ditemukan",
+            description: "Mahasiswa yang diminta tidak dapat ditemukan.",
           })
           router.push("/dashboard/instructor/students")
         }
       } catch (error) {
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to fetch student details. Please try again.",
+          title: "Kesalahan",
+          description: "Gagal mengambil detail mahasiswa. Silakan coba lagi.",
         })
       } finally {
         setIsLoading(false)

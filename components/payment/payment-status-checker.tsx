@@ -270,31 +270,17 @@ export function PaymentStatusChecker() {
         {/* Payment Instructions */}
         {(status === "pending" || status === "failed") && (
           <div className="rounded-lg border p-4">
-            <h3 className="text-lg font-medium">Petunjuk Pembayaran</h3>
-            <ol className="mt-4 list-decimal space-y-2 pl-5">
-              <li>
-                Transfer Rp 750.000 ke rekening berikut:
-                <div className="mt-1 rounded bg-muted p-2 font-mono text-sm">
-                  Bank Mandiri
-                  <br />
-                  No. Rekening: 1234-5678-9012-3456
-                  <br />
-                  Atas Nama: Perpusmu - Universitas Muhammadiyah Makassar
-                </div>
-              </li>
-              <li>
-                Atau scan kode QRIS berikut menggunakan aplikasi e-wallet atau mobile banking Anda:
-                <div className="mt-2 flex justify-center">
-                  <div className="h-48 w-48 rounded-lg border bg-white p-2">
-                    <div className="flex h-full items-center justify-center bg-gray-100">
-                      <span className="text-sm text-gray-500">[Kode QRIS]</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li>Setelah melakukan pembayaran, klik tombol "Perbarui" untuk memeriksa status pembayaran.</li>
-              <li>Jika pembayaran berhasil, Anda akan diminta untuk memasukkan nomor WhatsApp Anda.</li>
-            </ol>
+            <h3 className="text-lg font-medium">Informasi Pembayaran</h3>
+            <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+              <p>
+                Pembayaran dilakukan melalui pihak universitas. Silakan hubungi bagian administrasi kampus untuk
+                menyelesaikan pembayaran akses Perpusmu.
+              </p>
+              <p>
+                Setelah pembayaran Anda dikonfirmasi oleh pihak universitas, klik tombol{" "}
+                <span className="font-medium text-foreground">&quot;Perbarui Status&quot;</span> untuk memeriksa status pembayaran Anda.
+              </p>
+            </div>
           </div>
         )}
       </CardContent>
@@ -311,7 +297,7 @@ export function PaymentStatusChecker() {
               ) : (
                 <>
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Memeriksa...
+                  Perbarui Status
                 </>
               )}
             </Button>

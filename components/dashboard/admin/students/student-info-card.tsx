@@ -73,15 +73,15 @@ export function StudentInfoCard({
   const instructorSelectDialog = (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Assign Instructor</DialogTitle>
-        <DialogDescription>Select an instructor to assign to this student.</DialogDescription>
+        <DialogTitle>Tetapkan Instruktur</DialogTitle>
+        <DialogDescription>Pilih instruktur untuk ditugaskan ke mahasiswa ini.</DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
-          <Label htmlFor="instructor">Instructor</Label>
+          <Label htmlFor="instructor">Instruktur</Label>
           <Select value={selectedInstructorId} onValueChange={onSelectedInstructorIdChange}>
             <SelectTrigger id="instructor">
-              <SelectValue placeholder="Select an instructor" />
+              <SelectValue placeholder="Pilih instruktur" />
             </SelectTrigger>
             <SelectContent>
               {activeInstructors.map((inst) => (
@@ -95,9 +95,9 @@ export function StudentInfoCard({
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={() => onInstructorDialogOpenChange(false)}>
-          Cancel
+          Batal
         </Button>
-        <Button onClick={onAssignInstructor}>Assign</Button>
+        <Button onClick={onAssignInstructor}>Tetapkan</Button>
       </DialogFooter>
     </DialogContent>
   )
@@ -141,14 +141,14 @@ export function StudentInfoCard({
           </div>
           <div className="flex items-center gap-3">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span>Last active: {student.lastActive}</span>
+            <span>Terakhir aktif: {student.lastActive}</span>
           </div>
 
           <Separator />
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">Assigned Instructor</h3>
+              <h3 className="text-sm font-medium">Instruktur Ditugaskan</h3>
 
               {instructor ? (
                 <div className="flex gap-2">
@@ -156,7 +156,7 @@ export function StudentInfoCard({
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm">
                         <UserPlus className="mr-2 h-3 w-3" />
-                        Change
+                        Ubah
                       </Button>
                     </DialogTrigger>
                     {instructorSelectDialog}
@@ -164,7 +164,7 @@ export function StudentInfoCard({
 
                   <Button variant="outline" size="sm" onClick={onRemoveInstructor}>
                     <UserMinus className="mr-2 h-3 w-3" />
-                    Remove
+                    Hapus
                   </Button>
                 </div>
               ) : (
@@ -172,7 +172,7 @@ export function StudentInfoCard({
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
                       <UserPlus className="mr-2 h-3 w-3" />
-                      Assign
+                      Tetapkan
                     </Button>
                   </DialogTrigger>
                   {instructorSelectDialog}
@@ -205,7 +205,7 @@ export function StudentInfoCard({
             ) : (
               <div className="flex items-center justify-center rounded-md border p-3 text-center">
                 <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">No instructor assigned</span>
+                <span className="text-sm text-muted-foreground">Belum ada instruktur ditugaskan</span>
               </div>
             )}
           </div>

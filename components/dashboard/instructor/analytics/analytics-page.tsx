@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useSubmissionStore } from "@/lib/store/submission-store"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { BarChart3 } from "lucide-react"
 import { PageTransition } from "@/components/ui/motion"
@@ -24,41 +23,42 @@ import {
   Line,
 } from "recharts"
 
-const SIMILARITY_COLORS = ["#22c55e", "#eab308", "#f97316", "#ef4444"]
-
-const similarityData = [
-  { name: "0-24%", value: 45, color: "#22c55e" },
-  { name: "25-49%", value: 28, color: "#eab308" },
-  { name: "50-74%", value: 15, color: "#f97316" },
-  { name: "75-100%", value: 12, color: "#ef4444" },
-]
-
-const monthlyData = [
-  { month: "Jan", submissions: 12, avgSimilarity: 22 },
-  { month: "Feb", submissions: 19, avgSimilarity: 28 },
-  { month: "Mar", submissions: 15, avgSimilarity: 25 },
-  { month: "Apr", submissions: 22, avgSimilarity: 30 },
-  { month: "May", submissions: 28, avgSimilarity: 18 },
-  { month: "Jun", submissions: 24, avgSimilarity: 21 },
-]
-
-const coursePerformance = [
-  { course: "Skripsi A", submissions: 35, avgScore: 22 },
-  { course: "Skripsi B", submissions: 28, avgScore: 31 },
-  { course: "Skripsi C", submissions: 20, avgScore: 18 },
-  { course: "Penelitian D", submissions: 15, avgScore: 26 },
-]
+interface AnalyticsData {
+  totalSubmissions: number
+  pendingSubmissions: number
+  reviewedSubmissions: number
+  flaggedSubmissions: number
+  avgSimilarity: number
+  activeStudents: number
+  distribution: Array<{ name: string; value: number; color: string }>
+  monthlyData: Array<{ month: string; submissions: number; avgSimilarity: number }>
+}
 
 export function AnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [timeFilter, setTimeFilter] = useState<string>("semester")
+  const [data, setData] = useState<AnalyticsData | null>(null)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(timer)
+  const fetchAnalytics = useCallback(async (period: string) => {
+    setIsLoading(true)
+    try {
+      const res = await fetch(`/api/instructor/analytics?period=${period}`)
+      if (res.ok) {
+        const json = await res.json()
+        setData(json)
+      }
+    } catch (error) {
+      console.error("Failed to fetch analytics:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
-  if (isLoading) {
+  useEffect(() => {
+    fetchAnalytics(timeFilter)
+  }, [timeFilter, fetchAnalytics])
+
+  if (isLoading || !data) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
@@ -70,6 +70,10 @@ export function AnalyticsPage() {
       </div>
     )
   }
+
+  const completionRate = data.totalSubmissions > 0
+    ? Math.round((data.reviewedSubmissions / data.totalSubmissions) * 100)
+    : 0
 
   return (
     <PageTransition>
@@ -93,37 +97,41 @@ export function AnalyticsPage() {
         <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
             <CardDescription>Total Pengiriman</CardDescription>
-            <CardTitle className="text-3xl">120</CardTitle>
+            <CardTitle className="text-3xl">{data.totalSubmissions}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">+12% dari periode lalu</p>
+            <p className="text-xs text-muted-foreground">
+              {data.pendingSubmissions} menunggu tinjauan
+            </p>
           </CardContent>
         </Card>
         <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
             <CardDescription>Rata-rata Similarity</CardDescription>
-            <CardTitle className="text-3xl">24%</CardTitle>
+            <CardTitle className="text-3xl">{data.avgSimilarity}%</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">-3% dari periode lalu</p>
+            <p className="text-xs text-muted-foreground">
+              Dari semua dokumen yang memiliki score
+            </p>
           </CardContent>
         </Card>
         <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
             <CardDescription>Mahasiswa Aktif</CardDescription>
-            <CardTitle className="text-3xl">68</CardTitle>
+            <CardTitle className="text-3xl">{data.activeStudents}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">+5 baru bulan ini</p>
+            <p className="text-xs text-muted-foreground">Terdaftar dalam sistem</p>
           </CardContent>
         </Card>
         <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader className="pb-2">
             <CardDescription>Selesai Ditinjau</CardDescription>
-            <CardTitle className="text-3xl">98</CardTitle>
+            <CardTitle className="text-3xl">{data.reviewedSubmissions}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">82% tingkat penyelesaian</p>
+            <p className="text-xs text-muted-foreground">{completionRate}% tingkat penyelesaian</p>
           </CardContent>
         </Card>
       </div>
@@ -132,20 +140,26 @@ export function AnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Submissions per Bulan</CardTitle>
-            <CardDescription>Jumlah submission dan rata-rata similarity</CardDescription>
+            <CardTitle>Pengiriman per Bulan</CardTitle>
+            <CardDescription>Jumlah pengiriman dan rata-rata similarity</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" />
-                  <Tooltip />
-                  <Bar dataKey="submissions" fill="#0F2854" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {data.monthlyData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data.monthlyData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="month" className="text-xs" />
+                    <YAxis className="text-xs" />
+                    <Tooltip />
+                    <Bar dataKey="submissions" fill="#0F2854" radius={[4, 4, 0, 0]} name="Pengiriman" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-muted-foreground">
+                  Belum ada data pengiriman untuk periode ini
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -157,25 +171,31 @@ export function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-64 sm:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={similarityData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  >
-                    {similarityData.map((entry, index) => (
-                      <Cell key={entry.name} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              {data.distribution.some((d) => d.value > 0) ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data.distribution}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    >
+                      {data.distribution.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-muted-foreground">
+                  Belum ada data similarity score
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -189,43 +209,28 @@ export function AnalyticsPage() {
         </CardHeader>
         <CardContent>
           <div className="h-64 sm:h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="month" className="text-xs" />
-                <YAxis className="text-xs" />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="avgSimilarity"
-                  stroke="#4988C4"
-                  strokeWidth={2}
-                  dot={{ fill: "#0F2854", r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Course performance */}
-      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
-        <CardHeader>
-          <CardTitle>Performa per Mahasiswa</CardTitle>
-          <CardDescription>Jumlah pengiriman dan rata-rata score per mahasiswa</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 sm:h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={coursePerformance} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis type="number" className="text-xs" />
-                <YAxis dataKey="course" type="category" className="text-xs" width={80} />
-                <Tooltip />
-                <Bar dataKey="submissions" fill="#0F2854" radius={[0, 4, 4, 0]} />
-                <Bar dataKey="avgScore" fill="#4988C4" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {data.monthlyData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data.monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="month" className="text-xs" />
+                  <YAxis className="text-xs" />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="avgSimilarity"
+                    stroke="#4988C4"
+                    strokeWidth={2}
+                    dot={{ fill: "#0F2854", r: 4 }}
+                    name="Rata-rata Similarity (%)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                Belum ada data untuk periode ini
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

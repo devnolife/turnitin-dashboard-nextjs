@@ -19,14 +19,59 @@ model User {
   role                Role            @default(STUDENT)
   hasCompletedPayment Boolean         @default(false)
   whatsappNumber      String?
+  studyProgramId      String?
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
+  studyProgram StudyProgram? @relation(fields: [studyProgramId], references: [id])
   examDetails  ExamDetail?
   submissions  Submission[]
   payments     Payment[]
 
   @@map("users")
+}
+
+model Faculty {
+  id        String         @id @default(cuid())
+  name      String
+  code      String         @unique
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  programs StudyProgram[]
+
+  @@map("faculties")
+}
+
+model StudyProgram {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  degree    String   @default("S1")
+  facultyId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  faculty         Faculty          @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  similarityRules SimilarityRule[]
+  users           User[]
+
+  @@map("study_programs")
+}
+
+model SimilarityRule {
+  id              String   @id @default(cuid())
+  studyProgramId  String
+  ruleType        RuleType
+  label           String
+  maxPercentage   Float
+  orderIndex      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
+
+  @@map("similarity_rules")
 }
 
 model ExamDetail {
@@ -107,4 +152,9 @@ enum PaymentStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+enum RuleType {
+  PER_CHAPTER
+  PER_EXAM
 }

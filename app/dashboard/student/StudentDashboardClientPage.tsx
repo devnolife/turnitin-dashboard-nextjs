@@ -1,8 +1,10 @@
 "use client"
 
-import { BookOpen, FileText, BarChart3, Clock, CheckCircle, Upload, Bell, Shield } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { BookOpen, FileText, BarChart3, Clock, CheckCircle, Upload, Bell, Shield, FileCheck } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
 import { StudentOverview } from "@/components/dashboard/student/overview"
 import { StudentSubmissions } from "@/components/dashboard/student/submissions"
 import { StudentFeedback } from "@/components/dashboard/student/feedback"
@@ -13,8 +15,36 @@ import { PageTransition } from "@/components/ui/motion"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 
+interface SimilarityRuleData {
+  label: string
+  maxPercentage: number
+  ruleType: string
+}
+
+interface MyRulesResponse {
+  programName: string | null
+  ruleType: string | null
+  rules: SimilarityRuleData[]
+}
+
 export default function StudentDashboardClientPage() {
   const { user } = useAuthStore()
+  const [myRules, setMyRules] = useState<MyRulesResponse | null>(null)
+
+  useEffect(() => {
+    async function fetchRules() {
+      try {
+        const res = await fetch("/api/similarity-rules/my-rules")
+        if (res.ok) {
+          const data = await res.json()
+          setMyRules(data)
+        }
+      } catch {
+        // Silently fail
+      }
+    }
+    fetchRules()
+  }, [])
 
   // Check if student has submitted exam details
   const hasSubmittedExamDetails = !!user?.examDetails
@@ -221,6 +251,49 @@ export default function StudentDashboardClientPage() {
             </Card>
           </StaggerItem>
         </StaggerContainer>
+
+        {/* Similarity Rules Card */}
+        {myRules && myRules.rules.length > 0 && (
+          <Card className="rounded-3xl border-2 border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/10 mb-8">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <FileCheck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <CardTitle className="text-blue-700 dark:text-blue-400">
+                  Batas Similarity Prodi Anda
+                </CardTitle>
+              </div>
+              <CardDescription>
+                {myRules.programName} &bull; Tipe: {myRules.ruleType === "PER_CHAPTER" ? "Per Bab" : "Per Jenis Ujian"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {myRules.rules.map((rule, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-xl bg-background border px-4 py-3"
+                  >
+                    <span className="text-sm font-medium">{rule.label}</span>
+                    <Badge
+                      variant="outline"
+                      className={
+                        rule.maxPercentage <= 10
+                          ? "border-green-500 text-green-600"
+                          : rule.maxPercentage <= 20
+                          ? "border-yellow-500 text-yellow-600"
+                          : rule.maxPercentage <= 30
+                          ? "border-orange-500 text-orange-600"
+                          : "border-red-500 text-red-600"
+                      }
+                    >
+                      Maks. {rule.maxPercentage}%
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList className="bg-gray-100 dark:bg-gray-700 p-1.5 rounded-full">

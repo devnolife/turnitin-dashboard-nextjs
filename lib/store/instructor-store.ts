@@ -52,36 +52,38 @@ const getRandomJoinDate = () => {
 // Generate mock instructor data
 const generateMockInstructors = (count: number): Instructor[] => {
   const positions = ["professor", "associate_professor", "assistant_professor", "lecturer"]
-  const faculties = ["fac-1", "fac-2", "fac-3", "fac-4", "fac-5"]
+  const faculties = ["fac-1", "fac-2", "fac-3", "fac-4", "fac-5", "fac-6", "fac-7"]
   const programs = {
-    "fac-1": ["prog-1", "prog-2", "prog-3", "prog-4"],
-    "fac-2": ["prog-5", "prog-6", "prog-7", "prog-8"],
-    "fac-3": ["prog-9", "prog-10", "prog-11", "prog-12"],
-    "fac-4": ["prog-13", "prog-14", "prog-15"],
-    "fac-5": ["prog-16", "prog-17", "prog-18", "prog-19"],
+    "fac-1": ["prog-1", "prog-2", "prog-3", "prog-4", "prog-5", "prog-6", "prog-7", "prog-8"],
+    "fac-2": ["prog-9", "prog-10", "prog-11", "prog-12"],
+    "fac-3": ["prog-13", "prog-14", "prog-15", "prog-16"],
+    "fac-4": ["prog-17", "prog-18", "prog-19"],
+    "fac-5": ["prog-20", "prog-21", "prog-22", "prog-23"],
+    "fac-6": ["prog-24", "prog-25", "prog-26"],
+    "fac-7": ["prog-27", "prog-28", "prog-29"],
   }
 
   const specializations = [
-    "Artificial Intelligence",
-    "Machine Learning",
-    "Data Science",
-    "Software Engineering",
-    "Computer Networks",
-    "Cybersecurity",
-    "Database Systems",
-    "Human-Computer Interaction",
-    "Computer Graphics",
-    "Distributed Systems",
-    "Embedded Systems",
-    "Robotics",
-    "Bioinformatics",
-    "Natural Language Processing",
-    "Computer Vision",
-    "Quantum Computing",
-    "Cloud Computing",
-    "Mobile Computing",
-    "Web Technologies",
-    "Information Retrieval",
+    "Kecerdasan Buatan",
+    "Pembelajaran Mesin",
+    "Ilmu Data",
+    "Rekayasa Perangkat Lunak",
+    "Jaringan Komputer",
+    "Keamanan Siber",
+    "Sistem Basis Data",
+    "Interaksi Manusia Komputer",
+    "Grafika Komputer",
+    "Sistem Terdistribusi",
+    "Sistem Tertanam",
+    "Robotika",
+    "Bioinformatika",
+    "Pemrosesan Bahasa Alami",
+    "Visi Komputer",
+    "Komputasi Kuantum",
+    "Komputasi Awan",
+    "Komputasi Mobile",
+    "Teknologi Web",
+    "Temu Kembali Informasi",
   ]
 
   return Array.from({ length: count }, (_, i) => {
@@ -102,10 +104,23 @@ const generateMockInstructors = (count: number): Instructor[] => {
     // First instructor matches the mock auth user (user-2)
     const isAuthUser = i === 0
 
+    const instructorNames = [
+      "Dr. Ir. H. Abd. Rahman Rahim, M.M.",
+      "Dr. Hj. Andi Sugiati, M.Pd.",
+      "Prof. Dr. H. Irwan Akib, M.Pd.",
+      "Dr. Muhammad Nawir, M.Pd.",
+      "Dr. Hj. Syamsiah D., M.Pd.",
+      "Dr. Ir. Andi Haslindah, M.T.",
+      "Dr. H. Muh. Yunus, M.Pd.",
+      "Dr. Hj. St. Haliah Batau, M.Pd.",
+      "Dr. Hj. Rosmiati, M.Pd.",
+      "Dr. Ir. H. Saiful, M.T.",
+    ]
+
     return {
       id: isAuthUser ? "user-2" : `instructor-${i + 1}`,
-      name: isAuthUser ? "Jane Instructor" : `Dr. Instructor ${i + 1}`,
-      email: isAuthUser ? "instructor@example.com" : `instructor${i + 1}@university.edu`,
+      name: isAuthUser ? "Dr. Instruktur Utama" : instructorNames[i] || `Dr. Instruktur ${i + 1}`,
+      email: isAuthUser ? "instructor@example.com" : `instruktur${i + 1}@unismuh.ac.id`,
       employeeId: `I${(1000 + i + 1).toString().substring(1)}`,
       facultyId,
       programIds,
@@ -114,9 +129,9 @@ const generateMockInstructors = (count: number): Instructor[] => {
       joinDate: getRandomJoinDate(),
       status: isAuthUser ? "active" as const : (Math.random() > 0.2 ? "active" : Math.random() > 0.5 ? "inactive" : "on_leave"),
       phoneNumber: isAuthUser ? "+6281234567890" : `+62812${Math.floor(10000000 + Math.random() * 90000000)}`,
-      officeLocation: `Building ${String.fromCharCode(65 + Math.floor(Math.random() * 5))}, Room ${Math.floor(Math.random() * 500) + 100}`,
-      officeHours: `${Math.floor(Math.random() * 3) + 9}:00 - ${Math.floor(Math.random() * 3) + 13}:00, ${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"][Math.floor(Math.random() * 5)]} & ${["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"][Math.floor(Math.random() * 5)]}`,
-      bio: `Experienced educator with a focus on ${specializations[Math.floor(Math.random() * specializations.length)]} and ${specializations[Math.floor(Math.random() * specializations.length)]}. Published numerous papers in leading journals and conferences.`,
+      officeLocation: `Gedung ${String.fromCharCode(65 + Math.floor(Math.random() * 5))}, Ruang ${Math.floor(Math.random() * 500) + 100}`,
+      officeHours: `${Math.floor(Math.random() * 3) + 9}:00 - ${Math.floor(Math.random() * 3) + 13}:00, ${["Senin", "Selasa", "Rabu", "Kamis", "Jumat"][Math.floor(Math.random() * 5)]} & ${["Senin", "Selasa", "Rabu", "Kamis", "Jumat"][Math.floor(Math.random() * 5)]}`,
+      bio: `Pengajar berpengalaman dengan fokus pada ${specializations[Math.floor(Math.random() * specializations.length)]} dan ${specializations[Math.floor(Math.random() * specializations.length)]}. Telah menerbitkan berbagai artikel di jurnal dan konferensi terkemuka.`,
     }
   })
 }
@@ -151,7 +166,7 @@ export const useInstructorStore = create<InstructorState>()((set, get) => ({
       set({ isLoading: false })
     } catch (error) {
       set({
-        error: "Failed to fetch instructors. Please try again.",
+        error: "Gagal memuat data instruktur. Silakan coba lagi.",
         isLoading: false,
       })
     }
