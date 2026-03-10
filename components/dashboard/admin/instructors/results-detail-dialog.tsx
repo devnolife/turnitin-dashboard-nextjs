@@ -41,7 +41,7 @@ export function ReviewDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Review Turnitin Result</DialogTitle>
+          <DialogTitle>Review Perpusmu Result</DialogTitle>
           <DialogDescription>Provide feedback on the similarity report for this document.</DialogDescription>
         </DialogHeader>
 
@@ -128,7 +128,7 @@ export function UploadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Upload Turnitin Result</DialogTitle>
+          <DialogTitle>Upload Perpusmu Result</DialogTitle>
           <DialogDescription>Upload a new document to check for similarity.</DialogDescription>
         </DialogHeader>
 
@@ -222,7 +222,7 @@ export function TransferDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Transfer Turnitin Result</DialogTitle>
+          <DialogTitle>Transfer Perpusmu Result</DialogTitle>
           <DialogDescription>Transfer this result to another exam stage.</DialogDescription>
         </DialogHeader>
 

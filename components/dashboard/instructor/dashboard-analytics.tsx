@@ -98,7 +98,7 @@ export function DashboardAnalytics({
       <Card className="col-span-1">
         <CardHeader>
           <CardTitle>Similarity Distribution</CardTitle>
-          <CardDescription>Turnitin similarity scores</CardDescription>
+          <CardDescription>Perpusmu similarity scores</CardDescription>
         </CardHeader>
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">

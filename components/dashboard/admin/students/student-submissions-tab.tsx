@@ -75,7 +75,7 @@ export function TurnitinResultsContent({ student, formatExamStage, formatDate }:
       ) : (
         <div className="flex flex-col items-center justify-center rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground/40" />
-          <h3 className="mt-4 text-lg font-medium">No Turnitin Results</h3>
+          <h3 className="mt-4 text-lg font-medium">No Perpusmu results</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             No similarity reports are available for this student.
           </p>

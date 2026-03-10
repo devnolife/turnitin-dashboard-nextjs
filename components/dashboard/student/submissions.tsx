@@ -20,7 +20,7 @@ export function StudentSubmissions() {
       <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
           <CardTitle>Dokumen Saya</CardTitle>
-          <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Turnitin</CardDescription>
+          <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -60,7 +60,7 @@ export function StudentSubmissions() {
       <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
           <CardTitle>Dokumen Saya</CardTitle>
-          <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Turnitin</CardDescription>
+          <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
@@ -78,7 +78,7 @@ export function StudentSubmissions() {
     <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
       <CardHeader>
         <CardTitle>Dokumen Saya</CardTitle>
-        <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Turnitin</CardDescription>
+        <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

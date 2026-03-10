@@ -209,7 +209,7 @@ export function SubmissionsPage() {
                 <div className="text-2xl font-bold">
                   {submissions.filter((submission) => submission.status === "pending").length}
                 </div>
-                <p className="text-xs text-muted-foreground">Perlu di-upload ke Turnitin</p>
+                <p className="text-xs text-muted-foreground">Perlu di-upload ke Perpusmu</p>
               </CardContent>
             </Card>
           </StaggerItem>

@@ -54,12 +54,12 @@ export function PendingApproval() {
           </CardTitle>
           <CardDescription>Detail ujian Anda sedang diverifikasi oleh administrator</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <StaggerContainer>
+        <CardContent className="pt-2">
+          <StaggerContainer className="space-y-6">
             <StaggerItem>
-              <div className="rounded-lg border p-4 bg-card/50 backdrop-blur-sm">
-                <h3 className="text-lg font-medium mb-4 gradient-text">Detail Ujian Anda</h3>
-                <div className="space-y-3">
+              <div className="rounded-xl border p-5 bg-card/50 backdrop-blur-sm">
+                <h3 className="text-lg font-medium mb-5 gradient-text">Detail Ujian Anda</h3>
+                <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-1 text-muted-foreground">Judul Skripsi:</div>
                     <div className="col-span-2 font-medium">{user?.examDetails?.thesisTitle}</div>
@@ -89,8 +89,8 @@ export function PendingApproval() {
             </StaggerItem>
 
             <StaggerItem>
-              <div className="rounded-lg border border-warning/20 bg-warning/5 p-4 backdrop-blur-sm">
-                <p className="text-sm text-warning-foreground">
+              <div className="rounded-xl border border-warning/20 bg-warning/5 p-5 backdrop-blur-sm">
+                <p className="text-sm text-amber-700 dark:text-amber-300">
                   Administrator sedang memverifikasi detail ujian Anda. Proses ini biasanya membutuhkan waktu 1-2 hari
                   kerja. Anda akan mendapatkan notifikasi melalui WhatsApp ketika verifikasi selesai.
                 </p>
@@ -98,10 +98,10 @@ export function PendingApproval() {
             </StaggerItem>
           </StaggerContainer>
         </CardContent>
-        <CardFooter className="flex justify-center border-t pt-4">
+        <CardFooter className="flex justify-center border-t pt-6">
           <p className="text-xs text-center text-muted-foreground">
             Jika Anda memiliki pertanyaan, silakan hubungi administrator di{" "}
-            <span className="font-medium">admin@turnitin.co.id</span> atau WhatsApp{" "}
+            <span className="font-medium">admin@perpusmu.ac.id</span> atau WhatsApp{" "}
             <span className="font-medium">+62812-3456-7890</span>.
           </p>
         </CardFooter>

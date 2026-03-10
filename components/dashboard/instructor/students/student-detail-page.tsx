@@ -349,7 +349,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
       <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Kirim Hasil Turnitin</DialogTitle>
+            <DialogTitle>Kirim hasil Perpusmu</DialogTitle>
             <DialogDescription>
               Tambahkan komentar untuk pengiriman ini. Mahasiswa akan dapat melihat hasil dan komentar Anda.
             </DialogDescription>

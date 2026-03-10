@@ -46,10 +46,10 @@ export function ResultsTable({
   const showDateColumn = variant === "reviewed" ? "reviewed" : "submitted"
 
   const emptyConfig = {
-    all: { icon: FileText, title: "No Results Found", desc: "No Turnitin results match your search criteria." },
-    pending: { icon: CheckCircle, title: "No Pending Reviews", desc: "All Turnitin results have been reviewed." },
-    reviewed: { icon: FileText, title: "No Reviewed Results", desc: "No Turnitin results have been reviewed yet." },
-    flagged: { icon: AlertTriangle, title: "No Flagged Results", desc: "No Turnitin results have been flagged for review." },
+    all: { icon: FileText, title: "No Results Found", desc: "No Perpusmu results match your search criteria." },
+    pending: { icon: CheckCircle, title: "No Pending Reviews", desc: "All Perpusmu results have been reviewed." },
+    reviewed: { icon: FileText, title: "No Reviewed Results", desc: "No Perpusmu results have been reviewed yet." },
+    flagged: { icon: AlertTriangle, title: "No Flagged Results", desc: "No Perpusmu results have been flagged for review." },
   }[variant]
 
   const EmptyIcon = emptyConfig.icon

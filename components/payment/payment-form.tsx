@@ -52,7 +52,7 @@ export function PaymentForm() {
 
       toast({
         title: "Pembayaran berhasil",
-        description: "Terima kasih atas pembayaran Anda. Anda sekarang memiliki akses penuh ke layanan Turnitin.",
+        description: "Terima kasih atas pembayaran Anda. Anda sekarang memiliki akses penuh ke layanan Perpusmu.",
       })
 
       // Redirect to student dashboard

@@ -286,10 +286,9 @@
     }
   }
 
-  /* Gradient text - using ui-dashboard primary palette */
+  /* Primary text color */
   .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(to right, #5AB2FF, #A0DEFF, #CAF4FF);
+    color: #5AB2FF;
   }
 
   /* Glassmorphism */

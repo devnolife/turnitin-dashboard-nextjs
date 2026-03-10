@@ -111,13 +111,14 @@ export function ExamDetailsForm() {
             <span className="gradient-text">Detail Ujian Skripsi</span>
           </CardTitle>
           <CardDescription>
-            Silakan lengkapi detail ujian skripsi Anda untuk mengakses dashboard Turnitin
+            Silakan lengkapi detail ujian skripsi Anda untuk mengakses dashboard Perpusmu
           </CardDescription>
         </CardHeader>
-        <CardContent>
+
+        <CardContent className="pt-2">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <StaggerContainer>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <StaggerContainer className="space-y-6">
                 <StaggerItem>
                   <FormField
                     control={form.control}
@@ -135,7 +136,7 @@ export function ExamDetailsForm() {
                             />
                           </div>
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="mt-2">
                           Masukkan judul lengkap skripsi Anda sesuai dengan dokumen resmi.
                         </FormDescription>
                         <FormMessage />
@@ -163,14 +164,14 @@ export function ExamDetailsForm() {
                             <SelectItem value="final_defense">Sidang Akhir</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormDescription>Pilih jenis ujian yang akan Anda ikuti.</FormDescription>
+                        <FormDescription className="mt-2">Pilih jenis ujian yang akan Anda ikuti.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </StaggerItem>
 
-                <StaggerItem>
+                <StaggerItem className="pt-2">
                   <Button
                     type="submit"
                     className="w-full"
@@ -187,9 +188,9 @@ export function ExamDetailsForm() {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-center border-t pt-4">
+        <CardFooter className="flex justify-center border-t pt-6">
           <p className="text-xs text-center text-muted-foreground">
-            Detail ujian Anda akan diverifikasi oleh administrator sebelum Anda dapat mengakses dashboard Turnitin.
+            Detail ujian Anda akan diverifikasi oleh administrator sebelum Anda dapat mengakses dashboard Perpusmu.
           </p>
         </CardFooter>
       </Card>

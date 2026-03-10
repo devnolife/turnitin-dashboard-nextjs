@@ -9,14 +9,15 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
+import { Loader2, User, Lock } from "lucide-react"
+import { useAuthStore } from "@/lib/store/auth-store"
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
+  username: z.string().min(3, {
+    message: "Username minimal 3 karakter.",
   }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: "Password minimal 6 karakter.",
   }),
 })
 
@@ -24,11 +25,12 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const { login } = useAuthStore()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   })
@@ -37,51 +39,26 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const user = await login(values.username, values.password)
 
-      // Mock response - in a real app, this would come from your API
-      const mockResponse = {
-        success: true,
-        user: {
-          id: "123",
-          email: values.email,
-          role: values.email.includes("admin")
-            ? "admin"
-            : values.email.includes("instructor")
-              ? "instructor"
-              : "student",
-          hasCompletedPayment: !values.email.includes("unpaid"),
-        },
-      }
+      toast({
+        title: "Login berhasil",
+        description: "Selamat datang di Perpusmu",
+      })
 
-      if (mockResponse.success) {
-        // Store user info in localStorage or state management
-        localStorage.setItem("user", JSON.stringify(mockResponse.user))
-
-        // Redirect based on role and payment status
-        if (mockResponse.user.role === "student" && !mockResponse.user.hasCompletedPayment) {
-          router.push("/payment")
-        } else if (mockResponse.user.role === "student") {
-          router.push("/dashboard/student")
-        } else if (mockResponse.user.role === "instructor") {
-          router.push("/dashboard/instructor")
-        } else if (mockResponse.user.role === "admin") {
-          router.push("/dashboard/admin")
-        }
-
-        toast({
-          title: "Login successful",
-          description: "Welcome to Turnitin Campus",
-        })
-      } else {
-        throw new Error("Invalid credentials")
+      // Redirect based on role
+      if (user.role === "student") {
+        router.push("/dashboard/student")
+      } else if (user.role === "instructor") {
+        router.push("/dashboard/instructor")
+      } else if (user.role === "admin") {
+        router.push("/dashboard/admin")
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
+        title: "Login gagal",
+        description: "Username atau password salah. Silakan coba lagi.",
       })
     } finally {
       setIsLoading(false)
@@ -90,19 +67,22 @@ export function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormField
           control={form.control}
-          name="email"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="name@example.com"
-                  {...field}
-                  className="focus:ring-2 focus:ring-primary-dark/50 transition-all"
-                />
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Masukkan username"
+                    className="pl-10 focus:ring-2 focus:ring-primary/50 transition-all"
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,25 +95,33 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  {...field}
-                  className="focus:ring-2 focus:ring-primary-dark/50 transition-all"
-                />
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    className="pl-10 focus:ring-2 focus:ring-primary/50 transition-all"
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-primary-dark hover:bg-primary-dark/90" disabled={isLoading}>
+        <Button
+          type="submit"
+          className="w-full"
+          variant="gradient"
+          disabled={isLoading}
+        >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Logging in...
+              Memproses...
             </>
           ) : (
-            "Login"
+            "Masuk"
           )}
         </Button>
       </form>

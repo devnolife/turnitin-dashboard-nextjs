@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { StudentDetailPage } from "@/components/dashboard/admin/students/student-detail-page"
 
 export const metadata: Metadata = {
-  title: "Student Details - Admin Dashboard - Turnitin Campus",
+  title: "Student Details - Admin Dashboard - Perpusmu",
   description: "View and manage detailed student information",
 }
 

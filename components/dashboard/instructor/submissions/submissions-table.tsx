@@ -41,7 +41,7 @@ export function SubmissionsTable({
     <Card>
       <CardHeader>
         <CardTitle>Pengiriman</CardTitle>
-        <CardDescription>Tinjau dan upload dokumen mahasiswa ke Turnitin</CardDescription>
+        <CardDescription>Tinjau dan upload dokumen mahasiswa ke Perpusmu</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border overflow-x-auto">

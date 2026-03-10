@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String          @id @default(cuid())
+  username            String          @unique
+  password            String
+  name                String
+  role                Role            @default(STUDENT)
+  hasCompletedPayment Boolean         @default(false)
+  whatsappNumber      String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  examDetails  ExamDetail?
+  submissions  Submission[]
+  payments     Payment[]
+
+  @@map("users")
+}
+
+model ExamDetail {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  thesisTitle    String
+  examType       ExamType
+  approvalStatus ApprovalStatus @default(PENDING)
+  submittedAt    DateTime       @default(now())
+  reviewedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("exam_details")
+}
+
+model Submission {
+  id              String           @id @default(cuid())
+  userId          String
+  documentTitle   String
+  documentUrl     String
+  similarityScore Float?
+  status          SubmissionStatus @default(PENDING)
+  reportUrl       String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("submissions")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  userId        String
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  paymentMethod String?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum ExamType {
+  PROPOSAL_DEFENSE
+  RESULTS_DEFENSE
+  FINAL_DEFENSE
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SubmissionStatus {
+  PENDING
+  REVIEWED
+  FLAGGED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}

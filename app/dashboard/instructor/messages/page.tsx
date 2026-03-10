@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { MessagesPage } from "@/components/dashboard/instructor/messages/messages-page"
 
 export const metadata: Metadata = {
-  title: "Messages - Instructor Dashboard - Turnitin Campus",
+  title: "Messages - Instructor Dashboard - Perpusmu",
   description: "Communicate with your students and colleagues",
 }
 

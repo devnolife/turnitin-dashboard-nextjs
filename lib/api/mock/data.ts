@@ -2,9 +2,9 @@
 const users = [
   {
     id: "user-1",
-    email: "student@example.com",
+    username: "mahasiswa",
     role: "student",
-    name: "John Student",
+    name: "Ahmad Fauzan",
     hasCompletedPayment: false,
     whatsappNumber: null as string | null,
     examDetails: null as {
@@ -16,9 +16,9 @@ const users = [
   },
   {
     id: "user-2",
-    email: "instructor@example.com",
+    username: "dosen",
     role: "instructor",
-    name: "Jane Instructor",
+    name: "Dr. Siti Aminah",
     hasCompletedPayment: true,
     whatsappNumber: "+6281234567890" as string | null,
     examDetails: null as {
@@ -30,9 +30,9 @@ const users = [
   },
   {
     id: "user-3",
-    email: "admin@example.com",
+    username: "admin",
     role: "admin",
-    name: "Admin User",
+    name: "Muh. Rizal",
     hasCompletedPayment: true,
     whatsappNumber: "+6287654321098" as string | null,
     examDetails: null as {

@@ -82,7 +82,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
   })
 
   const handleViewReport = () => {
-    toast({ title: "Viewing Report", description: "Opening Turnitin report in a new window." })
+    toast({ title: "Viewing Report", description: "Opening Perpusmu report in a new window." })
   }
 
   const handleDownload = () => {
@@ -103,7 +103,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
   const handleReviewSubmit = () => {
     if (!selectedResult) return
     reviewTurnitinResult(selectedResult.id, reviewComment)
-    toast({ title: "Review Submitted", description: "The Turnitin result has been reviewed successfully." })
+    toast({ title: "Review Submitted", description: "The Perpusmu result has been reviewed successfully." })
     setReviewDialogOpen(false)
     setReviewComment("")
   }
@@ -135,7 +135,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
     transferTurnitinResult(selectedResult.id, transferTargetStage)
     toast({
       title: "Result Transferred",
-      description: `The Turnitin result has been transferred to the ${formatExamStage(transferTargetStage)}.`,
+      description: `The Perpusmu result has been transferred to the ${formatExamStage(transferTargetStage)}.`,
     })
     setTransferDialogOpen(false)
   }
@@ -170,8 +170,8 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle>Turnitin Results Management</CardTitle>
-              <CardDescription>Upload, review, and manage Turnitin results for students</CardDescription>
+              <CardTitle>Perpusmu Results Management</CardTitle>
+              <CardDescription>Upload, review, and manage Perpusmu results for students</CardDescription>
             </div>
             <Button onClick={() => setUploadDialogOpen(true)}>
               <Upload className="mr-2 h-4 w-4" />

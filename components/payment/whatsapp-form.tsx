@@ -136,7 +136,7 @@ export function WhatsAppForm() {
       </CardContent>
       <CardFooter className="flex justify-center border-t pt-4">
         <p className="text-xs text-center text-muted-foreground">
-          Nomor WhatsApp Anda akan digunakan untuk komunikasi penting terkait layanan Turnitin.
+          Nomor WhatsApp Anda akan digunakan untuk komunikasi penting terkait layanan Perpusmu.
         </p>
       </CardFooter>
     </Card>

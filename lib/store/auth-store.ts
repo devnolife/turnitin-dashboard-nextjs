@@ -11,7 +11,7 @@ interface AuthState {
   isLoading: boolean
   error: string | null
   isAuthenticated: boolean
-  login: (role: string) => Promise<void>
+  login: (username: string, password: string) => Promise<User>
   logout: () => void
   checkAuth: () => boolean
   updateUser: (userData: Partial<User>) => void
@@ -28,11 +28,11 @@ export const useAuthStore = create<AuthState>()(
       error: null,
       isAuthenticated: false,
 
-      login: async (role: string) => {
+      login: async (username: string, password: string) => {
         set({ isLoading: true, error: null })
 
         try {
-          const response = await api.post("/auth/login", { role })
+          const response = await api.post("/auth/login", { username, password })
           const { user, token } = response.data
 
           set({
@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>()(
           return user
         } catch (error) {
           set({
-            error: "Login failed. Please try again.",
+            error: "Login gagal. Periksa username dan password Anda.",
             isLoading: false,
             isAuthenticated: false,
           })
@@ -154,7 +154,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "turnitin-auth-storage",
+      name: "perpusmu-auth-storage",
     },
   ),
 )

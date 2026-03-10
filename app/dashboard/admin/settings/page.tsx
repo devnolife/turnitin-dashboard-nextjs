@@ -39,8 +39,8 @@ export default function AdminSettingsPage() {
     },
     {
       icon: Settings,
-      title: "Turnitin API",
-      description: "Konfigurasi integrasi Turnitin API",
+      title: "Perpusmu API",
+      description: "Konfigurasi integrasi Perpusmu API",
       action: "Kelola",
     },
   ]

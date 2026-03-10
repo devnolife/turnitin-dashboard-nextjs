@@ -78,7 +78,7 @@ export function StudentOverview() {
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/feedback">
                 <Bell className="mr-2 h-4 w-4" />
-                Cek Hasil Turnitin
+                Cek hasil Perpusmu
               </Link>
             </Button>
           </CardContent>

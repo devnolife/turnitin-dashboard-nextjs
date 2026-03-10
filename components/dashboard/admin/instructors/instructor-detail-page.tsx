@@ -366,13 +366,13 @@ export function InstructorDetailPage({ instructorId }: InstructorDetailPageProps
             <Card>
               <CardHeader>
                 <CardTitle>Instructor Management</CardTitle>
-                <CardDescription>Manage students and Turnitin results</CardDescription>
+                <CardDescription>Manage students and Perpusmu results</CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="students" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
                   <TabsList>
                     <TabsTrigger value="students">Supervised Students</TabsTrigger>
-                    <TabsTrigger value="turnitin">Turnitin Results</TabsTrigger>
+                    <TabsTrigger value="turnitin">Perpusmu Results</TabsTrigger>
                     <TabsTrigger value="programs">By Program</TabsTrigger>
                     <TabsTrigger value="exams">By Exam Stage</TabsTrigger>
                   </TabsList>

@@ -27,7 +27,7 @@ export default function StudentDashboardClientPage() {
     return (
       <PageTransition>
         <DashboardMainCard
-          title="Selamat Datang di Turnitin Campus"
+          title="Selamat Datang di Perpusmu"
           subtitle="Lengkapi detail ujian Anda untuk mulai menggunakan layanan plagiarisme 🎓"
           icon={BookOpen}
         >
@@ -66,7 +66,7 @@ export default function StudentDashboardClientPage() {
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">4</div>
                     <div>
                       <p className="font-medium text-sm">Terima Hasil</p>
-                      <p className="text-xs text-muted-foreground">Instruktur akan mengirim hasil Turnitin</p>
+                      <p className="text-xs text-muted-foreground">Instruktur akan mengirim hasil Perpusmu</p>
                     </div>
                   </div>
                 </CardContent>
@@ -142,7 +142,7 @@ export default function StudentDashboardClientPage() {
                     Jika proses verifikasi membutuhkan waktu lebih dari 2 hari kerja, silakan hubungi:
                   </p>
                   <div className="space-y-2">
-                    <p className="text-sm font-medium">📧 admin@turnitin.co.id</p>
+                    <p className="text-sm font-medium">📧 admin@perpusmu.ac.id</p>
                     <p className="text-sm font-medium">📱 +62812-3456-7890</p>
                   </div>
                 </CardContent>
@@ -159,7 +159,7 @@ export default function StudentDashboardClientPage() {
     <PageTransition>
       <DashboardMainCard
         title="Dashboard Mahasiswa"
-        subtitle="Kelola pengiriman dokumen dan lihat hasil Turnitin 📄"
+        subtitle="Kelola pengiriman dokumen dan lihat hasil Perpusmu 📄"
         icon={BookOpen}
       >
         <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">

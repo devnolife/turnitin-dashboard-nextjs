@@ -11,7 +11,7 @@ export function StudentFeedback() {
       instructor: "Instruktur Ahmad",
       date: "12 Apr 2025",
       type: "Hasil",
-      content: "Hasil Turnitin menunjukkan similarity 12%. Dokumen Anda sudah memenuhi standar. Silakan lanjutkan ke bab berikutnya.",
+      content: "hasil Perpusmu menunjukkan similarity 12%. Dokumen Anda sudah memenuhi standar. Silakan lanjutkan ke bab berikutnya.",
     },
     {
       id: "FB-002",
@@ -29,7 +29,7 @@ export function StudentFeedback() {
       date: "18 Mar 2025",
       type: "Hasil",
       content:
-        "Similarity 8%. Dokumen sudah baik. Hasil Turnitin sudah dilampirkan, silakan unduh.",
+        "Similarity 8%. Dokumen sudah baik. hasil Perpusmu sudah dilampirkan, silakan unduh.",
     },
   ]
 
@@ -37,7 +37,7 @@ export function StudentFeedback() {
     <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
       <CardHeader>
         <CardTitle>Umpan Balik Terbaru</CardTitle>
-        <CardDescription>Hasil Turnitin dan komentar dari instruktur</CardDescription>
+        <CardDescription>hasil Perpusmu dan komentar dari instruktur</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

@@ -14,8 +14,8 @@ export function DashboardMainCard({ title, subtitle, icon: Icon, children }: Das
   return (
     <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg relative overflow-hidden theme-transition">
       {/* Decorative blob shapes */}
-      <div className="absolute -right-20 -top-20 w-64 h-64 gen-z-blob bg-primary-lighter/30 dark:bg-primary/10" />
-      <div className="absolute -left-20 -bottom-20 w-64 h-64 gen-z-blob-alt bg-secondary/50 dark:bg-secondary/10" />
+      <div className="absolute -right-20 -top-20 w-64 h-64 gen-z-blob bg-primary-lighter/30 dark:bg-primary/10 pointer-events-none" style={{ transform: "translateZ(0)" }} />
+      <div className="absolute -left-20 -bottom-20 w-64 h-64 gen-z-blob-alt bg-secondary/50 dark:bg-secondary/10 pointer-events-none" style={{ transform: "translateZ(0)" }} />
 
       {/* Header */}
       <div className="relative z-10 mb-6">

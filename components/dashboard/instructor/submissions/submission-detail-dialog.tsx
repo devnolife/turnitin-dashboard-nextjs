@@ -36,7 +36,7 @@ export function SubmissionDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Kirim Hasil Turnitin</DialogTitle>
+          <DialogTitle>Kirim hasil Perpusmu</DialogTitle>
           <DialogDescription>
             Tambahkan komentar untuk pengiriman ini. Mahasiswa akan dapat melihat hasil dan komentar Anda.
           </DialogDescription>

@@ -236,13 +236,13 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           <SlideUp className="md:col-span-3">
             <Card>
               <CardHeader>
-                <CardTitle>Turnitin Results & Submissions</CardTitle>
-                <CardDescription>View the student&apos;s Turnitin results and submissions</CardDescription>
+                <CardTitle>Perpusmu Results & Submissions</CardTitle>
+                <CardDescription>View the student&apos;s Perpusmu results and submissions</CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="turnitin" className="space-y-4">
                   <TabsList>
-                    <TabsTrigger value="turnitin">Turnitin Results</TabsTrigger>
+                    <TabsTrigger value="turnitin">Perpusmu Results</TabsTrigger>
                     <TabsTrigger value="submissions">Submissions</TabsTrigger>
                     <TabsTrigger value="feedback">Feedback</TabsTrigger>
                     <TabsTrigger value="activity">Activity Log</TabsTrigger>

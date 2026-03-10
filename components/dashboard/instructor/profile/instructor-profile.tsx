@@ -27,7 +27,7 @@ export function InstructorProfile() {
                 <div className="text-center sm:text-left">
                   <h3 className="text-xl font-semibold">{user?.name || "Instruktur"}</h3>
                   <p className="text-muted-foreground">{user?.email}</p>
-                  <Badge className="mt-2" variant="secondary">Pengawas Turnitin</Badge>
+                  <Badge className="mt-2" variant="secondary">Pengawas Perpusmu</Badge>
                 </div>
               </div>
             </CardContent>
@@ -51,7 +51,7 @@ export function InstructorProfile() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Pengawas upload dokumen Turnitin mahasiswa</p>
+                <p className="text-sm text-muted-foreground">Pengawas upload dokumen Perpusmu mahasiswa</p>
               </CardContent>
             </Card>
           </div>

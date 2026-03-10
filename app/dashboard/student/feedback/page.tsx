@@ -18,7 +18,7 @@ const mockFeedback = [
     date: "12 Apr 2025",
     type: "Hasil" as const,
     similarity: 12,
-    content: "Hasil Turnitin menunjukkan similarity 12%. Dokumen Anda sudah memenuhi standar. Silakan lanjutkan ke bab berikutnya.",
+    content: "hasil Perpusmu menunjukkan similarity 12%. Dokumen Anda sudah memenuhi standar. Silakan lanjutkan ke bab berikutnya.",
   },
   {
     id: "FB-002",
@@ -36,7 +36,7 @@ const mockFeedback = [
     date: "18 Mar 2025",
     type: "Hasil" as const,
     similarity: 8,
-    content: "Similarity 8%. Dokumen sudah baik. Hasil Turnitin sudah dilampirkan, silakan unduh.",
+    content: "Similarity 8%. Dokumen sudah baik. hasil Perpusmu sudah dilampirkan, silakan unduh.",
   },
   {
     id: "FB-004",
@@ -82,7 +82,7 @@ export default function StudentFeedbackPage() {
   return (
     <DashboardMainCard
       title="Hasil & Umpan Balik"
-      subtitle="Lihat hasil Turnitin dan komentar dari instruktur pengawas 💬"
+      subtitle="Lihat hasil Perpusmu dan komentar dari instruktur pengawas 💬"
       icon={MessageSquare}
     >
       <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
@@ -101,7 +101,7 @@ export default function StudentFeedbackPage() {
         <StaggerItem>
           <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Lolos Turnitin</CardTitle>
+              <CardTitle className="text-sm font-medium">Lolos Perpusmu</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
@@ -139,7 +139,7 @@ export default function StudentFeedbackPage() {
       <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
           <CardTitle>Riwayat Umpan Balik</CardTitle>
-          <CardDescription>Hasil Turnitin dan komentar dari instruktur pengawas</CardDescription>
+          <CardDescription>hasil Perpusmu dan komentar dari instruktur pengawas</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

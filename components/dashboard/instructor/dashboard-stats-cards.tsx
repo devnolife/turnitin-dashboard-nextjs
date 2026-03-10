@@ -59,7 +59,7 @@ export function DashboardStatsCards({
             <div className="text-2xl font-bold">
               <AnimatedCounter value={pendingReviewCount} />
             </div>
-            <p className="text-xs text-muted-foreground">Perlu di-upload ke Turnitin</p>
+            <p className="text-xs text-muted-foreground">Perlu di-upload ke Perpusmu</p>
           </CardContent>
         </Card>
       </StaggerItem>

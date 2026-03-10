@@ -5,8 +5,8 @@ export function PricingCard() {
   return (
     <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="text-2xl">Akses Mahasiswa Turnitin</CardTitle>
-        <CardDescription>Akses penuh ke layanan Turnitin selama satu tahun akademik</CardDescription>
+        <CardTitle className="text-2xl">Akses Mahasiswa Perpusmu</CardTitle>
+        <CardDescription>Akses penuh ke layanan Perpusmu selama satu tahun akademik</CardDescription>
         <div className="mt-4">
           <span className="text-4xl font-bold">Rp 750.000</span>
           <span className="text-muted-foreground"> / tahun</span>

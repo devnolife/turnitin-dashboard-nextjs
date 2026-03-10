@@ -1,8 +1,8 @@
 "use client"
 
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, useMotionValue, useTransform, animate } from "framer-motion"
 import { cn } from "@/lib/utils"
-import type { ReactNode } from "react"
+import { type ReactNode, useState, useEffect } from "react"
 
 // Fade in animation
 export const FadeIn = ({
@@ -176,7 +176,7 @@ export const StaggerContainer = ({
   children,
   className,
   delay = 0,
-  staggerDelay = 0.1,
+  staggerDelay = 0.05,
   ...props
 }: {
   children: ReactNode
@@ -188,7 +188,6 @@ export const StaggerContainer = ({
   <motion.div
     initial="hidden"
     animate="show"
-    exit="hidden"
     variants={{
       hidden: { opacity: 0 },
       show: {
@@ -223,39 +222,39 @@ export const StaggerItem = ({
   switch (direction) {
     case "up":
       variants = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0, transition: { ease: [0.33, 1, 0.68, 1] } },
+        hidden: { opacity: 0, y: 10 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
       }
       break
     case "down":
       variants = {
-        hidden: { opacity: 0, y: -20 },
-        show: { opacity: 1, y: 0, transition: { ease: [0.33, 1, 0.68, 1] } },
+        hidden: { opacity: 0, y: -10 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
       }
       break
     case "left":
       variants = {
-        hidden: { opacity: 0, x: -20 },
-        show: { opacity: 1, x: 0, transition: { ease: [0.33, 1, 0.68, 1] } },
+        hidden: { opacity: 0, x: -10 },
+        show: { opacity: 1, x: 0, transition: { duration: 0.2, ease: "easeOut" } },
       }
       break
     case "right":
       variants = {
-        hidden: { opacity: 0, x: 20 },
-        show: { opacity: 1, x: 0, transition: { ease: [0.33, 1, 0.68, 1] } },
+        hidden: { opacity: 0, x: 10 },
+        show: { opacity: 1, x: 0, transition: { duration: 0.2, ease: "easeOut" } },
       }
       break
     case "scale":
       variants = {
-        hidden: { opacity: 0, scale: 0.95 },
-        show: { opacity: 1, scale: 1, transition: { ease: [0.33, 1, 0.68, 1] } },
+        hidden: { opacity: 0, scale: 0.97 },
+        show: { opacity: 1, scale: 1, transition: { duration: 0.2, ease: "easeOut" } },
       }
       break
     case "fade":
     default:
       variants = {
         hidden: { opacity: 0 },
-        show: { opacity: 1, transition: { ease: [0.33, 1, 0.68, 1] } },
+        show: { opacity: 1, transition: { duration: 0.2, ease: "easeOut" } },
       }
   }
 
@@ -274,17 +273,15 @@ export const PageTransition = ({
   children: ReactNode
   className?: string
 }) => (
-  <AnimatePresence mode="wait">
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
-      className={cn("min-h-screen", className)}
-    >
-      {typeof children === "function" ? children() : children}
-    </motion.div>
-  </AnimatePresence>
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.2, ease: "easeOut" }}
+    className={cn("min-h-screen", className)}
+    style={{ willChange: "opacity" }}
+  >
+    {typeof children === "function" ? children() : children}
+  </motion.div>
 )
 
 // Hover animation wrapper
@@ -418,11 +415,28 @@ export const AnimatedCounter = ({
   value: number
   className?: string
   [key: string]: any
-}) => (
-  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={className} {...props}>
-    <motion.span animate={{ count: value }} initial={{ count: 0 }} transition={{ duration: 1, ease: "easeOut" }}>
-      {({ count }) => Math.floor(count)}
-    </motion.span>
-  </motion.span>
-)
+}) => {
+  const motionValue = useMotionValue(0)
+  const rounded = useTransform(motionValue, (v) => Math.floor(v))
+  const [display, setDisplay] = useState(0)
+
+  useEffect(() => {
+    const controls = animate(motionValue, value, {
+      duration: 0.6,
+      ease: "easeOut",
+    })
+    return controls.stop
+  }, [motionValue, value])
+
+  useEffect(() => {
+    const unsubscribe = rounded.on("change", (v) => setDisplay(v))
+    return unsubscribe
+  }, [rounded])
+
+  return (
+    <span className={className} {...props}>
+      {display}
+    </span>
+  )
+}
 

@@ -305,7 +305,7 @@ export const useInstructorStore = create<InstructorState>()((set, get) => ({
   getTurnitinResultsByInstructor: (instructorId) => {
     const students = get().getStudentsByInstructor(instructorId)
 
-    // Collect all Turnitin results from these students
+    // Collect all Perpusmu results from these students
     return students.flatMap((student) => student.turnitinResults)
   },
 

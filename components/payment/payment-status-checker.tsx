@@ -146,7 +146,7 @@ export function PaymentStatusChecker() {
           {status === "failed" && <Badge variant="destructive">Gagal</Badge>}
           {status === "checking" && <Badge variant="secondary">Memeriksa...</Badge>}
         </CardTitle>
-        <CardDescription>Periksa status pembayaran Anda untuk akses Turnitin</CardDescription>
+        <CardDescription>Periksa status pembayaran Anda untuk akses Perpusmu</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -156,7 +156,7 @@ export function PaymentStatusChecker() {
           <div className="mt-4 grid gap-3">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Layanan:</span>
-              <span className="font-medium">Akses Mahasiswa Turnitin</span>
+              <span className="font-medium">Akses Mahasiswa Perpusmu</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Jumlah:</span>
@@ -279,7 +279,7 @@ export function PaymentStatusChecker() {
                   <br />
                   No. Rekening: 1234-5678-9012-3456
                   <br />
-                  Atas Nama: PT Turnitin Indonesia
+                  Atas Nama: Perpusmu - Universitas Muhammadiyah Makassar
                 </div>
               </li>
               <li>
@@ -331,7 +331,7 @@ export function PaymentStatusChecker() {
 
         <p className="text-xs text-center text-muted-foreground">
           Jika Anda mengalami masalah dengan pembayaran, silakan hubungi tim dukungan kami di{" "}
-          <span className="font-medium">support@turnitin.co.id</span> atau telepon{" "}
+          <span className="font-medium">support@perpusmu.ac.id</span> atau telepon{" "}
           <span className="font-medium">021-1234-5678</span>.
         </p>
       </CardFooter>

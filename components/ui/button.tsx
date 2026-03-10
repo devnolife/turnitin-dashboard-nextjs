@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -40,7 +39,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
   isLoading?: boolean
   loadingText?: string
@@ -68,50 +67,48 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return (
-      <motion.div whileTap={{ scale: 0.98 }} className={cn("relative overflow-hidden", className)}>
-        <Comp
-          className={cn(buttonVariants({ variant, size, className }))}
-          ref={ref}
-          onClick={handleRipple}
-          disabled={isLoading || props.disabled}
-          {...props}
-        >
-          {isLoading ? (
-            <>
-              <svg
-                className="mr-2 h-4 w-4 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              {loadingText || props.children}
-            </>
-          ) : (
-            props.children
-          )}
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }), "relative overflow-hidden active:scale-[0.98] transition-transform")}
+        ref={ref}
+        onClick={handleRipple}
+        disabled={isLoading || props.disabled}
+        {...props}
+      >
+        {isLoading ? (
+          <>
+            <svg
+              className="mr-2 h-4 w-4 animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            {loadingText || props.children}
+          </>
+        ) : (
+          props.children
+        )}
 
-          {withRipple &&
-            ripples.map((ripple) => (
-              <span
-                key={ripple.id}
-                className="absolute rounded-full bg-white/30 animate-ripple"
-                style={{
-                  top: ripple.y,
-                  left: ripple.x,
-                  transform: "translate(-50%, -50%)",
-                  pointerEvents: "none",
-                }}
-              />
-            ))}
-        </Comp>
-      </motion.div>
+        {withRipple &&
+          ripples.map((ripple) => (
+            <span
+              key={ripple.id}
+              className="absolute rounded-full bg-white/30 animate-ripple"
+              style={{
+                top: ripple.y,
+                left: ripple.x,
+                transform: "translate(-50%, -50%)",
+                pointerEvents: "none",
+              }}
+            />
+          ))}
+      </Comp>
     )
   },
 )

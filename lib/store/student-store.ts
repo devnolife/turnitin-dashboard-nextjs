@@ -25,7 +25,7 @@ interface StudentState {
   setInstructorFilter: (instructorId: string | null) => void
   applyFilters: () => void
 
-  // Turnitin result management
+  // Perpusmu result management
   addTurnitinResult: (result: Omit<TurnitinResult, "id">) => string
   updateTurnitinResult: (resultId: string, updates: Partial<TurnitinResult>) => boolean
   deleteTurnitinResult: (resultId: string) => boolean
@@ -53,7 +53,7 @@ const getRandomSimilarityScore = () => {
   return Math.floor(Math.random() * 40)
 }
 
-// Generate mock Turnitin results
+// Generate mock Perpusmu results
 const generateMockTurnitinResults = (studentId: string, examStage: ExamStage): TurnitinResult[] => {
   if (examStage === "applicant") return []
 
@@ -119,7 +119,7 @@ const generateMockStudents = (count: number): Student[] => {
     const facultyId = faculties[Math.floor(Math.random() * faculties.length)]
     const programId =
       programs[facultyId as keyof typeof programs][
-        Math.floor(Math.random() * programs[facultyId as keyof typeof programs].length)
+      Math.floor(Math.random() * programs[facultyId as keyof typeof programs].length)
       ]
     const examStage = examStages[Math.floor(Math.random() * examStages.length)]
     const instructorId = Math.random() > 0.1 ? (Math.random() > 0.5 ? "user-2" : `instructor-${Math.floor(Math.random() * 10) + 1}`) : null

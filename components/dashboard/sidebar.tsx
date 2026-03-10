@@ -14,7 +14,6 @@ import {
   BookOpen,
   MessageSquare,
   LogOut,
-  ShieldCheck,
   Shield,
   CheckSquare,
   Send,
@@ -92,11 +91,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="h-full flex flex-col relative z-10">
       {/* Header */}
       <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-white flex items-center justify-center rounded-2xl rotate-12 shadow-md">
-            <ShieldCheck className="h-6 w-6 text-primary-dark" />
-          </div>
-          <h1 className="text-2xl font-bold text-white">Turnitin</h1>
+        <div className="flex items-center gap-3">
+          <img src="/logo.jpg" alt="Logo Unismuh" className="w-10 h-10 rounded-full shadow-md" />
+          <h1 className="text-2xl font-bold text-white">Perpusmu</h1>
         </div>
       </div>
 
@@ -124,16 +121,15 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 className={cn(
                   "w-full justify-start rounded-2xl h-11 text-sm font-normal mb-1",
                   pathname === route.href &&
-                    "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter",
+                  "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter",
                 )}
               >
                 <route.icon className="mr-3 h-[18px] w-[18px] shrink-0" />
                 {route.title}
                 {"badge" in route && route.badge && (
                   <span
-                    className={`ml-auto px-2 py-0.5 rounded-full text-xs ${
-                      route.badge === "New" ? "bg-[#63A6DD]" : "bg-primary"
-                    } text-white animate-pulse-light`}
+                    className={`ml-auto px-2 py-0.5 rounded-full text-xs ${route.badge === "New" ? "bg-[#63A6DD]" : "bg-primary"
+                      } text-white animate-pulse-light`}
                   >
                     {route.badge}
                   </span>

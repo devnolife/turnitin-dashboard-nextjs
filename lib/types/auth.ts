@@ -9,7 +9,7 @@ export interface ExamDetails {
 
 export interface User {
   id: string
-  email: string
+  username: string
   role: string
   name: string
   hasCompletedPayment: boolean

@@ -31,7 +31,7 @@ function generateMockActivities(): Activity[] {
   return [
     { id: 1, type: "submission", title: "Pengiriman baru diterima", description: "Mahasiswa John Doe mengirim 'Research Proposal' untuk ditinjau", timestamp: "2 jam lalu", icon: Upload },
     { id: 2, type: "feedback", title: "Feedback diberikan", description: "Anda memberikan feedback pada 'Literature Review' milik Sarah Smith", timestamp: "Kemarin", icon: MessageSquare },
-    { id: 3, type: "review", title: "Laporan Turnitin ditinjau", description: "Anda meninjau hasil Turnitin untuk 5 mahasiswa", timestamp: "2 hari lalu", icon: CheckCircle },
+    { id: 3, type: "review", title: "Laporan Perpusmu ditinjau", description: "Anda meninjau hasil Perpusmu untuk 5 mahasiswa", timestamp: "2 hari lalu", icon: CheckCircle },
     { id: 4, type: "notification", title: "Notifikasi dikirim", description: "Anda mengirim notifikasi ke 3 mahasiswa tentang batas pengiriman", timestamp: "3 hari lalu", icon: Bell },
     { id: 5, type: "report", title: "Laporan similarity diperiksa", description: "Anda memeriksa laporan similarity untuk pengiriman baru", timestamp: "5 hari lalu", icon: FileText },
   ]
@@ -168,7 +168,7 @@ export function InstructorDashboardClient() {
     <div>
       <DashboardMainCard
         title="Dashboard Instruktur"
-        subtitle="Pantau pengiriman Turnitin dan awasi mahasiswa Anda 📋"
+        subtitle="Pantau pengiriman Perpusmu dan awasi mahasiswa Anda 📋"
         icon={Shield}
       >
         {/* Instructor Profile */}
@@ -187,7 +187,7 @@ export function InstructorDashboardClient() {
                 <CardTitle className="mt-4 text-center">{instructor.name}</CardTitle>
                 <CardDescription className="text-center">{instructor.email}</CardDescription>
                 <Badge variant="outline" className="mt-2">
-                  Pengawas Turnitin
+                  Pengawas Perpusmu
                 </Badge>
               </div>
             </CardHeader>

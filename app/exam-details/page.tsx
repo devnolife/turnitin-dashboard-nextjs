@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { ExamDetailsForm } from "@/components/dashboard/student/exam-details-form"
 
 export const metadata: Metadata = {
-  title: "Exam Details - Turnitin Campus",
-  description: "Submit your exam details for Turnitin Campus",
+  title: "Exam Details - Perpusmu",
+  description: "Submit your exam details for Perpusmu",
 }
 
 export default function ExamDetailsPage() {
@@ -12,7 +12,7 @@ export default function ExamDetailsPage() {
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold tracking-tight">Detail Ujian Skripsi</h1>
         <p className="mt-2 text-muted-foreground">
-          Lengkapi detail ujian skripsi Anda untuk mengakses layanan Turnitin
+          Lengkapi detail ujian skripsi Anda untuk mengakses layanan Perpusmu
         </p>
       </div>
 
