@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import api from "@/lib/api/mock-api"
+import api from "@/lib/api/client"
 import { useAuthStore } from "./auth-store"
 import type { Submission } from "@/lib/types/submission"
 

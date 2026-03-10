@@ -12,6 +12,10 @@ model User {
   username            String          @unique
   password            String
   name                String
+  nim                 String?         @unique
+  hp                  String?
+  email               String?
+  prodi               String?
   role                Role            @default(STUDENT)
   hasCompletedPayment Boolean         @default(false)
   whatsappNumber      String?

@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import api from "@/lib/api/mock-api"
+import api from "@/lib/api/client"
 import type { ExamType, ExamDetails, User } from "@/lib/types/auth"
 
 export type { ExamType, ExamDetails, User } from "@/lib/types/auth"
@@ -32,8 +32,19 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null })
 
         try {
-          const response = await api.post("/auth/login", { username, password })
-          const { user, token } = response.data
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          })
+
+          const data = await res.json()
+
+          if (!res.ok) {
+            throw new Error(data.message || "Login gagal")
+          }
+
+          const { user, token } = data
 
           set({
             user,
@@ -44,8 +55,9 @@ export const useAuthStore = create<AuthState>()(
 
           return user
         } catch (error) {
+          const message = error instanceof Error ? error.message : "Login gagal. Periksa username dan password Anda."
           set({
-            error: "Login gagal. Periksa username dan password Anda.",
+            error: message,
             isLoading: false,
             isAuthenticated: false,
           })

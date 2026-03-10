@@ -12,6 +12,10 @@ export interface User {
   username: string
   role: string
   name: string
+  nim?: string
+  hp?: string
+  email?: string
+  prodi?: string
   hasCompletedPayment: boolean
   whatsappNumber?: string
   examDetails?: ExamDetails | null

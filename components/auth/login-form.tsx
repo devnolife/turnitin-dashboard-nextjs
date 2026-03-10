@@ -14,7 +14,7 @@ import { useAuthStore } from "@/lib/store/auth-store"
 
 const formSchema = z.object({
   username: z.string().min(3, {
-    message: "Username minimal 3 karakter.",
+    message: "NIM / Username minimal 3 karakter.",
   }),
   password: z.string().min(6, {
     message: "Password minimal 6 karakter.",
@@ -58,7 +58,7 @@ export function LoginForm() {
       toast({
         variant: "destructive",
         title: "Login gagal",
-        description: "Username atau password salah. Silakan coba lagi.",
+        description: error instanceof Error ? error.message : "NIM/Username atau password salah.",
       })
     } finally {
       setIsLoading(false)
@@ -73,12 +73,12 @@ export function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>NIM / Username</FormLabel>
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Masukkan username"
+                    placeholder="Masukkan NIM atau username"
                     className="pl-10 focus:ring-2 focus:ring-primary/50 transition-all"
                     {...field}
                   />
