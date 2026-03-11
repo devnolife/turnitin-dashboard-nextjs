@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { User, Phone, BookOpen, Mail, Calendar, Shield } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +9,22 @@ import { useAuthStore } from "@/lib/store/auth-store"
 
 export default function StudentProfilePage() {
   const { user } = useAuthStore()
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchStatus() {
+      try {
+        const res = await fetch("/api/student/stats")
+        if (res.ok) {
+          const data = await res.json()
+          setPaymentStatus(data.paymentStatus)
+        }
+      } catch {
+        // Silently fail
+      }
+    }
+    fetchStatus()
+  }, [])
 
   const formatWhatsAppNumber = (number: string | undefined) => {
     if (!number) return "Tidak tersedia"
@@ -99,8 +116,13 @@ export default function StudentProfilePage() {
                 <Shield className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Status Langganan</p>
-                <Badge variant="default" className="mt-1">Aktif hingga Juli 31, 2025</Badge>
+                <p className="text-sm text-muted-foreground">Status Pembayaran</p>
+                <Badge
+                  variant="default"
+                  className={`mt-1 ${paymentStatus === "COMPLETED" ? "bg-green-600" : "bg-yellow-600"}`}
+                >
+                  {paymentStatus === "COMPLETED" ? "Lunas ✓" : "Menunggu Pembayaran"}
+                </Badge>
               </div>
             </div>
           </CardContent>

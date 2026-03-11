@@ -1,52 +1,43 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { Upload, FileText, Bell, Phone, BookOpen } from "lucide-react"
+import { FileText, Bell, Phone, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
-import { motion } from "framer-motion"
 
-export function StudentOverview() {
+interface StudentStats {
+  total: number
+  reviewed: number
+  pending: number
+  flagged: number
+  avgSimilarity: number
+  paymentStatus: string
+}
+
+interface StudentOverviewProps {
+  stats: StudentStats | null
+}
+
+export function StudentOverview({ stats }: StudentOverviewProps) {
   const { user } = useAuthStore()
 
-  // Format WhatsApp number for display
   const formatWhatsAppNumber = (number: string | undefined) => {
     if (!number) return "Tidak tersedia"
-
-    // If number starts with +62, format it
-    if (number.startsWith("+62")) {
-      return number
-    }
-
-    // If number starts with 62, add +
-    if (number.startsWith("62")) {
-      return `+${number}`
-    }
-
-    // If number starts with 0, replace with +62
-    if (number.startsWith("0")) {
-      return `+62${number.substring(1)}`
-    }
-
+    if (number.startsWith("+62")) return number
+    if (number.startsWith("62")) return `+${number}`
+    if (number.startsWith("0")) return `+62${number.substring(1)}`
     return number
   }
 
-  // Format the exam type for display
   const formatExamType = (examType: string | null | undefined) => {
     if (!examType) return "Tidak tersedia"
-
     switch (examType) {
-      case "proposal_defense":
-        return "Sidang Proposal"
-      case "results_defense":
-        return "Sidang Hasil"
-      case "final_defense":
-        return "Sidang Akhir"
-      default:
-        return examType
+      case "proposal_defense": return "Sidang Proposal"
+      case "results_defense": return "Sidang Hasil"
+      case "final_defense": return "Sidang Akhir"
+      default: return examType
     }
   }
 
@@ -59,16 +50,6 @@ export function StudentOverview() {
             <CardDescription>Tugas yang sering dilakukan</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <Button
-              asChild
-              className="w-full justify-start bg-gradient-to-r from-primary-dark to-primary text-white"
-              withRipple
-            >
-              <Link href="/dashboard/student/submit">
-                <Upload className="mr-2 h-4 w-4" />
-                Kirim Dokumen Baru
-              </Link>
-            </Button>
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/submissions">
                 <FileText className="mr-2 h-4 w-4" />
@@ -78,7 +59,7 @@ export function StudentOverview() {
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/feedback">
                 <Bell className="mr-2 h-4 w-4" />
-                Cek hasil Perpusmu
+                Cek Hasil Perpusmu
               </Link>
             </Button>
           </CardContent>
@@ -88,66 +69,39 @@ export function StudentOverview() {
       <StaggerItem>
         <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
           <CardHeader>
-            <CardTitle className="gradient-text">Kuota Pengiriman</CardTitle>
-            <CardDescription>Penggunaan dan batas Anda saat ini</CardDescription>
+            <CardTitle className="gradient-text">Statistik Pengiriman</CardTitle>
+            <CardDescription>Ringkasan dokumen Anda</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Dokumen Terkirim</span>
-                <span className="font-medium">
-                  <AnimatedCounter value={12} /> / Tidak Terbatas
-                </span>
-              </div>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 1, ease: "easeOut" }}
-              >
-                <Progress
-                  value={50}
-                  className="h-2 bg-primary-lighter/30"
-                  indicatorColor="bg-gradient-to-r from-primary to-primary"
-                />
-              </motion.div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Total Dokumen</span>
+              <span className="font-medium">
+                <AnimatedCounter value={stats?.total ?? 0} />
+              </span>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Penyimpanan Terpakai</span>
-                <span className="font-medium">
-                  <AnimatedCounter value={45} /> MB / 1 GB
-                </span>
-              </div>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-              >
-                <Progress
-                  value={4.5}
-                  className="h-2 bg-primary-lighter/30"
-                  indicatorColor="bg-gradient-to-r from-primary to-primary"
-                />
-              </motion.div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Sudah Direview</span>
+              <span className="font-medium text-green-600">
+                <AnimatedCounter value={stats?.reviewed ?? 0} />
+              </span>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Periode Langganan</span>
-                <span className="font-medium">
-                  <AnimatedCounter value={58} />% Selesai
-                </span>
-              </div>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-              >
-                <Progress
-                  value={58}
-                  className="h-2 bg-primary-lighter/30"
-                  indicatorColor="bg-gradient-to-r from-primary to-primary"
-                />
-              </motion.div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Menunggu Hasil</span>
+              <span className="font-medium text-yellow-600">
+                <AnimatedCounter value={stats?.pending ?? 0} />
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Perlu Revisi</span>
+              <span className="font-medium text-red-600">
+                <AnimatedCounter value={stats?.flagged ?? 0} />
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Rata-rata Similarity</span>
+              <span className="font-medium">
+                <AnimatedCounter value={stats?.avgSimilarity ?? 0} />%
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -193,8 +147,10 @@ export function StudentOverview() {
               </div>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Status Langganan</p>
-                  <p className="font-medium">Aktif sampai 31 Juli 2025</p>
+                  <p className="text-sm text-muted-foreground">Status Pembayaran</p>
+                  <p className={`font-medium ${stats?.paymentStatus === "COMPLETED" ? "text-green-600" : "text-yellow-600"}`}>
+                    {stats?.paymentStatus === "COMPLETED" ? "Lunas ✓" : "Menunggu Pembayaran"}
+                  </p>
                 </div>
               </div>
             </div>

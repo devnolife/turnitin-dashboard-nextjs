@@ -6,7 +6,8 @@ export const metadata: Metadata = {
   description: "View detailed instructor information and supervised students",
 }
 
-export default function InstructorDetail({ params }: { params: { id: string } }) {
-  return <InstructorDetailPage instructorId={params.id} />
+export default async function InstructorDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  return <InstructorDetailPage instructorId={id} />
 }
 

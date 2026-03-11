@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { FileText, Upload, Clock, CheckCircle, AlertTriangle, Search, Filter, Eye, Download, BarChart3 } from "lucide-react"
+import { useState, useEffect } from "react"
+import { FileText, Clock, CheckCircle, AlertTriangle, Search, Eye, Download, BarChart3, Loader2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,64 +10,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
-import Link from "next/link"
+import { useAuthStore } from "@/lib/store/auth-store"
 
-const mockSubmissions = [
-  {
-    id: "SUB-001",
-    title: "Skripsi Bab 1 - Pendahuluan",
-    date: "12 Apr 2025",
-    status: "Hasil Diterima",
-    similarity: 12,
-    instructor: "Instruktur Ahmad",
-    fileSize: "2.4 MB",
-  },
-  {
-    id: "SUB-002",
-    title: "Skripsi Bab 2 - Tinjauan Pustaka",
-    date: "7 Apr 2025",
-    status: "Perlu Revisi",
-    similarity: 35,
-    instructor: "Instruktur Ahmad",
-    fileSize: "3.1 MB",
-  },
-  {
-    id: "SUB-003",
-    title: "Proposal Penelitian",
-    date: "18 Mar 2025",
-    status: "Hasil Diterima",
-    similarity: 8,
-    instructor: "Instruktur Budi",
-    fileSize: "1.8 MB",
-  },
-  {
-    id: "SUB-004",
-    title: "Skripsi Bab 3 - Metodologi Penelitian",
-    date: "15 Apr 2025",
-    status: "Menunggu Upload",
-    similarity: 0,
-    instructor: "Instruktur Ahmad",
-    fileSize: "2.7 MB",
-  },
-  {
-    id: "SUB-005",
-    title: "Skripsi Bab 4 - Hasil dan Pembahasan",
-    date: "20 Apr 2025",
-    status: "Diproses Instruktur",
-    similarity: 0,
-    instructor: "Instruktur Ahmad",
-    fileSize: "4.2 MB",
-  },
-  {
-    id: "SUB-006",
-    title: "Skripsi Bab 5 - Penutup",
-    date: "22 Apr 2025",
-    status: "Menunggu Upload",
-    similarity: 0,
-    instructor: "Instruktur Ahmad",
-    fileSize: "1.5 MB",
-  },
-]
+interface SubmissionData {
+  id: string
+  title: string
+  date: string
+  status: string
+  rawStatus: string
+  similarity: number
+  feedback: string | null
+  reviewedBy: string | null
+  reviewedAt: string | null
+  documentUrl: string
+}
 
 function getStatusBadge(status: string) {
   switch (status) {
@@ -75,10 +31,8 @@ function getStatusBadge(status: string) {
       return <Badge variant="default" className="bg-green-600"><CheckCircle className="mr-1 h-3 w-3" />{status}</Badge>
     case "Perlu Revisi":
       return <Badge variant="destructive"><AlertTriangle className="mr-1 h-3 w-3" />{status}</Badge>
-    case "Diproses Instruktur":
+    case "Menunggu Hasil":
       return <Badge variant="outline" className="border-blue-300 text-blue-600"><Clock className="mr-1 h-3 w-3" />{status}</Badge>
-    case "Menunggu Upload":
-      return <Badge variant="secondary"><Clock className="mr-1 h-3 w-3" />{status}</Badge>
     default:
       return <Badge variant="secondary">{status}</Badge>
   }
@@ -91,27 +45,80 @@ function getSimilarityBadge(similarity: number) {
 }
 
 export default function StudentSubmissionsPage() {
+  const { user } = useAuthStore()
+  const [submissions, setSubmissions] = useState<SubmissionData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
 
-  const filteredSubmissions = mockSubmissions.filter((sub) => {
-    const matchesSearch = sub.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sub.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    async function fetchSubmissions() {
+      if (!user?.id) return
+      try {
+        setIsLoading(true)
+        const res = await fetch(`/api/submissions?userId=${user.id}`)
+        if (!res.ok) throw new Error("Gagal memuat data")
+        const data = await res.json()
+        setSubmissions(data.submissions || [])
+      } catch {
+        setError("Gagal memuat data pengiriman. Silakan coba lagi.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchSubmissions()
+  }, [user?.id])
+
+  const filteredSubmissions = submissions.filter((sub) => {
+    const matchesSearch = sub.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesTab = activeTab === "all" ||
       (activeTab === "completed" && sub.status === "Hasil Diterima") ||
-      (activeTab === "processing" && (sub.status === "Diproses Instruktur" || sub.status === "Menunggu Upload")) ||
+      (activeTab === "processing" && sub.status === "Menunggu Hasil") ||
       (activeTab === "revision" && sub.status === "Perlu Revisi")
     return matchesSearch && matchesTab
   })
 
-  const totalSubmissions = mockSubmissions.length
-  const completedCount = mockSubmissions.filter(s => s.status === "Hasil Diterima").length
-  const processingCount = mockSubmissions.filter(s => s.status === "Diproses Instruktur" || s.status === "Menunggu Upload").length
-  const revisionCount = mockSubmissions.filter(s => s.status === "Perlu Revisi").length
-  const avgSimilarity = Math.round(
-    mockSubmissions.filter(s => s.similarity > 0).reduce((sum, s) => sum + s.similarity, 0) /
-    (mockSubmissions.filter(s => s.similarity > 0).length || 1)
-  )
+  const totalSubmissions = submissions.length
+  const completedCount = submissions.filter(s => s.status === "Hasil Diterima").length
+  const processingCount = submissions.filter(s => s.status === "Menunggu Hasil").length
+  const revisionCount = submissions.filter(s => s.status === "Perlu Revisi").length
+  const withScore = submissions.filter(s => s.similarity > 0)
+  const avgSimilarity = withScore.length > 0
+    ? Math.round(withScore.reduce((sum, s) => sum + s.similarity, 0) / withScore.length)
+    : 0
+
+  if (isLoading) {
+    return (
+      <DashboardMainCard
+        title="Pengiriman Dokumen"
+        subtitle="Kelola dan pantau semua dokumen yang telah Anda kirimkan 📄"
+        icon={FileText}
+      >
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-3 text-muted-foreground">Memuat data pengiriman...</span>
+        </div>
+      </DashboardMainCard>
+    )
+  }
+
+  if (error) {
+    return (
+      <DashboardMainCard
+        title="Pengiriman Dokumen"
+        subtitle="Kelola dan pantau semua dokumen yang telah Anda kirimkan 📄"
+        icon={FileText}
+      >
+        <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950 text-center">
+          <p className="text-red-800 dark:text-red-300">{error}</p>
+          <Button variant="outline" size="sm" className="mt-3" onClick={() => window.location.reload()}>
+            Coba Lagi
+          </Button>
+        </div>
+      </DashboardMainCard>
+    )
+  }
 
   return (
     <DashboardMainCard
@@ -152,14 +159,14 @@ export default function StudentSubmissionsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600"><AnimatedCounter value={processingCount} /></div>
-              <p className="text-xs text-muted-foreground">Menunggu / diproses</p>
+              <p className="text-xs text-muted-foreground">Menunggu hasil</p>
             </CardContent>
           </Card>
         </StaggerItem>
         <StaggerItem>
           <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium truncate">Avg. Similarity</CardTitle>
+              <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground shrink-0" />
             </CardHeader>
             <CardContent>
@@ -176,17 +183,13 @@ export default function StudentSubmissionsPage() {
             <CardTitle>Daftar Pengiriman</CardTitle>
             <CardDescription>Semua dokumen yang telah Anda kirim untuk dicek Perpusmu</CardDescription>
           </div>
-          <Button className="bg-gradient-to-r from-primary-dark to-primary text-white">
-            <Upload className="mr-2 h-4 w-4" />
-            Kirim Dokumen Baru
-          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Cari dokumen atau instruktur..."
+                placeholder="Cari dokumen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -217,7 +220,6 @@ export default function StudentSubmissionsPage() {
                     <TableRow>
                       <TableHead>Dokumen</TableHead>
                       <TableHead className="hidden md:table-cell">Tanggal</TableHead>
-                      <TableHead className="hidden sm:table-cell">Instruktur</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Similarity</TableHead>
                       <TableHead className="w-[100px]">Aksi</TableHead>
@@ -226,9 +228,13 @@ export default function StudentSubmissionsPage() {
                   <TableBody>
                     {filteredSubmissions.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8">
+                        <TableCell colSpan={5} className="text-center py-8">
                           <FileText className="mx-auto h-10 w-10 text-muted-foreground/40 mb-2" />
-                          <p className="text-muted-foreground">Tidak ada dokumen yang ditemukan.</p>
+                          <p className="text-muted-foreground">
+                            {submissions.length === 0
+                              ? "Anda belum memiliki pengiriman dokumen."
+                              : "Tidak ada dokumen yang ditemukan."}
+                          </p>
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -239,22 +245,29 @@ export default function StudentSubmissionsPage() {
                               <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
                               <div>
                                 <div className="font-medium">{submission.title}</div>
-                                <div className="text-xs text-muted-foreground">{submission.fileSize}</div>
+                                {submission.reviewedBy && (
+                                  <div className="text-xs text-muted-foreground">Direview oleh: {submission.reviewedBy}</div>
+                                )}
                               </div>
                             </div>
                           </TableCell>
                           <TableCell className="hidden md:table-cell text-sm text-muted-foreground">{submission.date}</TableCell>
-                          <TableCell className="hidden sm:table-cell text-sm">{submission.instructor}</TableCell>
                           <TableCell>{getStatusBadge(submission.status)}</TableCell>
                           <TableCell>{getSimilarityBadge(submission.similarity)}</TableCell>
                           <TableCell>
                             <div className="flex gap-1">
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              {submission.status === "Hasil Diterima" && (
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <Download className="h-4 w-4" />
+                              {submission.documentUrl && (
+                                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                                  <a href={submission.documentUrl} target="_blank" rel="noopener noreferrer">
+                                    <Eye className="h-4 w-4" />
+                                  </a>
+                                </Button>
+                              )}
+                              {submission.status === "Hasil Diterima" && submission.feedback && (
+                                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                                  <a href={submission.feedback} target="_blank" rel="noopener noreferrer">
+                                    <Download className="h-4 w-4" />
+                                  </a>
                                 </Button>
                               )}
                             </div>

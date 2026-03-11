@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { BookOpen, FileText, BarChart3, Clock, CheckCircle, Upload, Bell, Shield, FileCheck } from "lucide-react"
+import { BookOpen, FileText, BarChart3, Clock, CheckCircle, Bell, Shield, FileCheck, Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
@@ -27,23 +27,40 @@ interface MyRulesResponse {
   rules: SimilarityRuleData[]
 }
 
+interface StudentStats {
+  total: number
+  reviewed: number
+  pending: number
+  flagged: number
+  avgSimilarity: number
+  paymentStatus: string
+}
+
 export default function StudentDashboardClientPage() {
   const { user } = useAuthStore()
   const [myRules, setMyRules] = useState<MyRulesResponse | null>(null)
+  const [stats, setStats] = useState<StudentStats | null>(null)
 
   useEffect(() => {
-    async function fetchRules() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/similarity-rules/my-rules")
-        if (res.ok) {
-          const data = await res.json()
+        const [rulesRes, statsRes] = await Promise.all([
+          fetch("/api/similarity-rules/my-rules"),
+          fetch("/api/student/stats"),
+        ])
+        if (rulesRes.ok) {
+          const data = await rulesRes.json()
           setMyRules(data)
+        }
+        if (statsRes.ok) {
+          const data = await statsRes.json()
+          setStats(data)
         }
       } catch {
         // Silently fail
       }
     }
-    fetchRules()
+    fetchData()
   }, [])
 
   // Check if student has submitted exam details
@@ -184,6 +201,11 @@ export default function StudentDashboardClientPage() {
     )
   }
 
+  const totalSubmissions = stats?.total ?? 0
+  const avgSimilarity = stats?.avgSimilarity ?? 0
+  const pendingCount = stats?.pending ?? 0
+  const paymentActive = stats?.paymentStatus === "COMPLETED"
+
   // If student has submitted exam details and they're approved, show the dashboard
   return (
     <PageTransition>
@@ -201,9 +223,9 @@ export default function StudentDashboardClientPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={12} />
+                  <AnimatedCounter value={totalSubmissions} />
                 </div>
-                <p className="text-xs text-muted-foreground">+2 dari bulan lalu</p>
+                <p className="text-xs text-muted-foreground">Dokumen terkirim</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -216,9 +238,9 @@ export default function StudentDashboardClientPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={18} />%
+                  <AnimatedCounter value={avgSimilarity} />%
                 </div>
-                <p className="text-xs text-muted-foreground">-3% dari bulan lalu</p>
+                <p className="text-xs text-muted-foreground">Dari semua pengiriman</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -231,7 +253,7 @@ export default function StudentDashboardClientPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={3} />
+                  <AnimatedCounter value={pendingCount} />
                 </div>
                 <p className="text-xs text-muted-foreground">Pengiriman menunggu hasil</p>
               </CardContent>
@@ -241,12 +263,16 @@ export default function StudentDashboardClientPage() {
           <StaggerItem>
             <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Status Langganan</CardTitle>
+                <CardTitle className="text-sm font-medium">Status Pembayaran</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">Aktif</div>
-                <p className="text-xs text-muted-foreground">Sampai 31 Juli 2025</p>
+                <div className={`text-2xl font-bold ${paymentActive ? "text-green-600" : "text-yellow-600"}`}>
+                  {paymentActive ? "Lunas" : "Belum"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {paymentActive ? "Pembayaran sudah lunas" : "Menunggu pembayaran"}
+                </p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -317,7 +343,7 @@ export default function StudentDashboardClientPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <StudentOverview />
+            <StudentOverview stats={stats} />
           </TabsContent>
           <TabsContent value="submissions" className="space-y-4">
             <StudentSubmissions />

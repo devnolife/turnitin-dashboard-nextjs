@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-
 import { useEffect, useState } from "react"
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, GraduationCap, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,76 +10,135 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useToast } from "@/components/ui/use-toast"
-import { useFacultyStore, type Faculty } from "@/lib/store/faculty-store"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 
-export function AdminFacultiesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filteredFaculties, setFilteredFaculties] = useState<Faculty[]>([])
+interface StudyProgramData {
+  id: string
+  name: string
+  code: string
+  degree: string
+  facultyId: string
+  facultyName: string
+  facultyCode: string
+}
 
-  const { faculties, isLoading, fetchFaculties } = useFacultyStore()
-  const { toast } = useToast()
+interface FacultyGroup {
+  id: string
+  name: string
+  code: string
+  programs: StudyProgramData[]
+}
+
+export function AdminFacultiesPage() {
+  const [faculties, setFaculties] = useState<FacultyGroup[]>([])
+  const [filtered, setFiltered] = useState<FacultyGroup[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
     fetchFaculties()
-  }, [fetchFaculties])
+  }, [])
 
-  // Filter faculties based on search query
+  const fetchFaculties = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch("/api/admin/study-programs")
+      const data = await res.json()
+      const programs = data.programs || []
+
+      // Group by faculty
+      const facultyMap = new Map<string, FacultyGroup>()
+      for (const prog of programs) {
+        const fac = prog.faculty
+        if (!fac) continue
+        if (!facultyMap.has(fac.id)) {
+          facultyMap.set(fac.id, {
+            id: fac.id,
+            name: fac.name,
+            code: fac.code,
+            programs: [],
+          })
+        }
+        facultyMap.get(fac.id)!.programs.push({
+          id: prog.id,
+          name: prog.name,
+          code: prog.code,
+          degree: prog.degree,
+          facultyId: fac.id,
+          facultyName: fac.name,
+          facultyCode: fac.code,
+        })
+      }
+
+      // Also include faculties that have no programs
+      const apiFaculties = data.faculties || []
+      for (const fac of apiFaculties) {
+        if (!facultyMap.has(fac.id)) {
+          facultyMap.set(fac.id, {
+            id: fac.id,
+            name: fac.name,
+            code: fac.code,
+            programs: [],
+          })
+        }
+      }
+
+      const grouped = Array.from(facultyMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+      setFaculties(grouped)
+      setFiltered(grouped)
+    } catch {
+      console.error("Gagal mengambil data fakultas")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setFilteredFaculties(faculties)
+      setFiltered(faculties)
       return
     }
-
-    const query = searchQuery.toLowerCase()
-    const filtered = faculties.filter(
-      (faculty) =>
-        faculty.name.toLowerCase().includes(query) ||
-        faculty.code.toLowerCase().includes(query) ||
-        faculty.programs.some((program) => program.name.toLowerCase().includes(query)),
-    )
-
-    setFilteredFaculties(filtered)
+    const q = searchQuery.toLowerCase()
+    const result = faculties
+      .map((fac) => ({
+        ...fac,
+        programs: fac.programs.filter((p) => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q)),
+      }))
+      .filter(
+        (fac) =>
+          fac.name.toLowerCase().includes(q) ||
+          fac.code.toLowerCase().includes(q) ||
+          fac.programs.length > 0
+      )
+      .map((fac) => ({
+        ...fac,
+        programs:
+          fac.name.toLowerCase().includes(q) || fac.code.toLowerCase().includes(q)
+            ? faculties.find((f) => f.id === fac.id)?.programs || fac.programs
+            : fac.programs,
+      }))
+    setFiltered(result)
   }, [searchQuery, faculties])
 
-  // Format degree for display
   const formatDegree = (degree: string) => {
     switch (degree) {
-      case "bachelor":
-        return "S1"
-      case "master":
-        return "S2"
-      case "doctoral":
-        return "S3"
-      default:
-        return degree
+      case "S1": return "S1"
+      case "S2": return "S2"
+      case "S3": return "S3"
+      case "bachelor": return "S1"
+      case "master": return "S2"
+      case "doctoral": return "S3"
+      default: return degree
     }
   }
 
-  // Get badge variant based on degree
-  const getDegreeBadgeVariant = (degree: string) => {
-    switch (degree) {
-      case "bachelor":
-        return "outline"
-      case "master":
-        return "secondary"
-      case "doctoral":
-        return "default"
-      default:
-        return "outline"
-    }
-  }
-
-  // Calculate total students and programs
-  const totalStudents = faculties.reduce((acc, faculty) => acc + faculty.students, 0)
-  const totalPrograms = faculties.reduce((acc, faculty) => acc + faculty.programs.length, 0)
+  const totalPrograms = faculties.reduce((acc, fac) => acc + fac.programs.length, 0)
 
   return (
     <PageTransition>
       <DashboardMainCard title="Manajemen Fakultas" subtitle="Kelola fakultas dan program studi 🏛️" icon={GraduationCap}>
-        <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <StaggerItem>
             <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -88,14 +146,11 @@ export function AdminFacultiesPage() {
                 <GraduationCap className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  <AnimatedCounter value={faculties.length} />
-                </div>
+                <div className="text-2xl font-bold"><AnimatedCounter value={faculties.length} /></div>
                 <p className="text-xs text-muted-foreground">Fakultas akademik</p>
               </CardContent>
             </Card>
           </StaggerItem>
-
           <StaggerItem>
             <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -103,61 +158,37 @@ export function AdminFacultiesPage() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  <AnimatedCounter value={totalPrograms} />
-                </div>
+                <div className="text-2xl font-bold"><AnimatedCounter value={totalPrograms} /></div>
                 <p className="text-xs text-muted-foreground">Di seluruh fakultas</p>
               </CardContent>
             </Card>
           </StaggerItem>
-
           <StaggerItem>
             <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
+                <CardTitle className="text-sm font-medium">Rata-rata Prodi</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={totalStudents} />
+                  <AnimatedCounter value={faculties.length > 0 ? Math.round(totalPrograms / faculties.length) : 0} />
                 </div>
-                <p className="text-xs text-muted-foreground">Mahasiswa terdaftar</p>
-              </CardContent>
-            </Card>
-          </StaggerItem>
-
-          <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Rata-rata per Fakultas</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <AnimatedCounter value={Math.round(totalStudents / faculties.length)} />
-                </div>
-                <p className="text-xs text-muted-foreground">Mahasiswa per fakultas</p>
+                <p className="text-xs text-muted-foreground">Program per fakultas</p>
               </CardContent>
             </Card>
           </StaggerItem>
         </StaggerContainer>
 
         <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Daftar Fakultas</CardTitle>
-              <CardDescription>Kelola fakultas dan program studi</CardDescription>
-            </div>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Tambah Fakultas
-            </Button>
+          <CardHeader>
+            <CardTitle>Daftar Fakultas</CardTitle>
+            <CardDescription>Kelola fakultas dan program studi</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Cari fakultas dan program..."
+                placeholder="Cari fakultas atau program..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-9"
@@ -166,25 +197,19 @@ export function AdminFacultiesPage() {
 
             <div className="rounded-md border overflow-x-auto">
               {isLoading ? (
-                <div className="p-4">
-                  <div className="space-y-4">
-                    {Array(3)
-                      .fill(0)
-                      .map((_, i) => (
-                        <div key={i} className="space-y-2">
-                          <Skeleton className="h-6 w-48" />
-                          <div className="space-y-2 pl-6">
-                            {Array(3)
-                              .fill(0)
-                              .map((_, j) => (
-                                <Skeleton key={j} className="h-4 w-40" />
-                              ))}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+                <div className="p-4 space-y-4">
+                  {Array(3).fill(0).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-6 w-48" />
+                      <div className="space-y-2 pl-6">
+                        {Array(3).fill(0).map((_, j) => (
+                          <Skeleton key={j} className="h-4 w-40" />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ) : filteredFaculties.length === 0 ? (
+              ) : filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-8 text-center">
                   <GraduationCap className="h-12 w-12 text-muted-foreground/40" />
                   <h3 className="mt-4 text-lg font-medium">Fakultas Tidak Ditemukan</h3>
@@ -194,79 +219,27 @@ export function AdminFacultiesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Fakultas</TableHead>
+                      <TableHead>Fakultas / Program</TableHead>
                       <TableHead>Kode</TableHead>
-                      <TableHead>Program</TableHead>
-                      <TableHead>Mahasiswa</TableHead>
-                      <TableHead className="w-[60px]"></TableHead>
+                      <TableHead>Jenjang</TableHead>
+                      <TableHead>Jumlah Prodi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredFaculties.map((faculty) => (
+                    {filtered.map((faculty) => (
                       <React.Fragment key={faculty.id}>
-                        <TableRow>
-                          <TableCell className="font-medium">{faculty.name}</TableCell>
-                          <TableCell>{faculty.code}</TableCell>
-                          <TableCell>{faculty.programs.length}</TableCell>
-                          <TableCell>{faculty.students}</TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">Actions</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Edit</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Plus className="mr-2 h-4 w-4" />
-                                  <span>Tambah Program</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  <span>Hapus</span>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
+                        <TableRow className="bg-muted/50">
+                          <TableCell className="font-bold">{faculty.name}</TableCell>
+                          <TableCell><Badge variant="outline">{faculty.code}</Badge></TableCell>
+                          <TableCell>-</TableCell>
+                          <TableCell>{faculty.programs.length} prodi</TableCell>
                         </TableRow>
-
-                        {/* Study Programs */}
                         {faculty.programs.map((program) => (
-                          <TableRow key={program.id} className="bg-muted/30">
-                            <TableCell className="pl-8">
-                              <div className="font-medium">{program.name}</div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant={getDegreeBadgeVariant(program.degree)}>
-                                {formatDegree(program.degree)}
-                              </Badge>
-                            </TableCell>
-                            <TableCell colSpan={2}>{program.students} mahasiswa</TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Actions</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    <span>Edit</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-destructive">
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    <span>Hapus</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
+                          <TableRow key={program.id}>
+                            <TableCell className="pl-8">{program.name}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{program.code}</TableCell>
+                            <TableCell><Badge variant="secondary">{formatDegree(program.degree)}</Badge></TableCell>
+                            <TableCell>-</TableCell>
                           </TableRow>
                         ))}
                       </React.Fragment>

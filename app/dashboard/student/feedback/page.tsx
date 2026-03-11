@@ -1,83 +1,112 @@
 "use client"
 
-import { useState } from "react"
-import { MessageSquare, ThumbsUp, AlertCircle, Download, FileText, CheckCircle, Clock, Search } from "lucide-react"
+import { useState, useEffect } from "react"
+import { MessageSquare, ThumbsUp, AlertCircle, FileText, CheckCircle, Search, Loader2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import { useAuthStore } from "@/lib/store/auth-store"
 
-const mockFeedback = [
-  {
-    id: "FB-001",
-    document: "Skripsi Bab 1 - Pendahuluan",
-    instructor: "Instruktur Ahmad",
-    date: "12 Apr 2025",
-    type: "Hasil" as const,
-    similarity: 12,
-    content: "hasil Perpusmu menunjukkan similarity 12%. Dokumen Anda sudah memenuhi standar. Silakan lanjutkan ke bab berikutnya.",
-  },
-  {
-    id: "FB-002",
-    document: "Skripsi Bab 2 - Tinjauan Pustaka",
-    instructor: "Instruktur Ahmad",
-    date: "7 Apr 2025",
-    type: "Revisi" as const,
-    similarity: 35,
-    content: "Similarity masih 35%. Perlu revisi pada bagian kajian teori. Harap parafrasa ulang referensi yang di-highlight.",
-  },
-  {
-    id: "FB-003",
-    document: "Proposal Penelitian",
-    instructor: "Instruktur Budi",
-    date: "18 Mar 2025",
-    type: "Hasil" as const,
-    similarity: 8,
-    content: "Similarity 8%. Dokumen sudah baik. hasil Perpusmu sudah dilampirkan, silakan unduh.",
-  },
-  {
-    id: "FB-004",
-    document: "Skripsi Bab 3 - Metodologi",
-    instructor: "Instruktur Ahmad",
-    date: "22 Apr 2025",
-    type: "Hasil" as const,
-    similarity: 15,
-    content: "Similarity 15%. Masih dalam batas wajar. Dokumen bisa dilanjutkan, namun perhatikan kutipan di halaman 8-12.",
-  },
-  {
-    id: "FB-005",
-    document: "Skripsi Bab 2 - Revisi Kedua",
-    instructor: "Instruktur Ahmad",
-    date: "25 Apr 2025",
-    type: "Hasil" as const,
-    similarity: 18,
-    content: "Revisi kedua berhasil menurunkan similarity dari 35% ke 18%. Sudah memenuhi standar, silakan lanjutkan.",
-  },
-]
+interface FeedbackData {
+  id: string
+  title: string
+  date: string
+  similarity: number
+  status: string
+  feedback: string | null
+  reviewedBy: string | null
+  reviewedAt: string | null
+  type: "Hasil" | "Revisi"
+}
 
 export default function StudentFeedbackPage() {
+  const { user } = useAuthStore()
+  const [feedbackList, setFeedbackList] = useState<FeedbackData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
 
-  const filteredFeedback = mockFeedback.filter((fb) => {
-    const matchesSearch = fb.document.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      fb.instructor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      fb.content.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    async function fetchFeedback() {
+      if (!user?.id) return
+      try {
+        setIsLoading(true)
+        const res = await fetch(`/api/submissions?userId=${user.id}`)
+        if (!res.ok) throw new Error("Gagal memuat data")
+        const data = await res.json()
+        // Only show reviewed submissions (those with feedback/similarity)
+        const reviewed = (data.submissions || [])
+          .filter((s: { rawStatus: string }) => s.rawStatus === "REVIEWED" || s.rawStatus === "FLAGGED")
+          .map((s: { id: string; title: string; reviewedAt: string | null; date: string; similarity: number; feedback: string | null; reviewedBy: string | null; rawStatus: string }) => ({
+            id: s.id,
+            title: s.title,
+            date: s.reviewedAt || s.date,
+            similarity: s.similarity,
+            feedback: s.feedback,
+            reviewedBy: s.reviewedBy,
+            reviewedAt: s.reviewedAt,
+            status: s.rawStatus,
+            type: s.rawStatus === "FLAGGED" ? "Revisi" as const : "Hasil" as const,
+          }))
+        setFeedbackList(reviewed)
+      } catch {
+        setError("Gagal memuat umpan balik. Silakan coba lagi.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchFeedback()
+  }, [user?.id])
+
+  const filteredFeedback = feedbackList.filter((fb) => {
+    const matchesSearch = fb.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (fb.feedback || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (fb.reviewedBy || "").toLowerCase().includes(searchQuery.toLowerCase())
     const matchesTab = activeTab === "all" ||
       (activeTab === "hasil" && fb.type === "Hasil") ||
       (activeTab === "revisi" && fb.type === "Revisi")
     return matchesSearch && matchesTab
   })
 
-  const totalFeedback = mockFeedback.length
-  const hasilCount = mockFeedback.filter(f => f.type === "Hasil").length
-  const revisiCount = mockFeedback.filter(f => f.type === "Revisi").length
-  const avgSimilarity = Math.round(
-    mockFeedback.reduce((sum, f) => sum + f.similarity, 0) / mockFeedback.length
-  )
+  const totalFeedback = feedbackList.length
+  const hasilCount = feedbackList.filter(f => f.type === "Hasil").length
+  const revisiCount = feedbackList.filter(f => f.type === "Revisi").length
+  const avgSimilarity = feedbackList.length > 0
+    ? Math.round(feedbackList.reduce((sum, f) => sum + f.similarity, 0) / feedbackList.length)
+    : 0
+
+  if (isLoading) {
+    return (
+      <DashboardMainCard
+        title="Hasil & Umpan Balik"
+        subtitle="Lihat hasil Perpusmu dan komentar dari instruktur pengawas 💬"
+        icon={MessageSquare}
+      >
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-3 text-muted-foreground">Memuat umpan balik...</span>
+        </div>
+      </DashboardMainCard>
+    )
+  }
+
+  if (error) {
+    return (
+      <DashboardMainCard
+        title="Hasil & Umpan Balik"
+        subtitle="Lihat hasil Perpusmu dan komentar dari instruktur pengawas 💬"
+        icon={MessageSquare}
+      >
+        <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950 text-center">
+          <p className="text-red-800 dark:text-red-300">{error}</p>
+        </div>
+      </DashboardMainCard>
+    )
+  }
 
   return (
     <DashboardMainCard
@@ -139,14 +168,14 @@ export default function StudentFeedbackPage() {
       <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
           <CardTitle>Riwayat Umpan Balik</CardTitle>
-          <CardDescription>hasil Perpusmu dan komentar dari instruktur pengawas</CardDescription>
+          <CardDescription>Hasil Perpusmu dan komentar dari instruktur pengawas</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Cari dokumen, instruktur, atau komentar..."
+                placeholder="Cari dokumen atau komentar..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -172,7 +201,11 @@ export default function StudentFeedbackPage() {
                 {filteredFeedback.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
                     <MessageSquare className="h-10 w-10 text-muted-foreground/40 mb-2" />
-                    <p className="text-muted-foreground">Tidak ada umpan balik yang ditemukan.</p>
+                    <p className="text-muted-foreground">
+                      {feedbackList.length === 0
+                        ? "Belum ada umpan balik dari instruktur."
+                        : "Tidak ada umpan balik yang ditemukan."}
+                    </p>
                   </div>
                 ) : (
                   filteredFeedback.map((item) => (
@@ -181,7 +214,7 @@ export default function StudentFeedbackPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                            <span className="font-semibold">{item.document}</span>
+                            <span className="font-semibold">{item.title}</span>
                             <Badge
                               variant={item.type === "Hasil" ? "default" : "destructive"}
                               className={item.type === "Hasil" ? "bg-green-600" : ""}
@@ -197,25 +230,15 @@ export default function StudentFeedbackPage() {
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">
-                            Dari {item.instructor} • {item.date}
+                            {item.reviewedBy ? `Dari ${item.reviewedBy}` : "Instruktur"} • {item.date}
                           </p>
                         </div>
                       </div>
-                      <div className="mt-3 rounded-xl bg-muted/50 p-3">
-                        <p className="text-sm leading-relaxed">{item.content}</p>
-                      </div>
-                      <div className="mt-3 flex gap-2 justify-end">
-                        {item.type === "Hasil" && (
-                          <Button variant="outline" size="sm">
-                            <Download className="mr-2 h-4 w-4" />
-                            Unduh Hasil
-                          </Button>
-                        )}
-                        <Button variant="outline" size="sm">
-                          <MessageSquare className="mr-2 h-4 w-4" />
-                          Balas
-                        </Button>
-                      </div>
+                      {item.feedback && (
+                        <div className="mt-3 rounded-xl bg-muted/50 p-3">
+                          <p className="text-sm leading-relaxed">{item.feedback}</p>
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
