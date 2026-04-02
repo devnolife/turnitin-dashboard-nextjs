@@ -1,28 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { jwtVerify } from "jose"
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "perpusmu-secret-key-2024"
-)
+import { verifyAuth, requireRole, handleAuthError } from "@/lib/auth/verify-token"
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const token = request.cookies.get("auth-token")?.value
-    if (!token) {
-      return NextResponse.json({ message: "Tidak terautentikasi" }, { status: 401 })
-    }
-
-    const { payload } = await jwtVerify(token, JWT_SECRET)
-    const userId = payload.userId as string
-
-    const user = await prisma.user.findUnique({ where: { id: userId } })
-    if (!user || user.role !== "INSTRUCTOR") {
-      return NextResponse.json({ message: "Akses ditolak" }, { status: 403 })
-    }
+    const auth = await verifyAuth(request)
+    requireRole(auth, "INSTRUCTOR")
 
     const { id: submissionId } = await params
     const body = await request.json()
@@ -37,7 +23,7 @@ export async function POST(
     }
 
     const updateData: Record<string, unknown> = {
-      reviewedBy: userId,
+      reviewedBy: auth.userId,
       reviewedAt: new Date(),
     }
 

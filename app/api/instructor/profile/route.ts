@@ -1,23 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { jwtVerify } from "jose"
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "perpusmu-secret-key-2024"
-)
+import { verifyAuth, requireRole, handleAuthError } from "@/lib/auth/verify-token"
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value
-    if (!token) {
-      return NextResponse.json({ message: "Tidak terautentikasi" }, { status: 401 })
-    }
-
-    const { payload } = await jwtVerify(token, JWT_SECRET)
-    const userId = payload.userId as string
+    const auth = await verifyAuth(request)
+    requireRole(auth, "INSTRUCTOR")
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: auth.userId },
       select: {
         id: true,
         name: true,
@@ -36,23 +27,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ user })
   } catch (error) {
-    console.error("Get profile error:", error)
-    return NextResponse.json({ message: "Gagal mengambil profil" }, { status: 500 })
+    return handleAuthError(error)
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value
-    if (!token) {
-      return NextResponse.json({ message: "Tidak terautentikasi" }, { status: 401 })
-    }
+    const auth = await verifyAuth(request)
+    requireRole(auth, "INSTRUCTOR")
 
-    const { payload } = await jwtVerify(token, JWT_SECRET)
-    const userId = payload.userId as string
-
-    const user = await prisma.user.findUnique({ where: { id: userId } })
-    if (!user || user.role !== "INSTRUCTOR") {
+    const user = await prisma.user.findUnique({ where: { id: auth.userId } })
+    if (!user) {
       return NextResponse.json({ message: "Akses ditolak" }, { status: 403 })
     }
 
@@ -66,7 +51,7 @@ export async function PUT(request: NextRequest) {
     if (whatsappNumber !== undefined) updateData.whatsappNumber = whatsappNumber?.trim() || ""
 
     const updated = await prisma.user.update({
-      where: { id: userId },
+      where: { id: auth.userId },
       data: updateData,
       select: {
         id: true,
@@ -84,7 +69,6 @@ export async function PUT(request: NextRequest) {
       user: updated,
     })
   } catch (error) {
-    console.error("Update profile error:", error)
-    return NextResponse.json({ message: "Gagal memperbarui profil" }, { status: 500 })
+    return handleAuthError(error)
   }
 }

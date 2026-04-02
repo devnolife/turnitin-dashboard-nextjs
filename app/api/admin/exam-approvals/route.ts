@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+
     const searchParams = request.nextUrl.searchParams
     const status = searchParams.get("status")
 
@@ -29,6 +33,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ examDetails })
   } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
     console.error("Exam approvals error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil data persetujuan ujian" },

@@ -155,21 +155,39 @@ export function PaymentStatusChecker() {
           <h3 className="text-lg font-medium">Informasi Pembayaran</h3>
           <div className="mt-4 grid gap-3">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Layanan:</span>
-              <span className="font-medium">Akses Mahasiswa Perpusmu</span>
+              <span className="text-muted-foreground">Nama:</span>
+              <span className="font-medium">{payment?.nama || user?.name || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">NIM:</span>
+              <span className="font-medium">{payment?.nim || user?.nim || "-"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Jenis Pembayaran:</span>
+              <span className="font-medium">{payment?.jenisPembayaran || "PERPUSTAKAAN"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Jumlah:</span>
-              <span className="font-medium">Rp 750.000</span>
+              <span className="font-medium">
+                {payment?.jumlahPembayaran
+                  ? `Rp ${payment.jumlahPembayaran.toLocaleString("id-ID")}`
+                  : "-"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Periode:</span>
-              <span className="font-medium">1 Tahun Akademik</span>
+              <span className="font-medium">{payment?.periode || "-"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Metode Pembayaran:</span>
-              <span className="font-medium">Transfer Bank / QRIS</span>
+              <span className="text-muted-foreground">Status Pembayaran:</span>
+              <span className="font-medium">{payment?.statusPembayaran || "Belum ada data"}</span>
             </div>
+            {payment?.waktuPembayaran && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Waktu Pembayaran:</span>
+                <span className="font-medium">{payment.waktuPembayaran}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">Terakhir Diperiksa:</span>
               <span className="font-medium">{lastChecked || "Belum diperiksa"}</span>

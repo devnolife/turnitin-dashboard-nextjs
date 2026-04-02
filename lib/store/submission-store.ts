@@ -28,9 +28,7 @@ export const useSubmissionStore = create<SubmissionState>()((set) => ({
         throw new Error("User not authenticated")
       }
 
-      const response = await api.get("/submissions", {
-        params: { userId: user.id },
-      })
+      const response = await api.get("/submissions")
 
       set({
         submissions: response.data.submissions,
@@ -48,13 +46,7 @@ export const useSubmissionStore = create<SubmissionState>()((set) => ({
     set({ isLoading: true, error: null })
 
     try {
-      const token = useAuthStore.getState().token
-
-      const response = await api.get("/submissions/all", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await api.get("/submissions/all")
 
       set({
         submissions: response.data.submissions,

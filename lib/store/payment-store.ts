@@ -33,9 +33,7 @@ export const usePaymentStore = create<PaymentState>()((set, get) => ({
         throw new Error('User not authenticated')
       }
 
-      const response = await api.get('/payments/status', {
-        params: { userId: user.id },
-      })
+      const response = await api.get('/payments/status')
 
       const { payment } = response.data
       const lastChecked = new Date().toLocaleString('id-ID')

@@ -1,9 +1,12 @@
 export interface Payment {
-  id: string
+  id: string | null
   userId: string
-  amount: number
-  currency: string
+  nim: string
+  nama: string
+  periode: string | null
+  jenisPembayaran: string
+  jumlahPembayaran: number
+  waktuPembayaran: string | null
   status: "pending" | "processing" | "completed" | "failed"
-  createdAt: string
-  updatedAt: string
+  statusPembayaran: string | null
 }

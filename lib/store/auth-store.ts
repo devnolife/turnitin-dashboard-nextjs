@@ -102,9 +102,7 @@ export const useAuthStore = create<AuthState>()(
             throw new Error("User not authenticated")
           }
 
-          // Call API to update WhatsApp number
           const response = await api.post("/users/update-whatsapp", {
-            userId: user.id,
             whatsappNumber,
           })
 
@@ -137,9 +135,7 @@ export const useAuthStore = create<AuthState>()(
             throw new Error("User not authenticated")
           }
 
-          // Call API to submit exam details
           const response = await api.post("/users/submit-exam-details", {
-            userId: user.id,
             thesisTitle: details.thesisTitle,
             examType: details.examType,
           })

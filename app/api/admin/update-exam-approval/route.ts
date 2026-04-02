@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+
     const body = await request.json()
     const { userId, approvalStatus } = body
 
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
       examDetail,
     })
   } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
     console.error("Update exam approval error:", error)
     return NextResponse.json(
       { message: "Gagal memperbarui status persetujuan ujian" },

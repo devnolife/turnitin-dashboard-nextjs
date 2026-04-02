@@ -1,20 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createHash } from "crypto"
-import { SignJWT } from "jose"
 import { prisma } from "@/lib/prisma"
 import { fetchMahasiswaByNim } from "@/lib/auth/graphql-client"
+import { createToken } from "@/lib/auth/verify-token"
+import { rateLimit, getClientIp } from "@/lib/rate-limit"
 
 function md5(input: string): string {
   return createHash("md5").update(input).digest("hex")
-}
-
-async function createToken(userId: string, role: string): Promise<string> {
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET || "perpusmu-fallback-secret")
-  return new SignJWT({ userId, role })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(secret)
 }
 
 function sanitizeUser(user: {
@@ -45,6 +37,20 @@ function sanitizeUser(user: {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request)
+    const { success, remaining, resetAt } = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)
+
+    if (!success) {
+      const retryAfter = Math.ceil((resetAt - Date.now()) / 1000)
+      return NextResponse.json(
+        { message: `Terlalu banyak percobaan login. Coba lagi dalam ${Math.ceil(retryAfter / 60)} menit.` },
+        {
+          status: 429,
+          headers: { "Retry-After": String(retryAfter) },
+        }
+      )
+    }
+
     const body = await request.json()
     const { username, password } = body
 

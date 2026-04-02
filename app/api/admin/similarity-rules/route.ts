@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+
     const body = await request.json()
     const { studyProgramId, ruleType, rules } = body
 
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
       program: updatedProgram,
     })
   } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
     console.error("Similarity rules error:", error)
     return NextResponse.json(
       { message: "Gagal menyimpan aturan similarity" },
