@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { StaggerContainer, StaggerItem } from "@/components/ui/motion"
 import { type Student, type TurnitinResult, type ExamStage } from "@/lib/store/student-store"
+import type { BadgeVariant } from "@/components/ui/badge"
 
 export interface StudentSubmissionsTabProps {
   student: Student
@@ -110,7 +111,7 @@ export function SubmissionsContent({ student }: { student: Student }) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={["success", "secondary", "outline"][i] as any}>
+                    <Badge variant={(["success", "secondary", "outline"] as const)[i]}>
                       {["Dinilai", "Menunggu", "Draf"][i]}
                     </Badge>
                     <Button variant="outline" size="sm">
@@ -193,7 +194,7 @@ export function FeedbackContent({ student, formatDate }: FeedbackContentProps) {
 export interface ExamInfoCardProps {
   student: Student
   formatExamStage: (stage: ExamStage) => string
-  getExamStageBadgeVariant: (stage: ExamStage) => string
+  getExamStageBadgeVariant: (stage: ExamStage) => BadgeVariant
   formatDate: (dateString: string | null) => string
 }
 
@@ -214,7 +215,7 @@ export function ExamInfoCard({ student, formatExamStage, getExamStageBadgeVarian
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">Tahap Ujian</h3>
             <div className="flex items-center gap-2">
-              <Badge variant={getExamStageBadgeVariant(student.examStage) as any}>
+              <Badge variant={getExamStageBadgeVariant(student.examStage)}>
                 {formatExamStage(student.examStage)}
               </Badge>
             </div>

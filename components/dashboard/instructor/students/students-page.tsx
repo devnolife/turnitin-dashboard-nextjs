@@ -6,11 +6,11 @@ import { Search, Filter, X, Mail, FileText, Eye, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { Badge, type BadgeVariant } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
-import type { ExamStage } from "@/lib/store/student-store"
+import type { ExamStage, Student } from "@/lib/store/student-store"
 import { useInstructorStore } from "@/lib/store/instructor-store"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { useAuthStore } from "@/lib/store/auth-store"
@@ -21,7 +21,7 @@ export function InstructorStudentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [programFilter, setProgramFilter] = useState<string | null>(null)
   const [examStageFilter, setExamStageFilter] = useState<ExamStage | "all">("all")
-  const [filteredStudents, setFilteredStudents] = useState<any[]>([])
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
 
   const router = useRouter()
   const { toast } = useToast()
@@ -114,7 +114,7 @@ export function InstructorStudentsPage() {
   }
 
   // Get badge variant based on exam stage
-  const getExamStageBadgeVariant = (stage: ExamStage) => {
+  const getExamStageBadgeVariant = (stage: ExamStage): BadgeVariant => {
     switch (stage) {
       case "applicant":
         return "outline"
@@ -139,7 +139,7 @@ export function InstructorStudentsPage() {
   // Get available programs from student data
   const getAvailablePrograms = React.useCallback(() => {
     const programMap = new Map<string, string>()
-    allStudents.forEach((student: any) => {
+    allStudents.forEach((student: Student) => {
       if (student.programId && !programMap.has(student.programId)) {
         programMap.set(student.programId, student.programId)
       }

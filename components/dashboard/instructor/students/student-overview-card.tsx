@@ -10,12 +10,13 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
+import type { BadgeVariant } from "@/components/ui/badge"
 import { type Student, type ExamStage } from "@/lib/store/student-store"
 
 interface StudentOverviewCardProps {
   student: Student
   formatExamStage: (stage: ExamStage) => string
-  getExamStageBadgeVariant: (stage: ExamStage) => string
+  getExamStageBadgeVariant: (stage: ExamStage) => BadgeVariant
 }
 
 export function StudentOverviewCard({

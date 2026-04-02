@@ -23,7 +23,7 @@ import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/m
 import { SubmissionsTable } from "./submissions-table"
 import { SubmissionDetailDialog } from "./submission-detail-dialog"
 
-interface SubmissionData {
+export interface SubmissionData {
   id: string
   userId: string
   documentTitle: string
@@ -72,7 +72,7 @@ export function SubmissionsPage() {
         if (!res.ok) throw new Error("Failed to fetch")
         const data = await res.json()
 
-        const enhanced: SubmissionData[] = (data.submissions || []).map((s: any) => ({
+        const enhanced: SubmissionData[] = (data.submissions || []).map((s: Omit<SubmissionData, "studentId" | "studentName" | "comments">) => ({
           ...s,
           studentId: s.user.id,
           studentName: s.user.name || s.user.username,

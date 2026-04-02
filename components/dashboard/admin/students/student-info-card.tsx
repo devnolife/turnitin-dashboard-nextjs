@@ -28,6 +28,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { type Student, type ExamStage } from "@/lib/store/student-store"
+import type { BadgeVariant } from "@/components/ui/badge"
 
 export interface InstructorInfo {
   id: string
@@ -47,7 +48,7 @@ export interface StudentInfoCardProps {
   onRemoveInstructor: () => void
   onViewInstructor: (instructorId: string) => void
   formatExamStage: (stage: ExamStage) => string
-  getExamStageBadgeVariant: (stage: ExamStage) => string
+  getExamStageBadgeVariant: (stage: ExamStage) => BadgeVariant
   getFacultyName: (facultyId: string) => string
   getProgramName: (facultyId: string, programId: string) => string
 }
@@ -116,7 +117,7 @@ export function StudentInfoCard({
           </Avatar>
           <CardTitle className="mt-4 text-center">{student.name}</CardTitle>
           <CardDescription className="text-center">{student.studentId}</CardDescription>
-          <Badge variant={getExamStageBadgeVariant(student.examStage) as any} className="mt-2">
+          <Badge variant={getExamStageBadgeVariant(student.examStage)} className="mt-2">
             {formatExamStage(student.examStage)}
           </Badge>
         </div>

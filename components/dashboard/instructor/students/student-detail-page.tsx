@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import {
   ArrowLeft,
   Mail,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, type BadgeVariant } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { type Student, type ExamStage, useStudentStore } from "@/lib/store/student-store"
@@ -30,6 +31,24 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import React from "react"
 import { StudentOverviewCard } from "./student-overview-card"
 import { StudentProgressTabs } from "./student-progress-tabs"
@@ -44,6 +63,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   const [feedbackText, setFeedbackText] = useState("")
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null)
+  const [rejectExamOpen, setRejectExamOpen] = useState(false)
 
   const router = useRouter()
   const { toast } = useToast()
@@ -118,7 +138,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     }
   }
 
-  const getExamStageBadgeVariant = (stage: ExamStage) => {
+  const getExamStageBadgeVariant = (stage: ExamStage): BadgeVariant => {
     switch (stage) {
       case "applicant":
         return "outline"
@@ -200,6 +220,26 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   return (
     <PageTransition>
       <div className="flex flex-col gap-6">
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/instructor">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/instructor/students">Mahasiswa</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{student.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/instructor/students")}>
@@ -220,7 +260,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Setujui
                 </Button>
-                <Button variant="destructive" onClick={handleRejectExam}>
+                <Button variant="destructive" onClick={() => setRejectExamOpen(true)}>
                   <XCircle className="mr-2 h-4 w-4" />
                   Tolak
                 </Button>
@@ -344,6 +384,30 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           </SlideUp>
         </div>
       </div>
+
+      {/* Reject Exam Confirmation */}
+      <AlertDialog open={rejectExamOpen} onOpenChange={setRejectExamOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tolak Ujian Mahasiswa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini akan menolak ujian mahasiswa. Mahasiswa perlu mengajukan ulang untuk dapat melanjutkan proses ujian.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleRejectExam()
+                setRejectExamOpen(false)
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Tolak
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Feedback Dialog */}
       <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>

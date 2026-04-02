@@ -51,7 +51,7 @@ const getRandomJoinDate = () => {
 
 // Generate mock instructor data
 const generateMockInstructors = (count: number): Instructor[] => {
-  const positions = ["professor", "associate_professor", "assistant_professor", "lecturer"]
+  const positions: Instructor["position"][] = ["professor", "associate_professor", "assistant_professor", "lecturer"]
   const faculties = ["fac-1", "fac-2", "fac-3", "fac-4", "fac-5", "fac-6", "fac-7"]
   const programs = {
     "fac-1": ["prog-1", "prog-2", "prog-3", "prog-4", "prog-5", "prog-6", "prog-7", "prog-8"],
@@ -124,7 +124,7 @@ const generateMockInstructors = (count: number): Instructor[] => {
       employeeId: `I${(1000 + i + 1).toString().substring(1)}`,
       facultyId,
       programIds,
-      position: positions[Math.floor(Math.random() * positions.length)] as any,
+      position: positions[Math.floor(Math.random() * positions.length)],
       specialization: specializations[Math.floor(Math.random() * specializations.length)],
       joinDate: getRandomJoinDate(),
       status: isAuthUser ? "active" as const : (Math.random() > 0.2 ? "active" : Math.random() > 0.5 ? "inactive" : "on_leave"),

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { ChevronDown, ChevronUp, MoreHorizontal, Eye, Edit, Trash2, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, type BadgeVariant } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,16 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/components/ui/use-toast"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { type Student, type ExamStage, useStudentStore } from "@/lib/store/student-store"
 import { useFacultyStore } from "@/lib/store/faculty-store"
 import { useInstructorStore } from "@/lib/store/instructor-store"
@@ -26,6 +36,7 @@ export function StudentTable() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
+  const [deleteStudentId, setDeleteStudentId] = useState<string | null>(null)
 
   const router = useRouter()
   const { toast } = useToast()
@@ -52,7 +63,7 @@ export function StudentTable() {
   }
 
   // Get badge variant based on exam stage
-  const getExamStageBadgeVariant = (stage: ExamStage) => {
+  const getExamStageBadgeVariant = (stage: ExamStage): BadgeVariant => {
     switch (stage) {
       case "applicant":
         return "outline"
@@ -97,8 +108,8 @@ export function StudentTable() {
 
   // Sort students
   const sortedStudents = [...filteredStudents].sort((a, b) => {
-    let aValue: any = a[sortColumn]
-    let bValue: any = b[sortColumn]
+    let aValue: string | null = typeof a[sortColumn] === "string" ? a[sortColumn] : null
+    let bValue: string | null = typeof b[sortColumn] === "string" ? b[sortColumn] : null
 
     // Special case for sorting by faculty or program
     if (sortColumn === "facultyId") {
@@ -372,7 +383,7 @@ export function StudentTable() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={() => handleDeleteStudent(student.id)}
+                            onClick={() => setDeleteStudentId(student.id)}
                             className="text-destructive focus:text-destructive"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -426,6 +437,31 @@ export function StudentTable() {
           </div>
         )}
       </CardContent>
+
+      <AlertDialog open={!!deleteStudentId} onOpenChange={(open) => !open && setDeleteStudentId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Mahasiswa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Data mahasiswa akan dihapus secara permanen dari sistem.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteStudentId) {
+                  handleDeleteStudent(deleteStudentId)
+                  setDeleteStudentId(null)
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }
