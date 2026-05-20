@@ -6,10 +6,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2, User, Lock } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, User } from "lucide-react"
 import { useAuthStore } from "@/lib/store/auth-store"
 
 const formSchema = z.object({
@@ -23,6 +30,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
   const { login } = useAuthStore()
@@ -46,7 +54,6 @@ export function LoginForm() {
         description: "Selamat datang di Perpusmu",
       })
 
-      // Redirect based on role
       if (user.role === "student") {
         router.push("/dashboard/student")
       } else if (user.role === "instructor") {
@@ -58,7 +65,10 @@ export function LoginForm() {
       toast({
         variant: "destructive",
         title: "Login gagal",
-        description: error instanceof Error ? error.message : "NIM/Username atau password salah.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "NIM/Username atau password salah.",
       })
     } finally {
       setIsLoading(false)
@@ -74,13 +84,18 @@ export function LoginForm() {
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>NIM / Username</FormLabel>
+                <FormLabel className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  NIM / Username
+                </FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="group relative">
+                    <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
+                      <User className="h-4 w-4" />
+                    </div>
                     <Input
+                      autoComplete="username"
                       placeholder="Masukkan NIM atau username"
-                      className="pl-10 focus:ring-2 focus:ring-primary/50 transition-all"
+                      className="h-12 rounded-2xl border-border/70 bg-white/70 pl-11 text-[15px] shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 dark:bg-white/5"
                       {...field}
                     />
                   </div>
@@ -89,21 +104,42 @@ export function LoginForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Password
+                </FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="group relative">
+                    <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
+                      <Lock className="h-4 w-4" />
+                    </div>
                     <Input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
                       placeholder="••••••••"
-                      className="pl-10 focus:ring-2 focus:ring-primary/50 transition-all"
+                      className="h-12 rounded-2xl border-border/70 bg-white/70 pl-11 pr-12 text-[15px] shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 dark:bg-white/5"
                       {...field}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      tabIndex={-1}
+                      aria-label={
+                        showPassword ? "Sembunyikan password" : "Tampilkan password"
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -111,23 +147,29 @@ export function LoginForm() {
             )}
           />
         </fieldset>
+
         <Button
           type="submit"
-          className="w-full"
-          variant="gradient"
           disabled={isLoading}
+          className="group relative h-12 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-dark to-[#2c5f8d] text-[15px] font-semibold tracking-wide text-white shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-90"
         >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+          />
           {isLoading ? (
-            <>
+            <span className="relative flex items-center justify-center">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Memproses...
-            </>
+            </span>
           ) : (
-            "Masuk"
+            <span className="relative flex items-center justify-center">
+              Masuk ke Dashboard
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </span>
           )}
         </Button>
       </form>
     </Form>
   )
 }
-

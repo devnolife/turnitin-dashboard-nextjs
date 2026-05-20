@@ -21,6 +21,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
   const token = useAuthStore((s) => s.token)
   const _hasHydrated = useAuthStore((s) => s._hasHydrated)
+  const refreshSession = useAuthStore((s) => s.refreshSession)
 
   const handleMobileOpenChange = useCallback((open: boolean) => {
     setMobileOpen(open)
@@ -30,44 +31,58 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     // Tunggu store selesai hydrate dari localStorage
     if (!_hasHydrated) return
 
-    if (!token) {
-      router.push("/auth/login")
-      return
+    let cancelled = false
+
+    const run = async () => {
+      // Middleware sudah lindungi /dashboard/* dari sisi server. Di sini kita
+      // hanya rehydrate user state (cookie HttpOnly tidak terlihat dari JS).
+      let currentUser = user
+      if (!currentUser) {
+        const ok = await refreshSession()
+        if (cancelled) return
+        if (!ok) {
+          router.push("/auth/login")
+          return
+        }
+        currentUser = useAuthStore.getState().user
+      }
+
+      if (!currentUser) return
+
+      if (currentUser.role === "student" && !currentUser.hasCompletedPayment) {
+        toastRef.current({
+          variant: "destructive",
+          title: "Pembayaran Diperlukan",
+          description: "Silakan periksa status pembayaran Anda untuk mengakses dashboard.",
+        })
+        router.push("/payment")
+        return
+      }
+
+      if (currentUser.role === "student" && currentUser.hasCompletedPayment && !currentUser.whatsappNumber) {
+        toastRef.current({
+          variant: "destructive",
+          title: "Nomor WhatsApp Diperlukan",
+          description: "Silakan lengkapi nomor WhatsApp Anda untuk mengakses dashboard.",
+        })
+        router.push("/payment")
+        return
+      }
+
+      const currentRole = pathname.split("/")[2]
+      if (currentRole && currentUser.role !== currentRole) {
+        router.push(`/dashboard/${currentUser.role}`)
+        return
+      }
+
+      setLoading(false)
     }
 
-    if (!user) {
-      router.push("/auth/login")
-      return
+    void run()
+    return () => {
+      cancelled = true
     }
-
-    if (user.role === "student" && !user.hasCompletedPayment) {
-      toastRef.current({
-        variant: "destructive",
-        title: "Pembayaran Diperlukan",
-        description: "Silakan periksa status pembayaran Anda untuk mengakses dashboard.",
-      })
-      router.push("/payment")
-      return
-    }
-
-    if (user.role === "student" && user.hasCompletedPayment && !user.whatsappNumber) {
-      toastRef.current({
-        variant: "destructive",
-        title: "Nomor WhatsApp Diperlukan",
-        description: "Silakan lengkapi nomor WhatsApp Anda untuk mengakses dashboard.",
-      })
-      router.push("/payment")
-      return
-    }
-
-    const currentRole = pathname.split("/")[2]
-    if (currentRole && user.role !== currentRole) {
-      router.push(`/dashboard/${user.role}`)
-      return
-    }
-
-    setLoading(false)
-  }, [pathname, router, user, token, _hasHydrated])
+  }, [pathname, router, user, token, _hasHydrated, refreshSession])
 
   if (loading) {
     return (

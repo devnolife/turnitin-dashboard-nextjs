@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { createHash } from "crypto"
+import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
@@ -294,19 +295,22 @@ async function seedProdiFromFallback() {
 async function main() {
   console.log("Seeding database...")
 
-  // WARNING: MD5 is cryptographically weak but is kept here for compatibility
-  // with the login route (app/api/auth/login/route.ts) which uses MD5 comparison.
-  // TODO: Migrate both seed and login to bcrypt for stronger password security.
+  // Password disimpan dual: kolom `password` (MD5) untuk kompatibilitas dengan
+  // GraphQL UNISMUH, dan `passwordHash` (bcrypt) sebagai sumber kebenaran utama
+  // dipakai login route.
   const adminPassword = process.env.ADMIN_SEED_PASSWORD || "admin123"
   const instructorPassword = process.env.INSTRUCTOR_SEED_PASSWORD || "instruktur123"
+  const adminHash = await bcrypt.hash(adminPassword, 12)
+  const instructorHash = await bcrypt.hash(instructorPassword, 12)
 
   // Create admin account
   await prisma.user.upsert({
     where: { username: "admin" },
-    update: {},
+    update: { passwordHash: adminHash },
     create: {
       username: "admin",
       password: md5(adminPassword),
+      passwordHash: adminHash,
       name: "Administrator",
       role: "ADMIN",
       hasCompletedPayment: true,
@@ -317,10 +321,11 @@ async function main() {
   // Create instructor account
   await prisma.user.upsert({
     where: { username: "instruktur" },
-    update: {},
+    update: { passwordHash: instructorHash },
     create: {
       username: "instruktur",
       password: md5(instructorPassword),
+      passwordHash: instructorHash,
       name: "Instruktur Perpusmu",
       role: "INSTRUCTOR",
       hasCompletedPayment: true,

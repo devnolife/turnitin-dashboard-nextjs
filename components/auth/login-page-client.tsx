@@ -2,102 +2,214 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { CheckCircle2, ShieldCheck, Sparkles, GraduationCap } from "lucide-react"
 import { LoginForm } from "@/components/auth/login-form"
+
+const highlights = [
+  {
+    icon: ShieldCheck,
+    title: "Deteksi Plagiarisme Akurat",
+    desc: "Verifikasi orisinalitas berbasis standar akademik.",
+  },
+  {
+    icon: GraduationCap,
+    title: "Terintegrasi SIA UNISMUH",
+    desc: "Login langsung dengan akun kampus Anda.",
+  },
+  {
+    icon: Sparkles,
+    title: "Alur Pengajuan Modern",
+    desc: "Antarmuka rapi, proses cepat, notifikasi real-time.",
+  },
+]
+
+const stats = [
+  { value: "12k+", label: "Mahasiswa" },
+  { value: "320+", label: "Dosen" },
+  { value: "98%", label: "Akurasi" },
+]
 
 export default function LoginPageClient() {
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-primary-lighter/20 dark:bg-gray-900 transition-colors duration-300">
-      {/* Left side - Branding */}
-      <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-between relative overflow-hidden">
-        <div className="z-10">
-          <Link href="/" className="flex items-center gap-3">
+    <div className="relative min-h-screen w-full overflow-hidden bg-primary-lighter/30 dark:bg-gray-950 theme-transition">
+      {/* Decorative background layer */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-primary/30 blur-3xl animate-blob" />
+        <div className="login-blob-delay-1 absolute top-1/3 -right-24 h-[26rem] w-[26rem] rounded-full bg-secondary/60 blur-3xl animate-blob" />
+        <div className="login-blob-delay-2 absolute -bottom-40 left-1/3 h-[30rem] w-[30rem] rounded-full bg-accent/25 blur-3xl animate-blob" />
+
+        {/* Soft dot grid */}
+        <div className="login-dot-grid absolute inset-0 opacity-[0.18] dark:opacity-[0.08]" />
+      </div>
+
+      {/* Top bar */}
+      <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 md:px-10">
+        <Link href="/" className="group flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 -z-10 rounded-full bg-primary/40 blur-md transition-all group-hover:bg-primary/60" />
             <Image
               src="/logo.jpg"
               alt="Logo Unismuh Makassar"
               width={40}
               height={40}
-              className="rounded-full shadow-md"
-            />
-            <h1 className="text-2xl font-bold text-primary-dark dark:text-white">Perpusmu</h1>
-          </Link>
-        </div>
-
-        <div className="flex-1 flex flex-col justify-center items-center text-center z-10 py-12">
-          <div className="mb-8 relative">
-            <div className="absolute -z-10 inset-0 bg-gradient-to-r from-primary-dark/20 to-primary/20 rounded-full blur-3xl transform scale-150" />
-            <Image
-              src="/logo.jpg"
-              alt="Logo Universitas Muhammadiyah Makassar"
-              width={200}
-              height={200}
-              className="rounded-3xl shadow-xl"
-              priority
+              className="rounded-full ring-2 ring-white/70 dark:ring-white/10 shadow-md"
             />
           </div>
-
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary-dark dark:text-white">
-            Selamat Datang di{" "}
-            <span className="gradient-text">Perpusmu</span>
-          </h2>
-
-          <p className="text-muted-foreground max-w-md">
-            Sistem Manajemen Perpustakaan Digital Universitas Muhammadiyah Makassar
-          </p>
-        </div>
-
-        <div className="z-10 text-sm text-muted-foreground text-center md:text-left">
-          <blockquote className="space-y-2">
-            <p className="text-sm italic text-primary-dark/80 dark:text-primary-lighter/80">
-              &ldquo;Perpusmu memudahkan mahasiswa dalam mengakses layanan perpustakaan digital kampus.&rdquo;
+          <div className="leading-tight">
+            <p className="text-lg font-bold tracking-tight text-primary-dark dark:text-white">
+              Perpusmu
             </p>
-            <footer className="text-xs text-muted-foreground">— Universitas Muhammadiyah Makassar</footer>
-          </blockquote>
-        </div>
-
-        {/* Background blobs */}
-        <div className="absolute -z-0 top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary-dark/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-        </div>
-      </div>
-
-      {/* Right side - Login form */}
-      <div className="w-full md:w-1/2 bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-none md:rounded-l-3xl shadow-2xl p-6 md:p-12 flex items-center justify-center relative z-10">
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl font-bold mb-2 text-primary-dark dark:text-white">Masuk</h2>
-          <p className="text-muted-foreground mb-8">
-            Masukkan email dan password Anda untuk mengakses dashboard.
-          </p>
-
-          <LoginForm />
-
-          <div className="mt-8">
-            <p className="text-center text-sm text-muted-foreground">
-              Dengan masuk, Anda menyetujui{" "}
-              <Link
-                href="/terms"
-                className="text-primary hover:text-primary-dark hover:underline font-medium"
-              >
-                Ketentuan Layanan
-              </Link>{" "}
-              dan{" "}
-              <Link
-                href="/privacy"
-                className="text-primary hover:text-primary-dark hover:underline font-medium"
-              >
-                Kebijakan Privasi
-              </Link>
-              .
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              UNISMUH Makassar
             </p>
           </div>
+        </Link>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} Perpusmu - Universitas Muhammadiyah Makassar
-            </p>
-          </div>
+        <div className="hidden items-center gap-1.5 rounded-full border border-border/60 bg-white/70 px-4 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur-md dark:bg-white/5 md:flex">
+          <span className="relative inline-flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          Layanan beroperasi normal
         </div>
-      </div>
+      </header>
+
+      {/* Main split card */}
+      <main className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-center px-4 pb-10 md:px-10">
+        <div className="grid w-full overflow-hidden rounded-[2.25rem] border border-white/60 bg-white/70 shadow-[0_30px_80px_-30px_rgba(63,118,179,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/60 md:grid-cols-[1.05fr_1fr]">
+          {/* LEFT: Brand / Highlights */}
+          <section className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-[#2c5f8d] p-10 text-white md:flex">
+            {/* Decorative shapes */}
+            <div aria-hidden className="pointer-events-none absolute inset-0">
+              <div className="absolute -top-20 -right-16 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
+              <div className="absolute bottom-10 -left-10 h-60 w-60 animate-blob rounded-[40%_60%_60%_40%/50%_50%_50%_50%] bg-secondary/30 blur-2xl" />
+              <svg
+                className="absolute inset-0 h-full w-full opacity-[0.07]"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                    <path d="M 32 0 L 0 0 0 32" fill="none" stroke="white" strokeWidth="1" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+              </svg>
+            </div>
+
+            <div className="relative">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] backdrop-blur">
+                <Sparkles className="h-3 w-3" /> Sistem Cek Plagiarisme
+              </span>
+
+              <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight md:text-5xl">
+                Karya akademik
+                <br />
+                <span className="text-secondary">terverifikasi</span>,
+                <br />
+                proses tugas lebih ringkas.
+              </h1>
+
+              <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80">
+                Platform resmi Universitas Muhammadiyah Makassar untuk pengelolaan
+                pengecekan plagiarisme tugas akhir, makalah, dan publikasi mahasiswa.
+              </p>
+            </div>
+
+            <ul className="relative mt-10 space-y-3">
+              {highlights.map((h, i) => (
+                <li
+                  key={h.title}
+                  className={`animate-in slide-in-left flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm transition-colors hover:bg-white/10 stagger-${i + 1}`}
+                >
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/15 ring-1 ring-white/20">
+                    <h.icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">{h.title}</p>
+                    <p className="text-xs text-white/70">{h.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="relative mt-8 grid grid-cols-3 gap-2 rounded-2xl border border-white/15 bg-white/5 p-4 backdrop-blur-sm">
+              {stats.map((s) => (
+                <div key={s.label} className="text-center">
+                  <p className="text-2xl font-bold tracking-tight">{s.value}</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-white/70">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* RIGHT: Login form */}
+          <section className="relative flex items-center justify-center p-6 sm:p-10 md:p-12">
+            {/* Mobile brand strip */}
+            <div className="absolute inset-x-0 top-0 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-dark py-2.5 text-xs font-medium uppercase tracking-[0.18em] text-white md:hidden">
+              <Sparkles className="h-3 w-3" /> Perpusmu UNISMUH
+            </div>
+
+            <div className="animate-in slide-in-bottom stagger-1 w-full max-w-md pt-10 md:pt-0">
+              <div className="mb-8">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-dark dark:bg-primary/15 dark:text-primary-lighter">
+                  <CheckCircle2 className="h-3 w-3" /> Masuk Akun
+                </span>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                  Selamat datang kembali.
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Gunakan NIM atau username SIA UNISMUH untuk melanjutkan ke
+                  dashboard.
+                </p>
+              </div>
+
+              <LoginForm />
+
+              <div className="mt-8 space-y-4">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-dashed border-border" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-white/80 px-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur dark:bg-gray-900/80">
+                      Butuh bantuan?
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-center text-sm text-muted-foreground">
+                  Hubungi admin Perpusmu jika lupa password atau mengalami kendala
+                  login melalui WhatsApp resmi kampus.
+                </p>
+
+                <p className="text-center text-xs text-muted-foreground">
+                  Dengan masuk, Anda menyetujui{" "}
+                  <Link
+                    href="/terms"
+                    className="font-medium text-primary-dark underline-offset-4 hover:underline dark:text-primary-lighter"
+                  >
+                    Ketentuan Layanan
+                  </Link>{" "}
+                  &{" "}
+                  <Link
+                    href="/privacy"
+                    className="font-medium text-primary-dark underline-offset-4 hover:underline dark:text-primary-lighter"
+                  >
+                    Kebijakan Privasi
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer className="relative z-10 pb-6 text-center text-[11px] tracking-wide text-muted-foreground">
+        &copy; {new Date().getFullYear()} Perpusmu — Universitas Muhammadiyah Makassar
+      </footer>
     </div>
   )
 }

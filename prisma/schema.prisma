@@ -113,20 +113,41 @@ model ExamDetail {
 }
 
 model Submission {
-  id              String           @id @default(cuid())
-  userId          String
-  documentTitle   String
-  documentUrl     String
-  similarityScore Float?
-  status          SubmissionStatus @default(PENDING)
-  reportUrl       String?
-  reviewedBy      String?
-  reviewedAt      DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                 String           @id @default(cuid())
+  userId             String
+  documentTitle      String
+  documentUrl        String?
+  // File mahasiswa (uploaded once at create time)
+  fileName           String?
+  fileSize           Int?
+  fileMimeType       String?
+  // Klasifikasi
+  examType           ExamType?
+  chapter            String?
+  // Hasil dari instruktur
+  similarityScore    Float?
+  status             SubmissionStatus @default(PENDING)
+  reportUrl          String?
+  reportFileName     String?
+  reportFileSize     Int?
+  reportMimeType     String?
+  reportUploadedAt   DateTime?
+  rejectionReason    String?
+  reviewedBy         String?
+  reviewedAt         DateTime?
+  // Resubmit history
+  version            Int              @default(1)
+  parentSubmissionId String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Submission?  @relation("SubmissionResubmits", fields: [parentSubmissionId], references: [id], onDelete: SetNull)
+  children Submission[] @relation("SubmissionResubmits")
 
+  @@index([userId, examType])
+  @@index([status])
+  @@index([reviewedBy])
   @@map("submissions")
 }
 
@@ -167,6 +188,7 @@ enum ApprovalStatus {
 
 enum SubmissionStatus {
   PENDING
+  PROCESSING
   REVIEWED
   FLAGGED
 }

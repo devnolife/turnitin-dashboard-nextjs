@@ -381,3 +381,18 @@
   animation: fade-in-up 0.5s ease-out forwards;
 }
 
+
+/* === Login page modern utilities === */
+.login-dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(63, 118, 179, 0.5) 1px, transparent 0);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 40%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 40%, transparent 75%);
+}
+
+.login-blob-delay-1 { animation-delay: 2s; }
+.login-blob-delay-2 { animation-delay: 4s; }
+
+.stagger-150 { animation-delay: 150ms; }
+.stagger-270 { animation-delay: 270ms; }
+.stagger-390 { animation-delay: 390ms; }

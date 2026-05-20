@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createHash } from "crypto"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { hashPassword, md5 } from "@/lib/auth/password"
 import { logger } from "@/lib/logger"
 import { z } from "zod"
-
-function md5(input: string): string {
-  return createHash("md5").update(input).digest("hex")
-}
 
 const createInstructorSchema = z.object({
   username: z.string().min(3, "Username minimal 3 karakter"),
@@ -45,6 +41,7 @@ export async function POST(request: NextRequest) {
       data: {
         username,
         password: md5(password),
+        passwordHash: await hashPassword(password),
         name,
         email: email || null,
         hp: hp || null,

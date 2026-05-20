@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createHash } from "crypto"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { hashPassword, md5 } from "@/lib/auth/password"
 import { logger } from "@/lib/logger"
 import { z } from "zod"
-
-function md5(input: string): string {
-  return createHash("md5").update(input).digest("hex")
-}
 
 const updateInstructorSchema = z.object({
   name: z.string().min(1).optional(),
@@ -162,7 +158,10 @@ export async function PUT(
       data.hp = parsed.data.hp || null
       data.whatsappNumber = parsed.data.hp || null
     }
-    if (parsed.data.password) data.password = md5(parsed.data.password)
+    if (parsed.data.password) {
+      data.password = md5(parsed.data.password)
+      data.passwordHash = await hashPassword(parsed.data.password)
+    }
 
     const updated = await prisma.user.update({
       where: { id },
