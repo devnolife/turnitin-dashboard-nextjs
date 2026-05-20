@@ -1,6 +1,6 @@
 "use client"
 
-import { Users, FileCheck, Eye, BarChart, MessageSquare, ClipboardList } from "lucide-react"
+import { Users, FileCheck, Eye, BarChart, ClipboardList } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -56,14 +56,6 @@ export function DashboardQuickActions({ onNavigate }: DashboardQuickActionsProps
           >
             <BarChart className="h-6 w-6 text-primary-dark" />
             <span>Lihat Analitik</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="flex h-auto flex-col items-center justify-center gap-2 p-4"
-            onClick={() => onNavigate("/dashboard/instructor/messages")}
-          >
-            <MessageSquare className="h-6 w-6 text-primary-dark" />
-            <span>Kirim Pesan</span>
           </Button>
         </div>
       </CardContent>

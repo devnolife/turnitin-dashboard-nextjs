@@ -97,26 +97,28 @@ export function WhatsAppForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="whatsappNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nomor WhatsApp</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="+628123456789"
-                      {...field}
-                      className="focus:ring-2 focus:ring-primary/50 transition-all"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Masukkan nomor WhatsApp aktif Anda dengan format +62, 62, atau 0 diikuti dengan nomor.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <fieldset disabled={isSubmitting} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="whatsappNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nomor WhatsApp</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="+628123456789"
+                        {...field}
+                        className="focus:ring-2 focus:ring-primary/50 transition-all"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Masukkan nomor WhatsApp aktif Anda dengan format +62, 62, atau 0 diikuti dengan nomor.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </fieldset>
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary-dark to-primary"

@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/lib/store/auth-store"
+import { useToast } from "@/components/ui/use-toast"
 import { Mail, Shield, User, Save, Loader2, Phone } from "lucide-react"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
-import { PageTransition, FadeIn } from "@/components/ui/motion"
+import { PageTransition } from "@/components/ui/motion"
+import api from "@/lib/api/client"
 
 export function InstructorProfile() {
   const { user } = useAuthStore()
@@ -20,37 +22,27 @@ export function InstructorProfile() {
   const [hp, setHp] = useState("")
   const [whatsappNumber, setWhatsappNumber] = useState("")
   const [isSaving, setIsSaving] = useState(false)
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (user) {
       setName(user.name || "")
       setEmail(user.email || "")
-      setHp((user as any).hp || "")
+      setHp(user.hp || "")
       setWhatsappNumber(user.whatsappNumber || "")
     }
   }, [user])
 
   const handleSave = async () => {
     setIsSaving(true)
-    setMessage(null)
 
     try {
-      const res = await fetch("/api/instructor/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, hp, whatsappNumber }),
-      })
+      const res = await api.put("/instructor/profile", { name, email, hp, whatsappNumber })
+      const data = res.data
 
-      const data = await res.json()
-
-      if (res.ok) {
-        setMessage({ type: "success", text: "Profil berhasil diperbarui!" })
-      } else {
-        setMessage({ type: "error", text: data.message || "Gagal menyimpan" })
-      }
+      toast({ title: "Berhasil", description: "Profil berhasil diperbarui!" })
     } catch {
-      setMessage({ type: "error", text: "Terjadi kesalahan jaringan" })
+      toast({ variant: "destructive", title: "Error", description: "Terjadi kesalahan jaringan" })
     } finally {
       setIsSaving(false)
     }
@@ -65,7 +57,7 @@ export function InstructorProfile() {
             <CardContent className="pt-6">
               <div className="flex flex-col items-center gap-4 sm:flex-row">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src="" alt={user?.name || "Instructor"} />
+                  <AvatarImage alt={user?.name || "Instructor"} />
                   <AvatarFallback className="bg-primary-dark text-white text-xl">
                     {(user?.name || "IN").substring(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -86,71 +78,59 @@ export function InstructorProfile() {
               <CardDescription>Perbarui informasi profil Anda</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nama Lengkap</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Masukkan nama lengkap"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <fieldset disabled={isSaving} className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nama Lengkap</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@example.com"
-                      className="pl-10"
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Masukkan nama lengkap"
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="hp">No. Telepon</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="hp"
-                      value={hp}
-                      onChange={(e) => setHp(e.target.value)}
-                      placeholder="08xxxxxxxxxx"
-                      className="pl-10"
-                    />
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email@example.com"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hp">No. Telepon</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="hp"
+                        value={hp}
+                        onChange={(e) => setHp(e.target.value)}
+                        placeholder="08xxxxxxxxxx"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="wa">WhatsApp</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="wa"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                        placeholder="628xxxxxxxxxx"
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="wa">WhatsApp</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="wa"
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value)}
-                      placeholder="628xxxxxxxxxx"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {message && (
-                <FadeIn>
-                  <div
-                    className={`rounded-lg p-3 text-sm ${
-                      message.type === "success"
-                        ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                        : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                    }`}
-                  >
-                    {message.text}
-                  </div>
-                </FadeIn>
-              )}
+              </fieldset>
 
               <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={isSaving} className="gap-2">
@@ -184,7 +164,7 @@ export function InstructorProfile() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Telepon</span>
-                  <span className="font-medium">{(user as any)?.hp || "-"}</span>
+                  <span className="font-medium">{user?.hp || "-"}</span>
                 </div>
               </CardContent>
             </Card>

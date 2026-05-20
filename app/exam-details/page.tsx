@@ -9,11 +9,13 @@ import { Loader2 } from "lucide-react"
 
 export default function ExamDetailsPage() {
   const router = useRouter()
-  const { user, checkAuth } = useAuthStore()
+  const { user, checkAuth, _hasHydrated } = useAuthStore()
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!_hasHydrated) return
+
     if (!checkAuth()) {
       router.push("/auth/login")
       return
@@ -30,7 +32,7 @@ export default function ExamDetailsPage() {
     }
 
     setLoading(false)
-  }, [checkAuth, router, toast, user])
+  }, [checkAuth, router, toast, user, _hasHydrated])
 
   if (loading) {
     return (

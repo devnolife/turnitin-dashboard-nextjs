@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/motion"
+import api from "@/lib/api/client"
 import { SubmissionsTable } from "./submissions-table"
 import { SubmissionDetailDialog } from "./submission-detail-dialog"
 
@@ -68,9 +69,8 @@ export function SubmissionsPage() {
     const fetchSubmissions = async () => {
       setIsLoading(true)
       try {
-        const res = await fetch("/api/instructor/submissions")
-        if (!res.ok) throw new Error("Failed to fetch")
-        const data = await res.json()
+        const res = await api.get("/instructor/submissions")
+        const data = res.data
 
         const enhanced: SubmissionData[] = (data.submissions || []).map((s: Omit<SubmissionData, "studentId" | "studentName" | "comments">) => ({
           ...s,
@@ -156,16 +156,10 @@ export function SubmissionsPage() {
     if (!selectedSubmission || !feedbackText.trim()) return
 
     try {
-      const res = await fetch(`/api/instructor/submissions/${selectedSubmission.id}/feedback`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          feedback: feedbackText,
-          status: "REVIEWED",
-        }),
+      await api.post(`/instructor/submissions/${selectedSubmission.id}/feedback`, {
+        feedback: feedbackText,
+        status: "REVIEWED",
       })
-
-      if (!res.ok) throw new Error("Failed")
 
       // Update local state
       const updatedSubmissions = submissions.map((s) =>

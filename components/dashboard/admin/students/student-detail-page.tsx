@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ArrowLeft, FileText, CheckCircle, AlertTriangle, Clock, CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +12,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, FadeIn, SlideUp, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import api from "@/lib/api/client"
 
 interface Submission {
   id: string
@@ -80,12 +90,8 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
       setIsLoading(true)
       setError(null)
       try {
-        const res = await fetch(`/api/admin/students/${studentId}`)
-        if (!res.ok) {
-          setError("Mahasiswa tidak ditemukan")
-          return
-        }
-        const data = await res.json()
+        const res = await api.get(`/admin/students/${studentId}`)
+        const data = res.data
         setStudent(data.student)
       } catch {
         setError("Gagal mengambil detail mahasiswa")
@@ -149,6 +155,26 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
   return (
     <PageTransition>
       <div className="flex flex-col gap-6">
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/admin">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/admin/students">Mahasiswa</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{student.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/admin/students")}>
             <ArrowLeft className="h-4 w-4" />

@@ -10,6 +10,11 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { useToast } from "@/components/ui/use-toast"
+import api from "@/lib/api/client"
 import {
   Users,
   Search,
@@ -19,6 +24,8 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
+  UserPlus,
+  Loader2,
 } from "lucide-react"
 
 interface StudentRow {
@@ -34,11 +41,19 @@ interface StudentRow {
     examType: string
     approvalStatus: string
   } | null
+  instructorId: string | null
+  instructorName: string | null
   submissionsCount: number
   reviewedCount: number
   flaggedCount: number
   avgSimilarity: number
   paymentStatus: string
+}
+
+interface InstructorOption {
+  id: string
+  name: string
+  studentCount: number
 }
 
 export function AdminStudentsPage() {
@@ -49,6 +64,14 @@ export function AdminStudentsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
   const router = useRouter()
+  const { toast } = useToast()
+
+  // Assign dialog
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [assignTarget, setAssignTarget] = useState<StudentRow | null>(null)
+  const [selectedInstructor, setSelectedInstructor] = useState<string>("")
+  const [instructors, setInstructors] = useState<InstructorOption[]>([])
+  const [assigning, setAssigning] = useState(false)
 
   useEffect(() => {
     fetchStudents()
@@ -57,14 +80,48 @@ export function AdminStudentsPage() {
   const fetchStudents = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/admin/students")
-      const data = await res.json()
+      const res = await api.get("/admin/students")
+      const data = res.data
       setStudents(data.students || [])
       setFiltered(data.students || [])
     } catch {
       console.error("Gagal mengambil data mahasiswa")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const openAssign = async (student: StudentRow) => {
+    setAssignTarget(student)
+    setSelectedInstructor(student.instructorId || "")
+    setAssignOpen(true)
+    try {
+      const res = await api.get("/admin/instructors")
+      setInstructors(
+        (res.data.instructors || []).map((i: { id: string; name: string; studentCount?: number }) => ({
+          id: i.id,
+          name: i.name,
+          studentCount: i.studentCount || 0,
+        }))
+      )
+    } catch {
+      setInstructors([])
+    }
+  }
+
+  const handleAssign = async () => {
+    if (!assignTarget) return
+    setAssigning(true)
+    try {
+      const instructorId = selectedInstructor === "__none__" ? null : (selectedInstructor || null)
+      const res = await api.put(`/admin/students/${assignTarget.id}`, { instructorId })
+      toast({ title: res.data.message })
+      setAssignOpen(false)
+      fetchStudents()
+    } catch {
+      toast({ variant: "destructive", title: "Gagal mengubah instruktur" })
+    } finally {
+      setAssigning(false)
     }
   }
 
@@ -227,6 +284,7 @@ export function AdminStudentsPage() {
                       <TableHead>Ujian</TableHead>
                       <TableHead>Pengajuan</TableHead>
                       <TableHead>Rata-rata Similarity</TableHead>
+                      <TableHead>Instruktur</TableHead>
                       <TableHead>Pembayaran</TableHead>
                       <TableHead className="w-[60px]"></TableHead>
                     </TableRow>
@@ -257,6 +315,18 @@ export function AdminStudentsPage() {
                           <Badge variant={s.avgSimilarity > 30 ? "destructive" : s.avgSimilarity > 20 ? "warning" : "success"}>
                             {s.avgSimilarity}%
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {s.instructorName ? (
+                            <Badge variant="outline" className="cursor-pointer hover:bg-accent" onClick={() => openAssign(s)}>
+                              {s.instructorName}
+                            </Badge>
+                          ) : (
+                            <Button variant="ghost" size="sm" className="text-xs h-7 text-muted-foreground" onClick={() => openAssign(s)}>
+                              <UserPlus className="mr-1 h-3 w-3" />
+                              Assign
+                            </Button>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge variant={s.hasCompletedPayment ? "success" : "secondary"}>
@@ -307,6 +377,43 @@ export function AdminStudentsPage() {
           </CardContent>
         </Card>
       </DashboardMainCard>
+
+      {/* Assign Instructor Dialog */}
+      <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Instruktur</DialogTitle>
+            <DialogDescription>
+              Pilih instruktur untuk mahasiswa <strong>{assignTarget?.name}</strong> ({assignTarget?.nim})
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Instruktur</Label>
+              <Select value={selectedInstructor} onValueChange={setSelectedInstructor}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih instruktur..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">— Tidak ada (Lepas) —</SelectItem>
+                  {instructors.map((inst) => (
+                    <SelectItem key={inst.id} value={inst.id}>
+                      {inst.name} ({inst.studentCount} mahasiswa)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignOpen(false)}>Batal</Button>
+            <Button onClick={handleAssign} disabled={assigning}>
+              {assigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageTransition>
   )
 }

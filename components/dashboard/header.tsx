@@ -4,9 +4,10 @@ import { Bell, Menu, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/dashboard/theme-toggle"
+import type { User } from "@/lib/types"
 
 interface DashboardHeaderProps {
-  user: any | null
+  user: User | null
   onMenuClick?: () => void
 }
 
@@ -39,7 +40,7 @@ export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
       <div className="flex items-center gap-3">
         <ThemeToggle />
 
-        <Button variant="ghost" size="icon" className="rounded-full relative theme-transition">
+        <Button variant="ghost" size="icon" className="rounded-full relative theme-transition" aria-label="Notifikasi">
           <Bell className="h-5 w-5" />
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full" />
         </Button>

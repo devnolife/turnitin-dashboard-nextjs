@@ -20,10 +20,13 @@ model User {
   hasCompletedPayment Boolean         @default(false)
   whatsappNumber      String?
   studyProgramId      String?
+  instructorId        String?
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
   studyProgram StudyProgram? @relation(fields: [studyProgramId], references: [id])
+  instructor   User?         @relation("InstructorStudents", fields: [instructorId], references: [id])
+  students     User[]        @relation("InstructorStudents")
   examDetails  ExamDetail?
   submissions  Submission[]
   payments     Payment[]
@@ -109,14 +112,16 @@ model Submission {
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  userId        String
-  amount        Float
-  status        PaymentStatus @default(PENDING)
-  paymentMethod String?
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id               String        @id @default(cuid())
+  userId           String
+  amount           Float
+  status           PaymentStatus @default(PENDING)
+  paymentMethod    String?
+  jenisPembayaran  String?
+  periode          String?
+  paidAt           DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

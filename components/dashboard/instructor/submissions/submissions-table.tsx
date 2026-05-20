@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
+import type { SubmissionData } from "./submissions-page"
 
 interface SubmissionsTableProps {
-  filteredSubmissions: any[]
+  filteredSubmissions: SubmissionData[]
   totalSubmissions: number
   formatDate: (dateString: string) => string
   onViewSubmission: (submissionId: string) => void
-  onProvideFeedback: (submission: any) => void
+  onProvideFeedback: (submission: SubmissionData) => void
 }
 
 export function SubmissionsTable({
@@ -65,7 +66,7 @@ export function SubmissionsTable({
                         <div>
                           <div className="font-medium">{submission.documentTitle}</div>
                           <div className="text-xs text-muted-foreground">
-                            Dikirim pada {formatDate(submission.submittedAt)}
+                            Dikirim pada {formatDate(submission.createdAt)}
                           </div>
                         </div>
                       </div>
@@ -87,21 +88,21 @@ export function SubmissionsTable({
                       <div className="flex items-center gap-2">
                         <div className="w-24">
                           <Progress
-                            value={submission.similarityScore}
+                            value={submission.similarityScore ?? 0}
                             max={100}
                             className="h-2"
                             indicatorColor={
-                              submission.similarityScore < 15
+                              (submission.similarityScore ?? 0) < 15
                                 ? "bg-green-500"
-                                : submission.similarityScore < 30
+                                : (submission.similarityScore ?? 0) < 30
                                   ? "bg-blue-500"
-                                  : submission.similarityScore < 50
+                                  : (submission.similarityScore ?? 0) < 50
                                     ? "bg-amber-500"
                                     : "bg-red-500"
                             }
                           />
                         </div>
-                        <span className="text-sm font-medium">{submission.similarityScore}%</span>
+                        <span className="text-sm font-medium">{submission.similarityScore ?? 0}%</span>
                       </div>
                     </TableCell>
                     <TableCell>

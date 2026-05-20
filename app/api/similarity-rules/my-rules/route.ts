@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { verifyAuth, handleAuthError } from "@/lib/auth/verify-token"
+import { verifyAuth, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
 
 export async function GET(request: NextRequest) {
   try {
@@ -69,7 +70,8 @@ export async function GET(request: NextRequest) {
       rules,
     })
   } catch (error) {
-    console.error("My rules error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("My rules error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil aturan similarity" },
       { status: 500 }

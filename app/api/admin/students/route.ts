@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get("search")
     const prodi = searchParams.get("prodi")
@@ -41,6 +45,12 @@ export async function GET(request: NextRequest) {
             examType: true,
             approvalStatus: true,
             submittedAt: true,
+          },
+        },
+        instructor: {
+          select: {
+            id: true,
+            name: true,
           },
         },
         submissions: {
@@ -86,6 +96,8 @@ export async function GET(request: NextRequest) {
         hasCompletedPayment: s.hasCompletedPayment,
         createdAt: s.createdAt,
         examDetail: s.examDetails || null,
+        instructorId: s.instructor?.id || null,
+        instructorName: s.instructor?.name || null,
         submissionsCount,
         reviewedCount,
         flaggedCount,
@@ -97,7 +109,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ students: formatted })
   } catch (error) {
-    console.error("Admin students error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Admin students error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil data mahasiswa" },
       { status: 500 }

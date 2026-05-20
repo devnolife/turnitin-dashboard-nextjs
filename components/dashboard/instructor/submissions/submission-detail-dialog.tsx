@@ -12,11 +12,12 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import type { SubmissionData } from "./submissions-page"
 
 interface SubmissionDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  selectedSubmission: any | null
+  selectedSubmission: SubmissionData | null
   feedbackText: string
   onFeedbackTextChange: (text: string) => void
   onSubmitFeedback: () => void
@@ -48,18 +49,18 @@ export function SubmissionDetailDialog({
                 <div className="font-medium">{selectedSubmission.documentTitle}</div>
                 <Badge
                   variant={
-                    selectedSubmission.similarityScore < 15
+                    (selectedSubmission.similarityScore ?? 0) < 15
                       ? "outline"
-                      : selectedSubmission.similarityScore < 30
+                      : (selectedSubmission.similarityScore ?? 0) < 30
                         ? "secondary"
                         : "destructive"
                   }
                 >
-                  {selectedSubmission.similarityScore}% Similarity
+                  {selectedSubmission.similarityScore ?? 0}% Similarity
                 </Badge>
               </div>
               <div className="mt-2 text-sm text-muted-foreground">
-                Dikirim oleh {selectedSubmission.studentName} pada {formatDate(selectedSubmission.submittedAt)}
+                Dikirim oleh {selectedSubmission.studentName} pada {formatDate(selectedSubmission.createdAt)}
               </div>
             </div>
           )}

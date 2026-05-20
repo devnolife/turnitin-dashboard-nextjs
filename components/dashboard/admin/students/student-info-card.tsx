@@ -27,8 +27,7 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { type Student, type ExamStage } from "@/lib/store/student-store"
-import type { BadgeVariant } from "@/components/ui/badge"
+import { type Student } from "@/lib/store/student-store"
 
 export interface InstructorInfo {
   id: string
@@ -39,7 +38,7 @@ export interface InstructorInfo {
 export interface StudentInfoCardProps {
   student: Student
   instructor: InstructorInfo | null
-  instructors: Array<{ id: string; name: string; status: string }>
+  instructors: Array<{ id: string; name: string }>
   instructorDialogOpen: boolean
   onInstructorDialogOpenChange: (open: boolean) => void
   selectedInstructorId: string
@@ -47,10 +46,6 @@ export interface StudentInfoCardProps {
   onAssignInstructor: () => void
   onRemoveInstructor: () => void
   onViewInstructor: (instructorId: string) => void
-  formatExamStage: (stage: ExamStage) => string
-  getExamStageBadgeVariant: (stage: ExamStage) => BadgeVariant
-  getFacultyName: (facultyId: string) => string
-  getProgramName: (facultyId: string, programId: string) => string
 }
 
 export function StudentInfoCard({
@@ -64,13 +59,7 @@ export function StudentInfoCard({
   onAssignInstructor,
   onRemoveInstructor,
   onViewInstructor,
-  formatExamStage,
-  getExamStageBadgeVariant,
-  getFacultyName,
-  getProgramName,
 }: StudentInfoCardProps) {
-  const activeInstructors = instructors.filter((i) => i.status === "active")
-
   const instructorSelectDialog = (
     <DialogContent>
       <DialogHeader>
@@ -85,7 +74,7 @@ export function StudentInfoCard({
               <SelectValue placeholder="Pilih instruktur" />
             </SelectTrigger>
             <SelectContent>
-              {activeInstructors.map((inst) => (
+              {instructors.map((inst) => (
                 <SelectItem key={inst.id} value={inst.id}>
                   {inst.name}
                 </SelectItem>
@@ -116,9 +105,9 @@ export function StudentInfoCard({
             </AvatarFallback>
           </Avatar>
           <CardTitle className="mt-4 text-center">{student.name}</CardTitle>
-          <CardDescription className="text-center">{student.studentId}</CardDescription>
-          <Badge variant={getExamStageBadgeVariant(student.examStage)} className="mt-2">
-            {formatExamStage(student.examStage)}
+          <CardDescription className="text-center">{student.nim}</CardDescription>
+          <Badge variant={student.hasCompletedPayment ? "success" : "secondary"} className="mt-2">
+            {student.hasCompletedPayment ? "Pembayaran Lunas" : "Belum Bayar"}
           </Badge>
         </div>
       </CardHeader>
@@ -126,23 +115,19 @@ export function StudentInfoCard({
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Mail className="h-4 w-4 text-muted-foreground" />
-            <span>{student.email}</span>
+            <span>{student.email || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
             <Phone className="h-4 w-4 text-muted-foreground" />
-            <span>{student.whatsappNumber}</span>
+            <span>{student.hp || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            <span>{getFacultyName(student.facultyId)}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            <span>{getProgramName(student.facultyId, student.programId)}</span>
+            <span>{student.prodi}</span>
           </div>
           <div className="flex items-center gap-3">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span>Terakhir aktif: {student.lastActive}</span>
+            <span>Terdaftar: {new Date(student.createdAt).toLocaleDateString("id-ID")}</span>
           </div>
 
           <Separator />
@@ -213,16 +198,8 @@ export function StudentInfoCard({
         </div>
       </CardContent>
       <CardFooter className="flex justify-center border-t pt-4">
-        <Badge
-          variant={
-            student.status === "active"
-              ? "success"
-              : student.status === "inactive"
-                ? "secondary"
-                : "destructive"
-          }
-        >
-          {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+        <Badge variant={student.hasCompletedPayment ? "success" : "secondary"}>
+          {student.paymentStatus}
         </Badge>
       </CardFooter>
     </Card>

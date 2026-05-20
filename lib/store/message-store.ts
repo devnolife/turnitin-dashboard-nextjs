@@ -265,9 +265,13 @@ export const useMessageStore = create<MessageState>((set) => ({
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      // In a real app, you would send the message to the server and update the state accordingly
-      console.log("Message sent:", message)
-      set({ loading: false })
+      const newMessage: Message = {
+        ...message,
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+        read: false,
+      }
+      set((state) => ({ inbox: [...state.inbox, newMessage], loading: false }))
     } catch (error) {
       set({ error: "Failed to send message", loading: false })
     }
@@ -278,9 +282,12 @@ export const useMessageStore = create<MessageState>((set) => ({
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      // In a real app, you would update the message status on the server and update the state accordingly
-      console.log("Message marked as read:", messageId)
-      set({ loading: false })
+      set((state) => ({
+        inbox: state.inbox.map((msg) =>
+          msg.id === messageId ? { ...msg, read: true } : msg
+        ),
+        loading: false,
+      }))
     } catch (error) {
       set({ error: "Failed to mark message as read", loading: false })
     }
@@ -291,9 +298,10 @@ export const useMessageStore = create<MessageState>((set) => ({
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      // In a real app, you would delete the message on the server and update the state accordingly
-      console.log("Message deleted:", messageId)
-      set({ loading: false })
+      set((state) => ({
+        inbox: state.inbox.filter((msg) => msg.id !== messageId),
+        loading: false,
+      }))
     } catch (error) {
       set({ error: "Failed to delete message", loading: false })
     }

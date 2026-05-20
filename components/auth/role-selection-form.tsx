@@ -13,27 +13,14 @@ export function RoleSelectionForm() {
   const router = useRouter()
   const { toast } = useToast()
 
-  const { login, isLoading, error } = useAuthStore()
+  const { isLoading, error } = useAuthStore()
 
   const handleRoleSelection = async (role: string) => {
     setSelectedRole(role)
 
     try {
-      // Login with the selected role
-      const user = await login(role)
-
-      // Show success toast
-      toast({
-        title: "Login berhasil",
-        description: `Anda masuk sebagai ${role === "student" ? "Mahasiswa" : role === "instructor" ? "Instruktur" : "Admin"}`,
-      })
-
-      // Redirect based on role and payment status
-      if (role === "student" && !user.hasCompletedPayment) {
-        router.push("/payment")
-      } else {
-        router.push(`/dashboard/${role}`)
-      }
+      // Redirect to login page with role pre-selected
+      router.push(`/auth/login?role=${role}`)
     } catch (err) {
       toast({
         variant: "destructive",

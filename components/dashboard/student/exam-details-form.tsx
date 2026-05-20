@@ -118,61 +118,62 @@ export function ExamDetailsForm() {
         <CardContent className="pt-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <StaggerContainer className="space-y-6">
-                <StaggerItem>
-                  <FormField
-                    control={form.control}
-                    name="thesisTitle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Judul Skripsi</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              placeholder="Masukkan judul skripsi Anda"
-                              className="pl-10 transition-all focus:ring-2 focus:ring-primary/50"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormDescription className="mt-2">
-                          Masukkan judul lengkap skripsi Anda sesuai dengan dokumen resmi.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </StaggerItem>
-
-                <StaggerItem>
-                  <FormField
-                    control={form.control}
-                    name="examType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Jenis Ujian</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <fieldset disabled={isSubmitting} className="space-y-8">
+                <StaggerContainer className="space-y-6">
+                  <StaggerItem>
+                    <FormField
+                      control={form.control}
+                      name="thesisTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Judul Skripsi</FormLabel>
                           <FormControl>
-                            <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
-                              <SelectValue placeholder="Pilih jenis ujian" />
-                            </SelectTrigger>
+                            <div className="relative">
+                              <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder="Masukkan judul skripsi Anda"
+                                className="pl-10 transition-all focus:ring-2 focus:ring-primary/50"
+                                {...field}
+                              />
+                            </div>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="proposal_defense">Sidang Proposal</SelectItem>
-                            <SelectItem value="results_defense">Sidang Hasil</SelectItem>
-                            <SelectItem value="final_defense">Sidang Akhir</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription className="mt-2">Pilih jenis ujian yang akan Anda ikuti.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </StaggerItem>
+                          <FormDescription className="mt-2">
+                            Masukkan judul lengkap skripsi Anda sesuai dengan dokumen resmi.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </StaggerItem>
 
-                <StaggerItem className="pt-2">
-                  <Button
+                  <StaggerItem>
+                    <FormField
+                      control={form.control}
+                      name="examType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Jenis Ujian</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
+                                <SelectValue placeholder="Pilih jenis ujian" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="proposal_defense">Sidang Proposal</SelectItem>
+                              <SelectItem value="results_defense">Sidang Hasil</SelectItem>
+                              <SelectItem value="final_defense">Sidang Akhir</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription className="mt-2">Pilih jenis ujian yang akan Anda ikuti.</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </StaggerItem>
+
+                  <StaggerItem className="pt-2">
+                    <Button
                     type="submit"
                     className="w-full"
                     disabled={isSubmitting}
@@ -181,10 +182,11 @@ export function ExamDetailsForm() {
                     isLoading={isSubmitting}
                     loadingText="Mengirim..."
                   >
-                    Kirim Detail Ujian
-                  </Button>
-                </StaggerItem>
-              </StaggerContainer>
+                      Kirim Detail Ujian
+                    </Button>
+                  </StaggerItem>
+                </StaggerContainer>
+              </fieldset>
             </form>
           </Form>
         </CardContent>

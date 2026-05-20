@@ -1,14 +1,17 @@
 export interface StudyProgram {
   id: string
   name: string
-  degree: "bachelor" | "master" | "doctoral"
-  students: number
+  code: string
+  degree: string
+  facultyId: string
+  faculty?: Faculty
+  _count?: { users: number }
 }
 
 export interface Faculty {
   id: string
   name: string
   code: string
-  programs: StudyProgram[]
-  students: number
+  programs?: StudyProgram[]
+  _count?: { programs: number }
 }

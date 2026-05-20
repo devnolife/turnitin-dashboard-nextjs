@@ -1,5 +1,6 @@
 import { jwtVerify, SignJWT } from "jose"
 import { NextRequest, NextResponse } from "next/server"
+import { logger } from "@/lib/logger"
 
 export type Role = "STUDENT" | "INSTRUCTOR" | "ADMIN"
 
@@ -63,6 +64,6 @@ export function handleAuthError(error: unknown): NextResponse {
   if (error instanceof AuthError) {
     return NextResponse.json({ message: error.message }, { status: error.status })
   }
-  console.error("Unexpected error:", error)
+  logger.error("Unexpected error:", error)
   return NextResponse.json({ message: "Terjadi kesalahan server" }, { status: 500 })
 }

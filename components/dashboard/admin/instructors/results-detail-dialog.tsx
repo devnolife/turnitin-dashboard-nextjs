@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { type TurnitinResult, type ExamStage } from "@/lib/store/student-store"
+import { type TurnitinResult, type ExamStage } from "@/lib/types/student"
 
 export interface ReviewDialogProps {
   open: boolean

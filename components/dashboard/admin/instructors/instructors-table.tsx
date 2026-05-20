@@ -33,11 +33,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { FadeIn } from "@/components/ui/motion"
+import type { Instructor } from "@/lib/types"
+import type { Faculty, StudyProgram } from "@/lib/types"
 
 interface InstructorsTableProps {
   // Data
-  filteredInstructors: any[]
-  currentItems: any[]
+  filteredInstructors: Instructor[]
+  currentItems: Instructor[]
   isLoading: boolean
   // Pagination
   currentPage: number
@@ -61,8 +63,8 @@ interface InstructorsTableProps {
   // Sort
   onSortBy: (field: string) => void
   // Data/helpers
-  faculties: any[]
-  availablePrograms: any[]
+  faculties: Faculty[]
+  availablePrograms: StudyProgram[]
   formatPosition: (position: string) => string
   getStatusBadgeVariant: (status: string) => string
   getFacultyName: (facultyId: string) => string

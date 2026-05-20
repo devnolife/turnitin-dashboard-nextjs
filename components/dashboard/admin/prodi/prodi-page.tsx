@@ -21,9 +21,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter, FadeIn } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import api from "@/lib/api/client"
 
 interface SimilarityRule {
   id: string
@@ -80,8 +82,8 @@ export function AdminProdiPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/admin/study-programs")
-        const data = await res.json()
+        const res = await api.get("/admin/study-programs")
+        const data = res.data
         const flatPrograms: FlatProgram[] = (data.programs || []).map((p: StudyProgramAPI) => ({
           id: p.id,
           name: p.name,
@@ -359,13 +361,17 @@ export function AdminProdiPage() {
                   ))}
                 </div>
               ) : filteredPrograms.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-8 text-center">
-                  <BookOpen className="h-12 w-12 text-muted-foreground/40" />
-                  <h3 className="mt-4 text-lg font-medium">Program Studi Tidak Ditemukan</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Tidak ada program studi yang sesuai dengan pencarian Anda.
-                  </p>
-                </div>
+                <Empty>
+                  <EmptyMedia variant="icon">
+                    <BookOpen className="h-6 w-6" />
+                  </EmptyMedia>
+                  <EmptyHeader>
+                    <EmptyTitle>Program Studi Tidak Ditemukan</EmptyTitle>
+                    <EmptyDescription>
+                      Tidak ada program studi yang sesuai dengan pencarian Anda.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               ) : (
                 <Table>
                   <TableHeader>

@@ -6,9 +6,11 @@ import { useAuthStore } from "@/lib/store/auth-store"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, checkAuth } = useAuthStore()
+  const { user, checkAuth, _hasHydrated } = useAuthStore()
 
   useEffect(() => {
+    if (!_hasHydrated) return
+
     if (!checkAuth()) {
       router.push("/auth/login")
       return
@@ -16,7 +18,7 @@ export default function DashboardPage() {
     if (user?.role) {
       router.replace(`/dashboard/${user.role}`)
     }
-  }, [router, user, checkAuth])
+  }, [router, user, checkAuth, _hasHydrated])
 
   return (
     <div className="flex h-screen items-center justify-center">

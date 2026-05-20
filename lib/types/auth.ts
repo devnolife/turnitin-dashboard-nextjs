@@ -19,4 +19,5 @@ export interface User {
   hasCompletedPayment: boolean
   whatsappNumber?: string
   examDetails?: ExamDetails | null
+  createdAt?: string
 }

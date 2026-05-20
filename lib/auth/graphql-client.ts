@@ -17,6 +17,14 @@ export interface MahasiswaPembayaran {
   statusPembayaran: string
 }
 
+export interface ProdiData {
+  kodeFakultas: string
+  kodeProdi: string
+  namaProdi: string
+  kodeNim: string
+  statusProdi: string
+}
+
 interface GraphQLResponse {
   data?: {
     mahasiswaUser: MahasiswaData | null
@@ -26,7 +34,14 @@ interface GraphQLResponse {
 
 interface GraphQLPembayaranResponse {
   data?: {
-    mahasiswaPembayaran: MahasiswaPembayaran | null
+    mahasiswaPembayaran: MahasiswaPembayaran[] | null
+  }
+  errors?: Array<{ message: string }>
+}
+
+interface GraphQLProdiResponse {
+  data?: {
+    getAllProdi: ProdiData[] | null
   }
   errors?: Array<{ message: string }>
 }
@@ -76,7 +91,7 @@ export async function fetchMahasiswaByNim(nim: string): Promise<MahasiswaData | 
 
 export async function fetchMahasiswaPembayaran(
   nim: string,
-  jenisPembayaran: string = "PERPUSTAKAAN"
+  jenisPembayaran: string = "TURNITIN DIPLOMA S1"
 ): Promise<MahasiswaPembayaran | null> {
   const graphqlUrl = getGraphQLUrl()
 
@@ -110,5 +125,83 @@ export async function fetchMahasiswaPembayaran(
     throw new Error(`GraphQL error: ${result.errors[0].message}`)
   }
 
-  return result.data?.mahasiswaPembayaran ?? null
+  const items = result.data?.mahasiswaPembayaran
+  if (!items || items.length === 0) return null
+  return items[0]
 }
+
+// Mapping kodeFakultas ke nama fakultas
+export const FAKULTAS_MAP: Record<string, string> = {
+  "01": "Fakultas Keguruan dan Ilmu Pendidikan",
+  "02": "Fakultas Teknik",
+  "03": "Fakultas Ekonomi dan Bisnis",
+  "04": "Fakultas Pertanian",
+  "05": "Fakultas Kedokteran dan Ilmu Kesehatan",
+  "06": "Fakultas Agama Islam",
+  "07": "Fakultas Ilmu Sosial dan Ilmu Politik",
+  "08": "Fakultas Hukum",
+  "09": "Program Pascasarjana",
+  FKIP: "Fakultas Keguruan dan Ilmu Pendidikan",
+  FT: "Fakultas Teknik",
+  FEB: "Fakultas Ekonomi dan Bisnis",
+  FP: "Fakultas Pertanian",
+  FKIK: "Fakultas Kedokteran dan Ilmu Kesehatan",
+  FK: "Fakultas Kedokteran dan Ilmu Kesehatan",
+  FAI: "Fakultas Agama Islam",
+  FISIP: "Fakultas Ilmu Sosial dan Ilmu Politik",
+  FH: "Fakultas Hukum",
+  PPS: "Program Pascasarjana",
+  PASCA: "Program Pascasarjana",
+}
+
+function parseDegree(namaProdi: string): string {
+  const lower = namaProdi.toLowerCase()
+  if (lower.startsWith("s-1 ") || lower.startsWith("s1 ")) return "S1"
+  if (lower.startsWith("s-2 ") || lower.startsWith("s2 ") || lower.startsWith("magister ")) return "S2"
+  if (lower.startsWith("s-3 ") || lower.startsWith("s3 ")) return "S3"
+  if (lower.startsWith("d-3 ") || lower.startsWith("d3 ")) return "D3"
+  if (lower.startsWith("d-4 ") || lower.startsWith("d4 ")) return "D4"
+  if (lower.startsWith("profesi ") || lower.includes("profesi")) return "Profesi"
+  if (lower.startsWith("spesialis ")) return "Spesialis"
+  return "S1"
+}
+
+export function getFakultas(kodeFakultas: string): string {
+  return FAKULTAS_MAP[kodeFakultas] ?? `Fakultas ${kodeFakultas}`
+}
+
+export async function fetchAllProdi(): Promise<ProdiData[]> {
+  const graphqlUrl = getGraphQLUrl()
+
+  const query = `
+    query GetAllProdi {
+      getAllProdi {
+        kodeFakultas
+        kodeProdi
+        namaProdi
+        kodeNim
+        statusProdi
+      }
+    }
+  `
+
+  const response = await fetch(graphqlUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`GraphQL request failed: ${response.status}`)
+  }
+
+  const result: GraphQLProdiResponse = await response.json()
+
+  if (result.errors && result.errors.length > 0) {
+    throw new Error(`GraphQL error: ${result.errors[0].message}`)
+  }
+
+  return result.data?.getAllProdi ?? []
+}
+
+export { parseDegree }

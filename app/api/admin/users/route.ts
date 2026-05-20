@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const searchParams = request.nextUrl.searchParams
     const role = searchParams.get("role")
     const search = searchParams.get("search")
@@ -42,7 +46,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ users })
   } catch (error) {
-    console.error("Admin users error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Admin users error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil data pengguna" },
       { status: 500 }

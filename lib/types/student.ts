@@ -18,17 +18,17 @@ export interface TurnitinResult {
 export interface Student {
   id: string
   name: string
-  email: string
-  studentId: string
-  facultyId: string
-  programId: string
-  instructorId: string | null
-  examStage: ExamStage
-  thesisTitle: string | null
-  examDate: string | null
-  submittedAt: string
-  lastActive: string
-  status: "active" | "inactive" | "suspended"
-  whatsappNumber: string
-  turnitinResults: TurnitinResult[]
+  nim: string
+  email: string | null
+  hp: string | null
+  prodi: string
+  hasCompletedPayment: boolean
+  createdAt: string
+  examDetail: { thesisTitle: string; examType: string; approvalStatus: string } | null
+  submissionsCount: number
+  reviewedCount: number
+  flaggedCount: number
+  avgSimilarity: number
+  lastSubmissionAt: string | null
+  paymentStatus: string
 }

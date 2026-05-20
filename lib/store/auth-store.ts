@@ -11,9 +11,11 @@ interface AuthState {
   isLoading: boolean
   error: string | null
   isAuthenticated: boolean
+  _hasHydrated: boolean
   login: (username: string, password: string) => Promise<User>
   logout: () => void
   checkAuth: () => boolean
+  setToken: (token: string) => void
   updateUser: (userData: Partial<User>) => void
   updateWhatsappNumber: (whatsappNumber: string) => Promise<void>
   submitExamDetails: (details: { thesisTitle: string; examType: ExamType }) => Promise<void>
@@ -27,6 +29,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       isAuthenticated: false,
+      _hasHydrated: false,
 
       login: async (username: string, password: string) => {
         set({ isLoading: true, error: null })
@@ -66,17 +69,35 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        const token = get().token
+        if (token) {
+          fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+          }).catch(() => {})
+        }
+
         set({
           user: null,
           token: null,
           isAuthenticated: false,
           error: null,
         })
+
+        // Hapus storage secara eksplisit agar tidak ada sisa session
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("perpusmu-auth-storage")
+          window.location.href = "/auth/login"
+        }
       },
 
       checkAuth: () => {
         const { token } = get()
         return !!token
+      },
+
+      setToken: (token: string) => {
+        set({ token })
       },
 
       updateUser: (userData: Partial<User>) => {
@@ -163,6 +184,20 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "perpusmu-auth-storage",
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      onRehydrateStorage: () => {
+        return () => {
+          // Defer to avoid ReferenceError: useAuthStore is not yet assigned
+          // during synchronous rehydration in Zustand v5
+          setTimeout(() => {
+            useAuthStore.setState({ _hasHydrated: true })
+          }, 0)
+        }
+      },
     },
   ),
 )

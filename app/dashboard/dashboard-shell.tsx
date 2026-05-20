@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -15,26 +15,33 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const { toast } = useToast()
+  const toastRef = useRef(toast)
+  toastRef.current = toast
 
-  const { user, checkAuth } = useAuthStore()
+  const user = useAuthStore((s) => s.user)
+  const token = useAuthStore((s) => s.token)
+  const _hasHydrated = useAuthStore((s) => s._hasHydrated)
 
   const handleMobileOpenChange = useCallback((open: boolean) => {
     setMobileOpen(open)
   }, [])
 
   useEffect(() => {
-    if (!checkAuth()) {
+    // Tunggu store selesai hydrate dari localStorage
+    if (!_hasHydrated) return
+
+    if (!token) {
       router.push("/auth/login")
       return
     }
 
     if (!user) {
-      setLoading(false)
+      router.push("/auth/login")
       return
     }
 
     if (user.role === "student" && !user.hasCompletedPayment) {
-      toast({
+      toastRef.current({
         variant: "destructive",
         title: "Pembayaran Diperlukan",
         description: "Silakan periksa status pembayaran Anda untuk mengakses dashboard.",
@@ -44,7 +51,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     }
 
     if (user.role === "student" && user.hasCompletedPayment && !user.whatsappNumber) {
-      toast({
+      toastRef.current({
         variant: "destructive",
         title: "Nomor WhatsApp Diperlukan",
         description: "Silakan lengkapi nomor WhatsApp Anda untuk mengakses dashboard.",
@@ -60,12 +67,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     }
 
     setLoading(false)
-  }, [pathname, router, toast, user, checkAuth])
+  }, [pathname, router, user, token, _hasHydrated])
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
+      <div className="flex h-screen items-center justify-center bg-background" role="status" aria-label="Memuat...">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <span className="sr-only">Memuat...</span>
       </div>
     )
   }

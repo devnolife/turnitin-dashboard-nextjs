@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { MessageSquare, ThumbsUp, AlertCircle, Loader2 } from "lucide-react"
 import { useAuthStore } from "@/lib/store/auth-store"
+import api from "@/lib/api/client"
 
 interface FeedbackItem {
   id: string
@@ -26,9 +27,9 @@ export function StudentFeedback() {
     async function fetchFeedback() {
       if (!user?.id) return
       try {
-        const res = await fetch(`/api/submissions?userId=${user.id}`)
-        if (res.ok) {
-          const data = await res.json()
+        const res = await api.get("/submissions")
+        if (res.status === 200) {
+          const data = res.data
           const reviewed = (data.submissions || []).filter(
             (s: { rawStatus: string }) => s.rawStatus === "REVIEWED" || s.rawStatus === "FLAGGED"
           )

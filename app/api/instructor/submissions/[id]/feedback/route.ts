@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { verifyAuth, requireRole, handleAuthError } from "@/lib/auth/verify-token"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
+import { z } from "zod"
+
+const feedbackSchema = z.object({
+  feedback: z.string().min(1, "Feedback tidak boleh kosong").optional(),
+  status: z.enum(["REVIEWED", "FLAGGED", "PENDING"]).optional(),
+  similarityScore: z.number().min(0).max(100).optional(),
+})
 
 export async function POST(
   request: NextRequest,
@@ -12,7 +20,14 @@ export async function POST(
 
     const { id: submissionId } = await params
     const body = await request.json()
-    const { feedback, status, similarityScore } = body
+    const result = feedbackSchema.safeParse(body)
+    if (!result.success) {
+      return NextResponse.json(
+        { message: "Data tidak valid", errors: result.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
+    const { feedback, status, similarityScore } = result.data
 
     const submission = await prisma.submission.findUnique({
       where: { id: submissionId },
@@ -20,6 +35,14 @@ export async function POST(
 
     if (!submission) {
       return NextResponse.json({ message: "Pengiriman tidak ditemukan" }, { status: 404 })
+    }
+
+    // Ownership check: prevent different instructor from overwriting
+    if (submission.reviewedBy && submission.reviewedBy !== auth.userId) {
+      return NextResponse.json(
+        { message: "Pengiriman ini sudah direview oleh dosen lain" },
+        { status: 403 }
+      )
     }
 
     const updateData: Record<string, unknown> = {
@@ -46,7 +69,8 @@ export async function POST(
       submission: updated,
     })
   } catch (error) {
-    console.error("Submission feedback error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Submission feedback error:", error)
     return NextResponse.json(
       { message: "Gagal menyimpan feedback" },
       { status: 500 }

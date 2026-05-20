@@ -1,181 +1,82 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Filter, X, Mail, FileText, Eye, Users } from "lucide-react"
+import { Search, Users, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Badge, type BadgeVariant } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
-import type { ExamStage, Student } from "@/lib/store/student-store"
-import { useInstructorStore } from "@/lib/store/instructor-store"
+import { useStudentStore } from "@/lib/store/student-store"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import api from "@/lib/api/client"
 import React from "react"
+
+interface InstructorStudent {
+  id: string
+  name: string
+  nim: string
+  email: string | null
+  prodi: string
+  submissionsCount: number
+  avgSimilarity: number
+  examDetail: { thesisTitle: string; examType: string; approvalStatus: string } | null
+}
 
 export function InstructorStudentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [programFilter, setProgramFilter] = useState<string | null>(null)
-  const [examStageFilter, setExamStageFilter] = useState<ExamStage | "all">("all")
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
+  const [students, setStudents] = useState<InstructorStudent[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const router = useRouter()
   const { toast } = useToast()
   const { user } = useAuthStore()
-  const { getStudentsByInstructor, getStudentsByInstructorAndProgram, getStudentsByInstructorAndExamStage } =
-    useInstructorStore()
 
-  // Get instructor ID from auth store
-  const instructorId = user?.id
-
-  // Memoize the store functions to prevent recreation on each render
-  const memoizedGetStudentsByInstructor = React.useCallback(
-    (id: string) => getStudentsByInstructor(id),
-    [getStudentsByInstructor],
-  )
-
-  const memoizedGetStudentsByInstructorAndProgram = React.useCallback(
-    (id: string, programId: string) => getStudentsByInstructorAndProgram(id, programId),
-    [getStudentsByInstructorAndProgram],
-  )
-
-  const memoizedGetStudentsByInstructorAndExamStage = React.useCallback(
-    (id: string, stage: ExamStage) => getStudentsByInstructorAndExamStage(id, stage),
-    [getStudentsByInstructorAndExamStage],
-  )
-
-  // Get all students supervised by the instructor
-  const allStudents = React.useMemo(
-    () => (instructorId ? memoizedGetStudentsByInstructor(instructorId) : []),
-    [instructorId, memoizedGetStudentsByInstructor],
-  )
-
-  // Apply filters
   useEffect(() => {
-    if (!instructorId) {
-      setFilteredStudents([])
-      return
-    }
-
-    let students = [...allStudents]
-
-    // Apply program filter
-    if (programFilter) {
-      students = memoizedGetStudentsByInstructorAndProgram(instructorId, programFilter)
-    }
-
-    // Apply exam stage filter
-    if (examStageFilter !== "all") {
-      students = memoizedGetStudentsByInstructorAndExamStage(instructorId, examStageFilter)
-    }
-
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      students = students.filter(
-        (student) =>
-          student.name.toLowerCase().includes(query) ||
-          student.studentId.toLowerCase().includes(query) ||
-          (student.thesisTitle && student.thesisTitle.toLowerCase().includes(query)),
-      )
-    }
-
-    setFilteredStudents(students)
-  }, [
-    searchQuery,
-    programFilter,
-    examStageFilter,
-    allStudents,
-    instructorId,
-    memoizedGetStudentsByInstructorAndProgram,
-    memoizedGetStudentsByInstructorAndExamStage,
-  ])
-
-  // Format exam stage for display
-  const formatExamStage = (stage: ExamStage) => {
-    switch (stage) {
-      case "applicant":
-        return "Pendaftar"
-      case "proposal_exam":
-        return "Ujian Proposal"
-      case "results_exam":
-        return "Ujian Hasil"
-      case "final_exam":
-        return "Ujian Akhir"
-      case "graduated":
-        return "Lulus"
-      default:
-        return stage
-    }
-  }
-
-  // Get badge variant based on exam stage
-  const getExamStageBadgeVariant = (stage: ExamStage): BadgeVariant => {
-    switch (stage) {
-      case "applicant":
-        return "outline"
-      case "proposal_exam":
-        return "secondary"
-      case "results_exam":
-        return "default"
-      case "final_exam":
-        return "success"
-      case "graduated":
-        return "gradient"
-      default:
-        return "outline"
-    }
-  }
-
-  // Get program name from student data
-  const getProgramName = (programId: string) => {
-    return programId || "Program Tidak Diketahui"
-  }
-
-  // Get available programs from student data
-  const getAvailablePrograms = React.useCallback(() => {
-    const programMap = new Map<string, string>()
-    allStudents.forEach((student: Student) => {
-      if (student.programId && !programMap.has(student.programId)) {
-        programMap.set(student.programId, student.programId)
+    const fetchStudents = async () => {
+      setIsLoading(true)
+      try {
+        const res = await api.get("/instructor/students")
+        setStudents(res.data.students || [])
+      } catch {
+        setStudents([])
+      } finally {
+        setIsLoading(false)
       }
-    })
-    return Array.from(programMap, ([id, name]) => ({ id, name }))
-  }, [allStudents])
+    }
+    fetchStudents()
+  }, [])
 
-  // Memoize the available programs
-  const availablePrograms = React.useMemo(() => getAvailablePrograms(), [getAvailablePrograms])
+  const filteredStudents = React.useMemo(() => {
+    if (!searchQuery) return students
+    const q = searchQuery.toLowerCase()
+    return students.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.nim.toLowerCase().includes(q) ||
+        (s.examDetail?.thesisTitle && s.examDetail.thesisTitle.toLowerCase().includes(q)),
+    )
+  }, [students, searchQuery])
 
-  // Count students by exam stage
-  const countStudentsByExamStage = (stage: ExamStage) => {
-    return allStudents.filter((student) => student.examStage === stage).length
-  }
-
-  // Handle view student details
   const handleViewStudent = (studentId: string) => {
     router.push(`/dashboard/instructor/students/${studentId}`)
   }
 
-  // Handle email student
-  const handleEmailStudent = (email: string) => {
+  const handleEmailStudent = (email: string | null) => {
+    if (!email) return
     toast({
       title: "Email Terkirim",
       description: `Email telah dikirim ke ${email}`,
     })
   }
 
-  // Handle view submissions
-  const handleViewSubmissions = (studentId: string) => {
-    router.push(`/dashboard/instructor/submissions?studentId=${studentId}`)
-  }
-
   return (
     <PageTransition>
-      <DashboardMainCard title="Daftar Mahasiswa" subtitle="Kelola dan pantau mahasiswa di bawah pengawasan Anda 👥" icon={Users}>
+      <DashboardMainCard title="Daftar Mahasiswa" subtitle="Kelola dan pantau mahasiswa 👥" icon={Users}>
       <div className="flex flex-col gap-6">
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
@@ -185,9 +86,9 @@ export function InstructorStudentsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={allStudents.length} />
+                  <AnimatedCounter value={students.length} />
                 </div>
-                <p className="text-xs text-muted-foreground">Di bawah pengawasan Anda</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa terdaftar</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -195,13 +96,13 @@ export function InstructorStudentsPage() {
           <StaggerItem>
             <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Ujian Proposal</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={countStudentsByExamStage("proposal_exam")} />
+                  <AnimatedCounter value={students.reduce((a, s) => a + s.submissionsCount, 0)} />
                 </div>
-                <p className="text-xs text-muted-foreground">Mahasiswa tahap proposal</p>
+                <p className="text-xs text-muted-foreground">Dokumen diajukan</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -209,13 +110,13 @@ export function InstructorStudentsPage() {
           <StaggerItem>
             <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Ujian Hasil</CardTitle>
+                <CardTitle className="text-sm font-medium">Ujian Aktif</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={countStudentsByExamStage("results_exam")} />
+                  <AnimatedCounter value={students.filter((s) => s.examDetail != null).length} />
                 </div>
-                <p className="text-xs text-muted-foreground">Mahasiswa tahap hasil</p>
+                <p className="text-xs text-muted-foreground">Mahasiswa dengan ujian</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -223,13 +124,15 @@ export function InstructorStudentsPage() {
           <StaggerItem>
             <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Ujian Akhir</CardTitle>
+                <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  <AnimatedCounter value={countStudentsByExamStage("final_exam")} />
+                  {students.length > 0
+                    ? Math.round(students.reduce((a, s) => a + s.avgSimilarity, 0) / students.length)
+                    : 0}%
                 </div>
-                <p className="text-xs text-muted-foreground">Mahasiswa tahap akhir</p>
+                <p className="text-xs text-muted-foreground">Seluruh mahasiswa</p>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -238,7 +141,7 @@ export function InstructorStudentsPage() {
         <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
           <CardHeader>
             <CardTitle>Mahasiswa</CardTitle>
-            <CardDescription>Kelola mahasiswa di bawah pengawasan Anda</CardDescription>
+            <CardDescription>Daftar mahasiswa dalam sistem</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -252,134 +155,56 @@ export function InstructorStudentsPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="flex gap-2">
-                <Select value={programFilter || ""} onValueChange={(value) => setProgramFilter(value || null)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Semua Program" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all_programs">Semua Program</SelectItem>
-                    {availablePrograms.map((program) => (
-                      <SelectItem key={program.id} value={program.id}>
-                        {program.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={examStageFilter}
-                  onValueChange={(value) => setExamStageFilter(value as ExamStage | "all")}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Semua Tahap" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Tahap</SelectItem>
-                    <SelectItem value="proposal_exam">Ujian Proposal</SelectItem>
-                    <SelectItem value="results_exam">Ujian Hasil</SelectItem>
-                    <SelectItem value="final_exam">Ujian Akhir</SelectItem>
-                    <SelectItem value="graduated">Lulus</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
-
-            {/* Active filters */}
-            {(programFilter || examStageFilter !== "all" || searchQuery) && (
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center">
-                  <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Filter aktif:</span>
-                </div>
-
-                {programFilter && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    Program: {availablePrograms.find((p) => p.id === programFilter)?.name}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 p-0 hover:bg-transparent"
-                      onClick={() => setProgramFilter(null)}
-                    >
-                      <X className="h-3 w-3" />
-                      <span className="sr-only">Hapus filter program</span>
-                    </Button>
-                  </Badge>
-                )}
-
-                {examStageFilter !== "all" && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    Tahap: {formatExamStage(examStageFilter)}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 p-0 hover:bg-transparent"
-                      onClick={() => setExamStageFilter("all")}
-                    >
-                      <X className="h-3 w-3" />
-                      <span className="sr-only">Hapus filter tahap</span>
-                    </Button>
-                  </Badge>
-                )}
-
-                {searchQuery && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    Cari: {searchQuery}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 p-0 hover:bg-transparent"
-                      onClick={() => setSearchQuery("")}
-                    >
-                      <X className="h-3 w-3" />
-                      <span className="sr-only">Hapus pencarian</span>
-                    </Button>
-                  </Badge>
-                )}
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => {
-                    setProgramFilter(null)
-                    setExamStageFilter("all")
-                    setSearchQuery("")
-                  }}
-                >
-                  Hapus semua
-                </Button>
-              </div>
-            )}
 
             <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Mahasiswa</TableHead>
-                    <TableHead>Program</TableHead>
-                    <TableHead>Tahap Ujian</TableHead>
+                    <TableHead>Program Studi</TableHead>
+                    <TableHead>Pengajuan</TableHead>
+                    <TableHead>Similarity</TableHead>
                     <TableHead>Judul Skripsi</TableHead>
                     <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredStudents.length > 0 ? (
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="h-24 text-center">
+                        <div className="flex items-center justify-center">
+                          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                          <span className="ml-2">Memuat data...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredStudents.length > 0 ? (
                     filteredStudents.map((student) => (
                       <TableRow key={student.id}>
                         <TableCell>
                           <div className="font-medium">{student.name}</div>
-                          <div className="text-sm text-muted-foreground">{student.studentId}</div>
+                          <div className="text-sm text-muted-foreground">{student.nim}</div>
                         </TableCell>
-                        <TableCell>{getProgramName(student.programId)}</TableCell>
+                        <TableCell>{student.prodi}</TableCell>
+                        <TableCell>{student.submissionsCount}</TableCell>
                         <TableCell>
-                          <Badge variant={getExamStageBadgeVariant(student.examStage)}>
-                            {formatExamStage(student.examStage)}
+                          <Badge
+                            variant={
+                              student.avgSimilarity > 30
+                                ? "destructive"
+                                : student.avgSimilarity > 20
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
+                            {student.avgSimilarity}%
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="max-w-xs truncate">{student.thesisTitle || "Belum ada judul skripsi"}</div>
+                          <div className="max-w-xs truncate">
+                            {student.examDetail?.thesisTitle || "Belum ada judul skripsi"}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-2">
@@ -387,27 +212,19 @@ export function InstructorStudentsPage() {
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">Lihat</span>
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleEmailStudent(student.email)}>
-                              <Mail className="h-4 w-4" />
-                              <span className="sr-only">Email</span>
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleViewSubmissions(student.id)}>
-                              <FileText className="h-4 w-4" />
-                              <span className="sr-only">Pengiriman</span>
-                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
+                      <TableCell colSpan={6} className="h-24 text-center">
                         <div className="flex flex-col items-center justify-center">
                           <p className="text-lg font-medium">Tidak ada mahasiswa ditemukan</p>
                           <p className="text-sm text-muted-foreground">
-                            {allStudents.length === 0
-                              ? "Anda belum memiliki mahasiswa yang ditugaskan."
-                              : "Coba sesuaikan filter Anda untuk menemukan mahasiswa."}
+                            {students.length === 0
+                              ? "Belum ada mahasiswa terdaftar."
+                              : "Coba sesuaikan pencarian Anda."}
                           </p>
                         </div>
                       </TableCell>

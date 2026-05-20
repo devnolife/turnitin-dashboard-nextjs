@@ -11,12 +11,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import type { BadgeVariant } from "@/components/ui/badge"
-import { type Student, type ExamStage } from "@/lib/store/student-store"
+import { type Student } from "@/lib/store/student-store"
 
 interface StudentOverviewCardProps {
   student: Student
-  formatExamStage: (stage: ExamStage) => string
-  getExamStageBadgeVariant: (stage: ExamStage) => BadgeVariant
+  formatExamStage?: (stage: string) => string
+  getExamStageBadgeVariant?: (stage: string) => BadgeVariant
 }
 
 export function StudentOverviewCard({
@@ -24,6 +24,8 @@ export function StudentOverviewCard({
   formatExamStage,
   getExamStageBadgeVariant,
 }: StudentOverviewCardProps) {
+  const examType = student.examDetail?.examType || ""
+
   return (
     <Card>
       <CardHeader>
@@ -37,59 +39,41 @@ export function StudentOverviewCard({
             </AvatarFallback>
           </Avatar>
           <CardTitle className="mt-4 text-center">{student.name}</CardTitle>
-          <CardDescription className="text-center">{student.studentId}</CardDescription>
-          <Badge variant={getExamStageBadgeVariant(student.examStage)} className="mt-2">
-            {formatExamStage(student.examStage)}
-          </Badge>
+          <CardDescription className="text-center">{student.nim}</CardDescription>
+          {examType && (
+            <Badge variant={getExamStageBadgeVariant ? getExamStageBadgeVariant(examType) : "outline"} className="mt-2">
+              {formatExamStage ? formatExamStage(examType) : examType}
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Mail className="h-4 w-4 text-muted-foreground" />
-            <span>{student.email}</span>
+            <span>{student.email || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
             <Phone className="h-4 w-4 text-muted-foreground" />
-            <span>{student.whatsappNumber}</span>
+            <span>{student.hp || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span>Terakhir aktif: {student.lastActive}</span>
+            <span>Prodi: {student.prodi}</span>
           </div>
 
           <Separator />
 
           <div className="space-y-2">
-            <h3 className="text-sm font-medium">Progres Pengiriman</h3>
+            <h3 className="text-sm font-medium">Statistik Pengajuan</h3>
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Progres Keseluruhan</span>
-                  <span className="font-medium">
-                    {student.examStage === "applicant"
-                      ? "0%"
-                      : student.examStage === "proposal_exam"
-                        ? "25%"
-                        : student.examStage === "results_exam"
-                          ? "50%"
-                          : student.examStage === "final_exam"
-                            ? "75%"
-                            : "100%"}
-                  </span>
+                  <span>Pengajuan</span>
+                  <span className="font-medium">{student.submissionsCount}</span>
                 </div>
                 <Progress
-                  value={
-                    student.examStage === "applicant"
-                      ? 0
-                      : student.examStage === "proposal_exam"
-                        ? 25
-                        : student.examStage === "results_exam"
-                          ? 50
-                          : student.examStage === "final_exam"
-                            ? 75
-                            : 100
-                  }
+                  value={Math.min(student.submissionsCount * 20, 100)}
                   className="h-2 bg-primary-lighter/30"
                   indicatorColor="bg-gradient-to-r from-primary to-primary"
                 />
@@ -97,45 +81,11 @@ export function StudentOverviewCard({
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span>Proposal</span>
-                  <span className="font-medium">
-                    {student.examStage === "applicant" ? "Belum" : "Selesai"}
-                  </span>
+                  <span>Rata-rata Similarity</span>
+                  <span className="font-medium">{student.avgSimilarity}%</span>
                 </div>
                 <Progress
-                  value={student.examStage === "applicant" ? 0 : 100}
-                  className="h-1.5 bg-primary-lighter/30"
-                  indicatorColor="bg-primary"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Hasil</span>
-                  <span className="font-medium">
-                    {student.examStage === "applicant" || student.examStage === "proposal_exam"
-                      ? "Belum"
-                      : "Selesai"}
-                  </span>
-                </div>
-                <Progress
-                  value={student.examStage === "applicant" || student.examStage === "proposal_exam" ? 0 : 100}
-                  className="h-1.5 bg-primary-lighter/30"
-                  indicatorColor="bg-primary"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Akhir</span>
-                  <span className="font-medium">
-                    {student.examStage === "final_exam" || student.examStage === "graduated"
-                      ? "Selesai"
-                      : "Belum"}
-                  </span>
-                </div>
-                <Progress
-                  value={student.examStage === "final_exam" || student.examStage === "graduated" ? 100 : 0}
+                  value={student.avgSimilarity}
                   className="h-1.5 bg-primary-lighter/30"
                   indicatorColor="bg-primary"
                 />
@@ -146,16 +96,8 @@ export function StudentOverviewCard({
       </CardContent>
       <CardFooter>
         <div className="flex justify-center w-full border-t pt-4">
-          <Badge
-            variant={
-              student.status === "active"
-                ? "success"
-                : student.status === "inactive"
-                  ? "secondary"
-                  : "destructive"
-            }
-          >
-            {student.status === "active" ? "Aktif" : student.status === "inactive" ? "Tidak Aktif" : "Ditangguhkan"}
+          <Badge variant={student.hasCompletedPayment ? "success" : "secondary"}>
+            {student.hasCompletedPayment ? "Pembayaran Lunas" : "Belum Bayar"}
           </Badge>
         </div>
       </CardFooter>

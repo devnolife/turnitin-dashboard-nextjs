@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
+
+const similarityRuleSchema = z.object({
+  studyProgramId: z.string().min(1, "Study program ID wajib diisi"),
+  ruleType: z.string().min(1, "Rule type wajib diisi").max(50),
+  rules: z.array(z.object({
+    label: z.string().min(1, "Label wajib diisi").max(100, "Label maksimal 100 karakter"),
+    maxPercentage: z.number().min(0, "Persentase minimal 0").max(100, "Persentase maksimal 100"),
+  })),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,14 +19,14 @@ export async function POST(request: NextRequest) {
     requireRole(auth, "ADMIN")
 
     const body = await request.json()
-    const { studyProgramId, ruleType, rules } = body
-
-    if (!studyProgramId || !ruleType || !Array.isArray(rules)) {
+    const parsed = similarityRuleSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { message: "Data tidak lengkap" },
+        { message: parsed.error.errors[0].message },
         { status: 400 }
       )
     }
+    const { studyProgramId, ruleType, rules } = parsed.data
 
     // Delete existing rules for this program with this type
     await prisma.similarityRule.deleteMany({
@@ -50,7 +61,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)
-    console.error("Similarity rules error:", error)
+    logger.error("Similarity rules error:", error)
     return NextResponse.json(
       { message: "Gagal menyimpan aturan similarity" },
       { status: 500 }

@@ -1,8 +1,12 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const [totalUsers, totalStudents, totalInstructors, totalSubmissions, totalPayments, completedPayments] =
       await Promise.all([
         prisma.user.count(),
@@ -30,7 +34,8 @@ export async function GET() {
       pendingExamApprovals,
     })
   } catch (error) {
-    console.error("Admin stats error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Admin stats error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil data statistik" },
       { status: 500 }

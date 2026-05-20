@@ -1,11 +1,28 @@
 import { NextRequest, NextResponse } from "next/server"
+import { createHash } from "crypto"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
+import { z } from "zod"
+
+function md5(input: string): string {
+  return createHash("md5").update(input).digest("hex")
+}
+
+const updateInstructorSchema = z.object({
+  name: z.string().min(1).optional(),
+  email: z.string().email().optional().or(z.literal("")),
+  hp: z.string().optional().or(z.literal("")),
+  password: z.string().min(6).optional().or(z.literal("")),
+})
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const { id } = await params
 
     const instructor = await prisma.user.findUnique({
@@ -101,9 +118,107 @@ export async function GET(
 
     return NextResponse.json({ instructor: formatted })
   } catch (error) {
-    console.error("Admin instructor detail error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Admin instructor detail error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil detail instruktur" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+    const { id } = await params
+
+    const body = await request.json()
+    const parsed = updateInstructorSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: parsed.error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    const existing = await prisma.user.findUnique({
+      where: { id, role: "INSTRUCTOR" },
+    })
+    if (!existing) {
+      return NextResponse.json(
+        { message: "Instruktur tidak ditemukan" },
+        { status: 404 }
+      )
+    }
+
+    const data: Record<string, unknown> = {}
+    if (parsed.data.name) data.name = parsed.data.name
+    if (parsed.data.email !== undefined) data.email = parsed.data.email || null
+    if (parsed.data.hp !== undefined) {
+      data.hp = parsed.data.hp || null
+      data.whatsappNumber = parsed.data.hp || null
+    }
+    if (parsed.data.password) data.password = md5(parsed.data.password)
+
+    const updated = await prisma.user.update({
+      where: { id },
+      data,
+      select: { id: true, name: true, username: true, email: true, hp: true },
+    })
+
+    return NextResponse.json({
+      message: "Instruktur berhasil diperbarui",
+      instructor: updated,
+    })
+  } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Update instructor error:", error)
+    return NextResponse.json(
+      { message: "Gagal memperbarui instruktur" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+    const { id } = await params
+
+    const existing = await prisma.user.findUnique({
+      where: { id, role: "INSTRUCTOR" },
+    })
+    if (!existing) {
+      return NextResponse.json(
+        { message: "Instruktur tidak ditemukan" },
+        { status: 404 }
+      )
+    }
+
+    // Lepas semua mahasiswa yang di-assign ke instruktur ini
+    await prisma.user.updateMany({
+      where: { instructorId: id },
+      data: { instructorId: null },
+    })
+
+    await prisma.user.delete({ where: { id } })
+
+    return NextResponse.json({
+      message: "Instruktur berhasil dihapus",
+    })
+  } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Delete instructor error:", error)
+    return NextResponse.json(
+      { message: "Gagal menghapus instruktur" },
       { status: 500 }
     )
   }

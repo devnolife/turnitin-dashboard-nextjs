@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -11,13 +10,10 @@ import { Settings, Save, Loader2 } from "lucide-react"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { PageTransition, FadeIn } from "@/components/ui/motion"
 import { useAuthStore } from "@/lib/store/auth-store"
+import api from "@/lib/api/client"
 
 export function InstructorSettings() {
   const { user } = useAuthStore()
-
-  const [emailNotif, setEmailNotif] = useState(true)
-  const [submissionNotif, setSubmissionNotif] = useState(true)
-  const [messageNotif, setMessageNotif] = useState(true)
 
   const [displayName, setDisplayName] = useState("")
   const [email, setEmail] = useState("")
@@ -36,19 +32,10 @@ export function InstructorSettings() {
     setMessage(null)
 
     try {
-      const res = await fetch("/api/instructor/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: displayName, email }),
-      })
+      const res = await api.put("/instructor/profile", { name: displayName, email })
+      const data = res.data
 
-      const data = await res.json()
-
-      if (res.ok) {
-        setMessage({ type: "success", text: "Pengaturan berhasil disimpan!" })
-      } else {
-        setMessage({ type: "error", text: data.message || "Gagal menyimpan" })
-      }
+      setMessage({ type: "success", text: "Pengaturan berhasil disimpan!" })
     } catch {
       setMessage({ type: "error", text: "Terjadi kesalahan jaringan" })
     } finally {
@@ -60,50 +47,6 @@ export function InstructorSettings() {
     <PageTransition>
       <DashboardMainCard title="Pengaturan" subtitle="Kelola preferensi dan informasi akun Anda ⚙️" icon={Settings}>
         <div className="space-y-6">
-          <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle>Notifikasi</CardTitle>
-              <CardDescription>Kelola preferensi notifikasi Anda</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="email-notif">Notifikasi Email</Label>
-                  <p className="text-xs text-muted-foreground">Terima pemberitahuan via email</p>
-                </div>
-                <Switch
-                  id="email-notif"
-                  checked={emailNotif}
-                  onCheckedChange={setEmailNotif}
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="submission-notif">Pengiriman Baru</Label>
-                  <p className="text-xs text-muted-foreground">Notifikasi saat ada pengiriman baru</p>
-                </div>
-                <Switch
-                  id="submission-notif"
-                  checked={submissionNotif}
-                  onCheckedChange={setSubmissionNotif}
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="message-notif">Pesan Masuk</Label>
-                  <p className="text-xs text-muted-foreground">Notifikasi saat ada pesan baru</p>
-                </div>
-                <Switch
-                  id="message-notif"
-                  checked={messageNotif}
-                  onCheckedChange={setMessageNotif}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
           <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
             <CardHeader>
               <CardTitle>Akun</CardTitle>

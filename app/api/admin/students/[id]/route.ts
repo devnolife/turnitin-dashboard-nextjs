@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const { id } = await params
+
+    if (!id || id.trim().length === 0) {
+      return NextResponse.json(
+        { message: "ID mahasiswa tidak valid" },
+        { status: 400 }
+      )
+    }
 
     const student = await prisma.user.findUnique({
       where: { id, role: "STUDENT" },
@@ -150,10 +161,64 @@ export async function GET(
 
     return NextResponse.json({ student: formatted })
   } catch (error) {
-    console.error("Admin student detail error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Admin student detail error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil detail mahasiswa" },
       { status: 500 }
     )
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+    const { id } = await params
+    const body = await request.json()
+    const { instructorId } = body
+
+    const student = await prisma.user.findUnique({
+      where: { id, role: "STUDENT" },
+      select: { id: true },
+    })
+    if (!student) {
+      return NextResponse.json({ message: "Mahasiswa tidak ditemukan" }, { status: 404 })
+    }
+
+    if (instructorId) {
+      const instructor = await prisma.user.findUnique({
+        where: { id: instructorId, role: "INSTRUCTOR" },
+        select: { id: true, name: true },
+      })
+      if (!instructor) {
+        return NextResponse.json({ message: "Instruktur tidak ditemukan" }, { status: 404 })
+      }
+
+      await prisma.user.update({
+        where: { id },
+        data: { instructorId },
+      })
+
+      return NextResponse.json({
+        message: `Mahasiswa berhasil di-assign ke ${instructor.name}`,
+        instructorId: instructor.id,
+        instructorName: instructor.name,
+      })
+    } else {
+      // Unassign
+      await prisma.user.update({
+        where: { id },
+        data: { instructorId: null },
+      })
+      return NextResponse.json({ message: "Instruktur berhasil dilepas", instructorId: null, instructorName: null })
+    }
+  } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Assign instructor error:", error)
+    return NextResponse.json({ message: "Gagal mengubah instruktur" }, { status: 500 })
   }
 }

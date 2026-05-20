@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Slider } from "@/components/ui/slider"
 import { useToast } from "@/components/ui/use-toast"
 
@@ -65,39 +65,41 @@ export function GradeSubmissionForm({
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-sm font-medium">Student: {studentName}</p>
-            <p className="text-sm font-medium">Assignment: {assignmentTitle}</p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label htmlFor="score">Score</Label>
-              <span className="text-sm font-medium">
-                {Math.round(score)}/{maxPoints}
-              </span>
+          <fieldset disabled={isSubmitting} className="space-y-4">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Student: {studentName}</p>
+              <p className="text-sm font-medium">Assignment: {assignmentTitle}</p>
             </div>
-            <Slider
-              id="score"
-              min={0}
-              max={maxPoints}
-              step={1}
-              value={[score]}
-              onValueChange={(values) => setScore(values[0])}
-            />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="feedback">Feedback</Label>
-            <Textarea
-              id="feedback"
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Provide detailed feedback to the student..."
-              className="min-h-[150px]"
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="score">Score</Label>
+                <span className="text-sm font-medium">
+                  {Math.round(score)}/{maxPoints}
+                </span>
+              </div>
+              <Slider
+                id="score"
+                min={0}
+                max={maxPoints}
+                step={1}
+                value={[score]}
+                onValueChange={(values) => setScore(values[0])}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="feedback">Feedback</Label>
+              <Textarea
+                id="feedback"
+                value={feedback}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeedback(e.target.value)}
+                placeholder="Provide detailed feedback to the student..."
+                className="min-h-[150px]"
+                required
+              />
+            </div>
+          </fieldset>
         </CardContent>
 
         <CardFooter className="flex justify-between">

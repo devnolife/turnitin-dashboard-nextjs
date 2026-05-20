@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { useAuthStore } from "@/lib/store/auth-store"
+import api from "@/lib/api/client"
 
 interface FeedbackData {
   id: string
@@ -35,9 +36,8 @@ export default function StudentFeedbackPage() {
       if (!user?.id) return
       try {
         setIsLoading(true)
-        const res = await fetch(`/api/submissions?userId=${user.id}`)
-        if (!res.ok) throw new Error("Gagal memuat data")
-        const data = await res.json()
+        const res = await api.get("/submissions")
+        const data = res.data
         // Only show reviewed submissions (those with feedback/similarity)
         const reviewed = (data.submissions || [])
           .filter((s: { rawStatus: string }) => s.rawStatus === "REVIEWED" || s.rawStatus === "FLAGGED")

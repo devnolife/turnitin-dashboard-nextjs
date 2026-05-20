@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
+
+const examApprovalSchema = z.object({
+  userId: z.string().min(1, "User ID wajib diisi"),
+  approvalStatus: z.enum(["APPROVED", "REJECTED"], {
+    errorMap: () => ({ message: "Status harus APPROVED atau REJECTED" }),
+  }),
+})
+
+// Assign ke instruktur terakhir (terbaru) yang terdaftar
+async function getLatestInstructor(): Promise<string | null> {
+  const instructor = await prisma.user.findFirst({
+    where: { role: "INSTRUCTOR" },
+    orderBy: { createdAt: "desc" },
+    select: { id: true },
+  })
+  return instructor?.id ?? null
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,27 +27,19 @@ export async function POST(request: NextRequest) {
     requireRole(auth, "ADMIN")
 
     const body = await request.json()
-    const { userId, approvalStatus } = body
-
-    if (!userId || !approvalStatus) {
+    const parsed = examApprovalSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { message: "userId dan approvalStatus harus diisi" },
+        { message: parsed.error.errors[0].message },
         { status: 400 }
       )
     }
-
-    const validStatuses = ["APPROVED", "REJECTED"]
-    if (!validStatuses.includes(approvalStatus.toUpperCase())) {
-      return NextResponse.json(
-        { message: "Status tidak valid. Gunakan APPROVED atau REJECTED." },
-        { status: 400 }
-      )
-    }
+    const { userId, approvalStatus } = parsed.data
 
     const examDetail = await prisma.examDetail.update({
       where: { userId },
       data: {
-        approvalStatus: approvalStatus.toUpperCase(),
+        approvalStatus,
         reviewedAt: new Date(),
       },
       include: {
@@ -44,15 +55,34 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Jika disetujui, otomatis assign ke instruktur terakhir
+    let assignedInstructor = null
+    if (approvalStatus === "APPROVED") {
+      const instructorId = await getLatestInstructor()
+      if (instructorId) {
+        const updated = await prisma.user.update({
+          where: { id: userId },
+          data: { instructorId },
+          select: {
+            instructor: {
+              select: { id: true, name: true },
+            },
+          },
+        })
+        assignedInstructor = updated.instructor
+      }
+    }
+
     return NextResponse.json({
-      message: `Ujian berhasil ${approvalStatus.toUpperCase() === "APPROVED" ? "disetujui" : "ditolak"}`,
+      message: `Akun berhasil ${approvalStatus === "APPROVED" ? "disetujui" : "ditolak"}`,
       examDetail,
+      assignedInstructor,
     })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)
-    console.error("Update exam approval error:", error)
+    logger.error("Update exam approval error:", error)
     return NextResponse.json(
-      { message: "Gagal memperbarui status persetujuan ujian" },
+      { message: "Gagal memperbarui status persetujuan akun" },
       { status: 500 }
     )
   }

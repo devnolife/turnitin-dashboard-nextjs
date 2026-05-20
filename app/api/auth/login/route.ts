@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { fetchMahasiswaByNim } from "@/lib/auth/graphql-client"
 import { createToken } from "@/lib/auth/verify-token"
 import { rateLimit, getClientIp } from "@/lib/rate-limit"
+import { logger } from "@/lib/logger"
 
 function md5(input: string): string {
   return createHash("md5").update(input).digest("hex")
@@ -20,6 +21,7 @@ function sanitizeUser(user: {
   prodi?: string | null
   hasCompletedPayment: boolean
   whatsappNumber?: string | null
+  createdAt?: Date | null
 }) {
   return {
     id: user.id,
@@ -32,6 +34,7 @@ function sanitizeUser(user: {
     prodi: user.prodi ?? undefined,
     hasCompletedPayment: user.hasCompletedPayment,
     whatsappNumber: user.whatsappNumber ?? undefined,
+    createdAt: user.createdAt ? user.createdAt.toISOString() : undefined,
   }
 }
 
@@ -72,7 +75,7 @@ export async function POST(request: NextRequest) {
       // Step B: User exists locally — verify password
       if (localUser.password !== hashedPassword) {
         return NextResponse.json(
-          { message: "Password salah" },
+          { message: "Username atau password salah" },
           { status: 401 }
         )
       }
@@ -102,7 +105,7 @@ export async function POST(request: NextRequest) {
     // Step D: Verify password against GraphQL data (MD5 hash comparison)
     if (mahasiswa.passwd !== hashedPassword) {
       return NextResponse.json(
-        { message: "Password salah" },
+        { message: "Username atau password salah" },
         { status: 401 }
       )
     }
@@ -124,7 +127,7 @@ export async function POST(request: NextRequest) {
     const token = await createToken(newUser.id, newUser.role)
     return NextResponse.json({ user: sanitizeUser(newUser), token })
   } catch (error) {
-    console.error("Login error:", error)
+    logger.error("Login error:", error)
     return NextResponse.json(
       { message: "Terjadi kesalahan server" },
       { status: 500 }

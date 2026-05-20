@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageTransition, FadeIn } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import api from "@/lib/api/client"
 
 interface SimilarityRule {
   id?: string
@@ -74,8 +75,8 @@ export function SimilarityRulesPage() {
 
   const fetchProgram = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/study-programs?programId=${programId}`)
-      const data = await res.json()
+      const res = await api.get(`/admin/study-programs?programId=${programId}`)
+      const data = res.data
       const prog = (data.programs || []).find((p: ProgramData) => p.id === programId)
       if (prog) {
         setProgram(prog)
@@ -162,29 +163,18 @@ export function SimilarityRulesPage() {
     setSaveMessage(null)
 
     try {
-      const res = await fetch("/api/admin/similarity-rules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studyProgramId: programId,
-          ruleType: activeTab,
-          rules: currentRules.map((r, i) => ({
-            label: r.label,
-            maxPercentage: r.maxPercentage,
-            orderIndex: i,
-          })),
-        }),
+      const res = await api.post("/admin/similarity-rules", {
+        studyProgramId: programId,
+        ruleType: activeTab,
+        rules: currentRules.map((r, i) => ({
+          label: r.label,
+          maxPercentage: r.maxPercentage,
+          orderIndex: i,
+        })),
       })
 
-      const data = await res.json()
-
-      if (res.ok) {
-        setSaveMessage({ type: "success", text: "Aturan similarity berhasil disimpan!" })
-        // Refresh data
-        await fetchProgram()
-      } else {
-        setSaveMessage({ type: "error", text: data.message || "Gagal menyimpan aturan" })
-      }
+      setSaveMessage({ type: "success", text: "Aturan similarity berhasil disimpan!" })
+      await fetchProgram()
     } catch {
       setSaveMessage({ type: "error", text: "Terjadi kesalahan saat menyimpan" })
     } finally {

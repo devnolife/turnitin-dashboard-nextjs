@@ -12,6 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import api from "@/lib/api/client"
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -21,7 +22,7 @@ const formSchema = z.object({
     message: "Password minimal 6 karakter.",
   }),
   confirmPassword: z.string(),
-  name: z.string().optional(),
+  name: z.string().min(1, { message: "Nama wajib diisi." }),
   email: z.string().email({ message: "Email tidak valid." }).optional().or(z.literal("")),
   whatsappNumber: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -49,19 +50,27 @@ export function AddInstructorPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await api.post("/admin/instructors", {
+        username: values.username,
+        password: values.password,
+        name: values.name,
+        email: values.email || "",
+        hp: values.whatsappNumber || "",
+      })
 
       toast({
         title: "Instruktur berhasil ditambahkan",
-        description: `Instruktur "${values.username}" telah ditambahkan ke sistem.`,
+        description: `Instruktur "${values.name}" telah ditambahkan ke sistem.`,
       })
 
       router.push("/dashboard/admin/instructors")
-    } catch (error) {
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || "Gagal menambahkan instruktur. Silakan coba lagi."
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Gagal menambahkan instruktur. Silakan coba lagi.",
+        description: message,
       })
     } finally {
       setIsSubmitting(false)
@@ -91,7 +100,7 @@ export function AddInstructorPage() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <div className="space-y-4">
+              <fieldset disabled={isSubmitting} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="username"
@@ -134,7 +143,7 @@ export function AddInstructorPage() {
                     </FormItem>
                   )}
                 />
-              </div>
+              </fieldset>
             </Form>
           </CardContent>
         </Card>
@@ -147,13 +156,13 @@ export function AddInstructorPage() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <div className="space-y-4">
+              <fieldset disabled={isSubmitting} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nama Lengkap</FormLabel>
+                      <FormLabel>Nama Lengkap *</FormLabel>
                       <FormControl>
                         <Input placeholder="Nama instruktur" {...field} />
                       </FormControl>
@@ -190,7 +199,7 @@ export function AddInstructorPage() {
                     </FormItem>
                   )}
                 />
-              </div>
+              </fieldset>
             </Form>
           </CardContent>
         </Card>

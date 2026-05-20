@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
-import { AdminFacultiesPage } from "@/components/dashboard/admin/faculties/faculties-page"
+import { AcademicManagementPage } from "@/components/dashboard/admin/faculties/academic-management-page"
 
 export const metadata: Metadata = {
-  title: "Manajemen Fakultas - Dashboard Admin - Perpusmu",
-  description: "Kelola fakultas dan program studi",
+  title: "Fakultas & Program Studi - Dashboard Admin - Perpusmu",
+  description: "Kelola fakultas, program studi, dan aturan similarity",
 }
 
 export default function AdminFaculties() {
-  return <AdminFacultiesPage />
+  return <AcademicManagementPage />
 }
 

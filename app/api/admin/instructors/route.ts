@@ -1,10 +1,87 @@
 import { NextRequest, NextResponse } from "next/server"
+import { createHash } from "crypto"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
+import { z } from "zod"
+
+function md5(input: string): string {
+  return createHash("md5").update(input).digest("hex")
+}
+
+const createInstructorSchema = z.object({
+  username: z.string().min(3, "Username minimal 3 karakter"),
+  password: z.string().min(6, "Password minimal 6 karakter"),
+  name: z.string().min(1, "Nama wajib diisi"),
+  email: z.string().email("Email tidak valid").optional().or(z.literal("")),
+  hp: z.string().optional().or(z.literal("")),
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
+
+    const body = await request.json()
+    const parsed = createInstructorSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { message: parsed.error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    const { username, password, name, email, hp } = parsed.data
+
+    const existing = await prisma.user.findUnique({ where: { username } })
+    if (existing) {
+      return NextResponse.json(
+        { message: "Username sudah digunakan" },
+        { status: 409 }
+      )
+    }
+
+    const instructor = await prisma.user.create({
+      data: {
+        username,
+        password: md5(password),
+        name,
+        email: email || null,
+        hp: hp || null,
+        whatsappNumber: hp || null,
+        role: "INSTRUCTOR",
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        hp: true,
+        createdAt: true,
+      },
+    })
+
+    return NextResponse.json({
+      message: "Instruktur berhasil ditambahkan",
+      instructor,
+    }, { status: 201 })
+  } catch (error) {
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Create instructor error:", error)
+    return NextResponse.json(
+      { message: "Gagal menambahkan instruktur" },
+      { status: 500 }
+    )
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const searchParams = request.nextUrl.searchParams
-    const search = searchParams.get("search")
+    const rawSearch = searchParams.get("search")
+    const search = rawSearch ? rawSearch.trim().slice(0, 200) : null
 
     const where: Record<string, unknown> = { role: "INSTRUCTOR" }
 
@@ -32,6 +109,16 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: "desc" },
     })
 
+    // Count students per instructor
+    const studentCounts = await prisma.user.groupBy({
+      by: ["instructorId"],
+      where: {
+        role: "STUDENT",
+        instructorId: { in: instructors.map((i) => i.id) },
+      },
+      _count: true,
+    })
+
     // Count reviewed submissions per instructor
     const reviewedCounts = await prisma.submission.groupBy({
       by: ["reviewedBy"],
@@ -51,6 +138,7 @@ export async function GET(request: NextRequest) {
       _count: true,
     })
 
+    const studentMap = new Map(studentCounts.map((r) => [r.instructorId, r._count]))
     const reviewedMap = new Map(reviewedCounts.map((r) => [r.reviewedBy, r._count]))
     const pendingMap = new Map(pendingCounts.map((r) => [r.reviewedBy, r._count]))
 
@@ -62,13 +150,15 @@ export async function GET(request: NextRequest) {
       hp: inst.hp || inst.whatsappNumber || "-",
       prodi: inst.prodi || "-",
       createdAt: inst.createdAt,
+      studentCount: studentMap.get(inst.id) || 0,
       reviewedCount: reviewedMap.get(inst.id) || 0,
       pendingCount: pendingMap.get(inst.id) || 0,
     }))
 
     return NextResponse.json({ instructors: formatted })
   } catch (error) {
-    console.error("Admin instructors error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Admin instructors error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil data instruktur" },
       { status: 500 }

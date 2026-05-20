@@ -10,27 +10,18 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  Download,
-  MessageSquare,
+  AlertTriangle,
+  Clock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge, type BadgeVariant } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
-import { type Student, type ExamStage, useStudentStore } from "@/lib/store/student-store"
 import { useAuthStore } from "@/lib/store/auth-store"
-import { PageTransition, FadeIn, SlideUp, StaggerContainer, StaggerItem } from "@/components/ui/motion"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { PageTransition, FadeIn, SlideUp, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,125 +30,82 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import api from "@/lib/api/client"
 import React from "react"
-import { StudentOverviewCard } from "./student-overview-card"
-import { StudentProgressTabs } from "./student-progress-tabs"
+
+interface Submission {
+  id: string
+  title: string
+  documentUrl: string
+  similarity: number | null
+  status: string
+  statusLabel: string
+  feedback: string | null
+  reviewedBy: string | null
+  reviewedAt: string | null
+  createdAt: string
+}
+
+interface StudentDetailData {
+  id: string
+  name: string
+  nim: string
+  email: string
+  hp: string
+  prodi: string
+  hasCompletedPayment: boolean
+  createdAt: string
+  examDetail: {
+    id: string
+    thesisTitle: string
+    examType: string
+    examTypeLabel: string
+    approvalStatus: string
+    approvalLabel: string
+    submittedAt: string
+    reviewedAt: string | null
+  } | null
+  submissions: Submission[]
+  stats: {
+    submissionsCount: number
+    reviewedCount: number
+    flaggedCount: number
+    pendingCount: number
+    avgSimilarity: number
+  }
+}
 
 interface StudentDetailPageProps {
   studentId: string
 }
 
 export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
-  const [student, setStudent] = useState<Student | null>(null)
+  const [student, setStudent] = useState<StudentDetailData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [feedbackText, setFeedbackText] = useState("")
-  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false)
-  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null)
-  const [rejectExamOpen, setRejectExamOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
   const { toast } = useToast()
   const { user } = useAuthStore()
-  const { getStudentById } = useStudentStore()
 
   useEffect(() => {
-    // In a real app, this would be an API call
-    // For now, we're using the mock data from the store
     const fetchStudent = async () => {
       setIsLoading(true)
-
+      setError(null)
       try {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 800))
-
-        const foundStudent = getStudentById(studentId)
-
-        if (foundStudent) {
-          // Check if this student is assigned to the current instructor
-          if (foundStudent.instructorId === user?.id) {
-            setStudent(foundStudent)
-          } else {
-            toast({
-              variant: "destructive",
-              title: "Akses ditolak",
-              description: "Anda tidak memiliki izin untuk melihat detail mahasiswa ini.",
-            })
-            router.push("/dashboard/instructor/students")
-          }
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Mahasiswa tidak ditemukan",
-            description: "Mahasiswa yang diminta tidak dapat ditemukan.",
-          })
-          router.push("/dashboard/instructor/students")
-        }
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Kesalahan",
-          description: "Gagal mengambil detail mahasiswa. Silakan coba lagi.",
-        })
+        const res = await api.get(`/instructor/students/${studentId}`)
+        setStudent(res.data.student)
+      } catch {
+        setError("Gagal mengambil detail mahasiswa")
       } finally {
         setIsLoading(false)
       }
     }
-
-    // Only fetch if we have a studentId and we're not already loading
-    if (studentId && !isLoading) {
-      fetchStudent()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentId]) // Only depend on studentId to prevent infinite loops
-
-  // Format exam stage for display
-  const formatExamStage = (stage: ExamStage) => {
-    switch (stage) {
-      case "applicant":
-        return "Pendaftar"
-      case "proposal_exam":
-        return "Sidang Proposal"
-      case "results_exam":
-        return "Sidang Hasil"
-      case "final_exam":
-        return "Sidang Akhir"
-      case "graduated":
-        return "Lulus"
-      default:
-        return stage
-    }
-  }
-
-  const getExamStageBadgeVariant = (stage: ExamStage): BadgeVariant => {
-    switch (stage) {
-      case "applicant":
-        return "outline"
-      case "proposal_exam":
-        return "secondary"
-      case "results_exam":
-        return "default"
-      case "final_exam":
-        return "success"
-      case "graduated":
-        return "gradient"
-      default:
-        return "outline"
-    }
-  }
+    fetchStudent()
+  }, [studentId])
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Belum dijadwalkan"
-
     return new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
       month: "long",
@@ -165,19 +113,16 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     })
   }
 
-  // Handle providing feedback
-  const handleProvideFeedback = React.useCallback(() => {
-    if (!selectedSubmissionId || !feedbackText.trim()) return
-
-    toast({
-      title: "Feedback Terkirim",
-      description: "Feedback Anda telah berhasil dikirim.",
+  const formatDateTime = (dateString: string | null) => {
+    if (!dateString) return "-"
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     })
-
-    setFeedbackDialogOpen(false)
-    setFeedbackText("")
-    setSelectedSubmissionId(null)
-  }, [selectedSubmissionId, feedbackText, toast])
+  }
 
   const handleApproveExam = () => {
     toast({
@@ -194,21 +139,26 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     })
   }
 
-  // Loading state
   if (isLoading) {
     return (
-      <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-10" />
+          <Skeleton className="h-8 w-48" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          <Skeleton className="h-64" />
+          <Skeleton className="h-64 md:col-span-2" />
+        </div>
       </div>
     )
   }
 
-  // Not found state
-  if (!student) {
+  if (error || !student) {
     return (
       <div className="flex h-96 flex-col items-center justify-center">
         <h2 className="text-2xl font-bold">Mahasiswa Tidak Ditemukan</h2>
-        <p className="text-muted-foreground">Mahasiswa yang diminta tidak dapat ditemukan.</p>
+        <p className="text-muted-foreground">{error || "Mahasiswa yang diminta tidak dapat ditemukan."}</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard/instructor/students")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Kembali ke Daftar Mahasiswa
@@ -216,6 +166,8 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
       </div>
     )
   }
+
+  const initials = student.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
 
   return (
     <PageTransition>
@@ -250,17 +202,19 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => (window.location.href = `mailto:${student.email}`)}>
-              <Mail className="mr-2 h-4 w-4" />
-              Email Mahasiswa
-            </Button>
-            {student.examStage !== "applicant" && student.examStage !== "graduated" && (
+            {student.email && (
+              <Button variant="outline" onClick={() => (window.location.href = `mailto:${student.email}`)}>
+                <Mail className="mr-2 h-4 w-4" />
+                Email Mahasiswa
+              </Button>
+            )}
+            {student.examDetail && student.examDetail.approvalStatus === "PENDING" && (
               <>
                 <Button variant="success" onClick={handleApproveExam}>
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Setujui
                 </Button>
-                <Button variant="destructive" onClick={() => setRejectExamOpen(true)}>
+                <Button variant="destructive" onClick={handleRejectExam}>
                   <XCircle className="mr-2 h-4 w-4" />
                   Tolak
                 </Button>
@@ -271,173 +225,196 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
         <div className="grid gap-6 md:grid-cols-3">
           <FadeIn className="md:col-span-1">
-            <StudentOverviewCard
-              student={student}
-              formatExamStage={formatExamStage}
-              getExamStageBadgeVariant={getExamStageBadgeVariant}
-            />
-          </FadeIn>
-
-          <SlideUp className="md:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informasi Skripsi</CardTitle>
-                <CardDescription>Detail tentang skripsi dan ujian mahasiswa</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Judul Skripsi</h3>
-                  <p className="text-lg font-medium">{student.thesisTitle || "Belum ada judul skripsi"}</p>
+            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center text-center">
+                  <Avatar className="h-20 w-20 mb-4">
+                    <AvatarFallback className="text-xl bg-primary/10 text-primary">{initials}</AvatarFallback>
+                  </Avatar>
+                  <h2 className="text-xl font-bold">{student.name}</h2>
+                  <p className="text-sm text-muted-foreground">{student.nim}</p>
+                  <Badge variant={student.hasCompletedPayment ? "success" : "secondary"} className="mt-2">
+                    {student.hasCompletedPayment ? "Pembayaran Lunas" : "Belum Bayar"}
+                  </Badge>
                 </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground">Tahap Ujian</h3>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={getExamStageBadgeVariant(student.examStage)}>
-                        {formatExamStage(student.examStage)}
-                      </Badge>
-                    </div>
+                <div className="mt-6 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Email</span>
+                    <span className="font-medium">{student.email || "-"}</span>
                   </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground">Tanggal Ujian</h3>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>{formatDate(student.examDate)}</span>
-                    </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">No. HP</span>
+                    <span className="font-medium">{student.hp || "-"}</span>
                   </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Riwayat Pengiriman</h3>
-                  <div className="rounded-md border p-4">
-                    <StaggerContainer className="space-y-4">
-                      {student.examStage !== "applicant" ? (
-                        <>
-                          {student.turnitinResults.map((result) => (
-                            <StaggerItem key={result.id}>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <FileText className="h-4 w-4 text-primary" />
-                                  <span className="font-medium">{result.documentTitle}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Badge
-                                    variant={
-                                      result.similarityScore < 15
-                                        ? "outline"
-                                        : result.similarityScore < 30
-                                          ? "secondary"
-                                          : "destructive"
-                                    }
-                                  >
-                                    {result.similarityScore}% Similarity
-                                  </Badge>
-                                  <span className="text-sm text-muted-foreground">
-                                    Dikirim pada {formatDate(result.submittedAt)}
-                                  </span>
-                                  <Button variant="outline" size="sm">
-                                    <Download className="mr-2 h-3 w-3" />
-                                    Unduh
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      setSelectedSubmissionId(result.id)
-                                      setFeedbackDialogOpen(true)
-                                    }}
-                                  >
-                                    <MessageSquare className="mr-2 h-3 w-3" />
-                                    Kirim Hasil
-                                  </Button>
-                                </div>
-                              </div>
-                            </StaggerItem>
-                          ))}
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                          <FileText className="h-12 w-12 text-muted-foreground/40" />
-                          <h3 className="mt-4 text-lg font-medium">Belum Ada Pengiriman</h3>
-                          <p className="mt-2 text-sm text-muted-foreground">
-                            Mahasiswa ini belum mengirimkan dokumen apapun.
-                          </p>
-                        </div>
-                      )}
-                    </StaggerContainer>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Program Studi</span>
+                    <span className="font-medium">{student.prodi}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Terdaftar</span>
+                    <span className="font-medium">{formatDate(student.createdAt)}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </SlideUp>
 
-          <SlideUp className="md:col-span-3">
-            <StudentProgressTabs
-              student={student}
-              formatExamStage={formatExamStage}
-              formatDate={formatDate}
-            />
+            {student.examDetail && (
+              <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 mt-4">
+                <CardHeader>
+                  <CardTitle className="text-base">Info Ujian</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Judul Skripsi</p>
+                    <p className="text-sm font-medium">{student.examDetail.thesisTitle}</p>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Jenis Ujian</span>
+                    <span className="font-medium">{student.examDetail.examTypeLabel}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Status</span>
+                    <Badge
+                      variant={
+                        student.examDetail.approvalStatus === "APPROVED"
+                          ? "success"
+                          : student.examDetail.approvalStatus === "REJECTED"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                    >
+                      {student.examDetail.approvalLabel}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Diajukan</span>
+                    <span className="font-medium">{formatDate(student.examDetail.submittedAt)}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </FadeIn>
+
+          <SlideUp className="md:col-span-2 space-y-4">
+            <StaggerContainer className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+              <StaggerItem>
+                <Card className="rounded-2xl hover-lift">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                      <span className="text-xs text-muted-foreground">Pengajuan</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1"><AnimatedCounter value={student.stats.submissionsCount} /></p>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+              <StaggerItem>
+                <Card className="rounded-2xl hover-lift">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-xs text-muted-foreground">Direview</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1"><AnimatedCounter value={student.stats.reviewedCount} /></p>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+              <StaggerItem>
+                <Card className="rounded-2xl hover-lift">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-orange-500" />
+                      <span className="text-xs text-muted-foreground">Ditandai</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1"><AnimatedCounter value={student.stats.flaggedCount} /></p>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+              <StaggerItem>
+                <Card className="rounded-2xl hover-lift">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-yellow-500" />
+                      <span className="text-xs text-muted-foreground">Rata-rata</span>
+                    </div>
+                    <p className="text-2xl font-bold mt-1">{student.stats.avgSimilarity}%</p>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
+
+            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle>Riwayat Pengajuan</CardTitle>
+                <CardDescription>Dokumen yang telah diajukan oleh mahasiswa</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {student.submissions.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-2 opacity-40" />
+                    <p>Belum ada pengajuan</p>
+                  </div>
+                ) : (
+                  <div className="rounded-md border overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Dokumen</TableHead>
+                          <TableHead>Similarity</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Feedback</TableHead>
+                          <TableHead>Tanggal</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {student.submissions.map((sub) => (
+                          <TableRow key={sub.id}>
+                            <TableCell className="font-medium max-w-[200px] truncate">{sub.title}</TableCell>
+                            <TableCell>
+                              {sub.similarity !== null ? (
+                                <Badge
+                                  variant={
+                                    sub.similarity > 30
+                                      ? "destructive"
+                                      : sub.similarity > 20
+                                      ? "secondary"
+                                      : "outline"
+                                  }
+                                >
+                                  {sub.similarity}%
+                                </Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  sub.status === "REVIEWED"
+                                    ? "success"
+                                    : sub.status === "FLAGGED"
+                                    ? "destructive"
+                                    : "secondary"
+                                }
+                              >
+                                {sub.statusLabel}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="max-w-[150px] truncate text-xs">
+                              {sub.feedback || "-"}
+                            </TableCell>
+                            <TableCell className="text-xs">{formatDateTime(sub.createdAt)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </SlideUp>
         </div>
       </div>
-
-      {/* Reject Exam Confirmation */}
-      <AlertDialog open={rejectExamOpen} onOpenChange={setRejectExamOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Tolak Ujian Mahasiswa?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tindakan ini akan menolak ujian mahasiswa. Mahasiswa perlu mengajukan ulang untuk dapat melanjutkan proses ujian.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                handleRejectExam()
-                setRejectExamOpen(false)
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Tolak
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Feedback Dialog */}
-      <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Kirim hasil Perpusmu</DialogTitle>
-            <DialogDescription>
-              Tambahkan komentar untuk pengiriman ini. Mahasiswa akan dapat melihat hasil dan komentar Anda.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="feedback">Komentar</Label>
-              <Textarea
-                id="feedback"
-                placeholder="Masukkan komentar Anda di sini..."
-                value={feedbackText}
-                onChange={(e) => setFeedbackText(e.target.value)}
-                rows={6}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFeedbackDialogOpen(false)}>
-              Batal
-            </Button>
-            <Button onClick={handleProvideFeedback}>Kirim Hasil</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </PageTransition>
   )
 }

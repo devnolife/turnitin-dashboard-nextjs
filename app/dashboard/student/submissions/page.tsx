@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { useAuthStore } from "@/lib/store/auth-store"
+import api from "@/lib/api/client"
 
 interface SubmissionData {
   id: string
@@ -57,9 +58,8 @@ export default function StudentSubmissionsPage() {
       if (!user?.id) return
       try {
         setIsLoading(true)
-        const res = await fetch(`/api/submissions?userId=${user.id}`)
-        if (!res.ok) throw new Error("Gagal memuat data")
-        const data = await res.json()
+        const res = await api.get("/submissions")
+        const data = res.data
         setSubmissions(data.submissions || [])
       } catch {
         setError("Gagal memuat data pengiriman. Silakan coba lagi.")

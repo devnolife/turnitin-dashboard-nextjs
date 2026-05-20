@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,6 @@ import { useToast } from "@/components/ui/use-toast"
 import { Loader2, CheckCircle2, AlertCircle, RefreshCw, LogOut } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { usePaymentStore } from "@/lib/store/payment-store"
 import { WhatsAppForm } from "./whatsapp-form"
@@ -20,11 +19,22 @@ export function PaymentStatusChecker() {
   const router = useRouter()
   const { toast } = useToast()
 
-  const { user, logout } = useAuthStore()
+  const { user } = useAuthStore()
   const { payment, isLoading, lastChecked, error, checkPaymentStatus } = usePaymentStore()
+
+  const handleLogout = () => {
+    useAuthStore.getState().logout()
+    router.push("/auth/login")
+  }
+
+  // Guard to ensure the initial check runs only once per mount
+  const hasCheckedRef = useRef(false)
 
   // Check payment status on initial load
   useEffect(() => {
+    if (hasCheckedRef.current) return
+    hasCheckedRef.current = true
+
     const initialCheck = async () => {
       try {
         const paymentStatus = await checkPaymentStatus()
@@ -32,8 +42,10 @@ export function PaymentStatusChecker() {
 
         // If payment is completed, show WhatsApp form
         if (paymentStatus === "completed") {
-          // Check if user already has a WhatsApp number
-          if (user?.whatsappNumber) {
+          // Read the latest user from the store to avoid stale closure
+          const currentUser = useAuthStore.getState().user
+
+          if (currentUser?.whatsappNumber) {
             // If user already has a WhatsApp number, redirect to dashboard
             toast({
               title: "Pembayaran berhasil dikonfirmasi",
@@ -41,7 +53,7 @@ export function PaymentStatusChecker() {
             })
 
             setTimeout(() => {
-              router.push(`/dashboard/${user.role}`)
+              router.push(`/dashboard/${currentUser.role}`)
             }, 3000)
           } else {
             // If user doesn't have a WhatsApp number, show the form
@@ -53,13 +65,17 @@ export function PaymentStatusChecker() {
         toast({
           variant: "destructive",
           title: "Terjadi kesalahan",
-          description: error || "Gagal memeriksa status pembayaran. Silakan coba lagi.",
+          description: "Gagal memeriksa status pembayaran. Silakan coba lagi.",
         })
       }
     }
 
     initialCheck()
-  }, [checkPaymentStatus, error, router, toast, user])
+    // Intentionally run only once on mount. Including `toast`/`user`/`error`
+    // here causes an infinite loop because those references change after
+    // each call to `checkPaymentStatus`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleCheckPayment = async () => {
     setStatus("checking")
@@ -111,19 +127,6 @@ export function PaymentStatusChecker() {
     }
   }
 
-  const handleReturnToLogin = () => {
-    // Logout user
-    logout()
-
-    // Redirect to login page
-    router.push("/auth/login")
-
-    toast({
-      title: "Kembali ke halaman login",
-      description: "Anda dapat memilih peran yang berbeda atau mencoba lagi nanti.",
-    })
-  }
-
   // If payment is completed and we need to show the WhatsApp form
   if (showWhatsAppForm) {
     return <WhatsAppForm />
@@ -164,7 +167,7 @@ export function PaymentStatusChecker() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Jenis Pembayaran:</span>
-              <span className="font-medium">{payment?.jenisPembayaran || "PERPUSTAKAAN"}</span>
+              <span className="font-medium">{payment?.jenisPembayaran || "TURNITIN DIPLOMA S1"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Jumlah:</span>
@@ -233,10 +236,7 @@ export function PaymentStatusChecker() {
                   <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-400">
                     <p>
                       Sistem belum mendeteksi pembayaran Anda. Jika Anda sudah melakukan pembayaran, silakan klik tombol
-                      "Perbarui" untuk memeriksa kembali status pembayaran.
-                    </p>
-                    <p className="mt-2">
-                      Jika Anda ingin memilih peran yang berbeda, Anda dapat kembali ke halaman login.
+                      &quot;Perbarui Status&quot; untuk memeriksa kembali.
                     </p>
                   </div>
                 </div>
@@ -255,9 +255,6 @@ export function PaymentStatusChecker() {
                       Pembayaran Anda sedang diproses oleh sistem. Proses ini biasanya membutuhkan waktu 5-15 menit.
                       Silakan periksa kembali nanti.
                     </p>
-                    <p className="mt-2">
-                      Jika Anda ingin memilih peran yang berbeda, Anda dapat kembali ke halaman login.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -272,11 +269,8 @@ export function PaymentStatusChecker() {
                   <h3 className="text-sm font-medium text-red-800 dark:text-red-300">Pembayaran Gagal</h3>
                   <div className="mt-2 text-sm text-red-700 dark:text-red-400">
                     <p>
-                      Sistem tidak dapat mengonfirmasi pembayaran Anda. Silakan periksa metode pembayaran Anda dan coba
-                      lagi.
-                    </p>
-                    <p className="mt-2">
-                      Jika Anda ingin memilih peran yang berbeda, Anda dapat kembali ke halaman login.
+                      Sistem tidak dapat mengonfirmasi pembayaran Anda. Silakan hubungi bagian administrasi kampus
+                      untuk bantuan.
                     </p>
                   </div>
                 </div>
@@ -319,17 +313,10 @@ export function PaymentStatusChecker() {
                 </>
               )}
             </Button>
-
-            {(status === "pending" || status === "processing" || status === "failed") && (
-              <>
-                <Separator className="my-2" />
-
-                <Button variant="outline" onClick={handleReturnToLogin} className="w-full">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Kembali ke Halaman Login
-                </Button>
-              </>
-            )}
+            <Button variant="outline" onClick={handleLogout} className="w-full">
+              <LogOut className="mr-2 h-4 w-4" />
+              Keluar
+            </Button>
           </>
         )}
 

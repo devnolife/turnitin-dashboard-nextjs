@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -12,6 +12,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { useToast } from "@/components/ui/use-toast"
+import api from "@/lib/api/client"
 import {
   Shield,
   Search,
@@ -21,6 +26,11 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Loader2,
 } from "lucide-react"
 
 interface InstructorRow {
@@ -31,6 +41,7 @@ interface InstructorRow {
   hp: string
   prodi: string
   createdAt: string
+  studentCount: number
   reviewedCount: number
   pendingCount: number
 }
@@ -43,6 +54,21 @@ export function AdminInstructorsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
   const router = useRouter()
+  const { toast } = useToast()
+
+  // Edit dialog state
+  const [editOpen, setEditOpen] = useState(false)
+  const [editData, setEditData] = useState<InstructorRow | null>(null)
+  const [editName, setEditName] = useState("")
+  const [editEmail, setEditEmail] = useState("")
+  const [editHp, setEditHp] = useState("")
+  const [editPassword, setEditPassword] = useState("")
+  const [saving, setSaving] = useState(false)
+
+  // Delete dialog state
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<InstructorRow | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetchInstructors()
@@ -51,14 +77,58 @@ export function AdminInstructorsPage() {
   const fetchInstructors = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/admin/instructors")
-      const data = await res.json()
+      const res = await api.get("/admin/instructors")
+      const data = res.data
       setInstructors(data.instructors || [])
       setFiltered(data.instructors || [])
     } catch {
       console.error("Gagal mengambil data instruktur")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const openEdit = (inst: InstructorRow) => {
+    setEditData(inst)
+    setEditName(inst.name)
+    setEditEmail(inst.email === "-" ? "" : inst.email)
+    setEditHp(inst.hp === "-" ? "" : inst.hp)
+    setEditPassword("")
+    setEditOpen(true)
+  }
+
+  const handleEdit = async () => {
+    if (!editData) return
+    setSaving(true)
+    try {
+      await api.put(`/admin/instructors/${editData.id}`, {
+        name: editName,
+        email: editEmail,
+        hp: editHp,
+        password: editPassword || undefined,
+      })
+      toast({ title: "Instruktur berhasil diperbarui" })
+      setEditOpen(false)
+      fetchInstructors()
+    } catch {
+      toast({ variant: "destructive", title: "Gagal memperbarui instruktur" })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleting(true)
+    try {
+      await api.delete(`/admin/instructors/${deleteTarget.id}`)
+      toast({ title: `Instruktur "${deleteTarget.name}" berhasil dihapus` })
+      setDeleteOpen(false)
+      fetchInstructors()
+    } catch {
+      toast({ variant: "destructive", title: "Gagal menghapus instruktur" })
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -151,9 +221,15 @@ export function AdminInstructorsPage() {
         </StaggerContainer>
 
         <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
-          <CardHeader>
-            <CardTitle>Daftar Instruktur</CardTitle>
-            <CardDescription>Lihat dan kelola semua instruktur</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Daftar Instruktur</CardTitle>
+              <CardDescription>Lihat dan kelola semua instruktur</CardDescription>
+            </div>
+            <Button onClick={() => router.push("/dashboard/admin/instructors/new")}>
+              <Plus className="mr-2 h-4 w-4" />
+              Tambah Instruktur
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
@@ -189,6 +265,7 @@ export function AdminInstructorsPage() {
                       <TableHead>Email</TableHead>
                       <TableHead>No. HP</TableHead>
                       <TableHead>Prodi</TableHead>
+                      <TableHead>Mahasiswa</TableHead>
                       <TableHead>Review</TableHead>
                       <TableHead>Pending</TableHead>
                       <TableHead className="w-[60px]"></TableHead>
@@ -214,19 +291,39 @@ export function AdminInstructorsPage() {
                           <TableCell className="text-sm">{inst.hp}</TableCell>
                           <TableCell className="text-sm">{inst.prodi}</TableCell>
                           <TableCell>
+                            <Badge variant={inst.studentCount > 0 ? "default" : "secondary"}>{inst.studentCount}</Badge>
+                          </TableCell>
+                          <TableCell>
                             <Badge variant="success">{inst.reviewedCount}</Badge>
                           </TableCell>
                           <TableCell>
                             <Badge variant={inst.pendingCount > 0 ? "warning" : "secondary"}>{inst.pendingCount}</Badge>
                           </TableCell>
                           <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => router.push(`/dashboard/admin/instructors/${inst.id}`)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => router.push(`/dashboard/admin/instructors/${inst.id}`)}>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  <span>Lihat Detail</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openEdit(inst)}>
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  <span>Edit</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() => { setDeleteTarget(inst); setDeleteOpen(true) }}
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  <span>Hapus</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       )
@@ -264,6 +361,60 @@ export function AdminInstructorsPage() {
           </CardContent>
         </Card>
       </DashboardMainCard>
+
+      {/* Edit Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Instruktur</DialogTitle>
+            <DialogDescription>Ubah data instruktur. Kosongkan password jika tidak ingin mengubah.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Nama Lengkap</Label>
+              <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>No. HP / WhatsApp</Label>
+              <Input value={editHp} onChange={(e) => setEditHp(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Password Baru (opsional)</Label>
+              <Input type="password" placeholder="Kosongkan jika tidak diubah" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Batal</Button>
+            <Button onClick={handleEdit} disabled={saving}>
+              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hapus Instruktur</DialogTitle>
+            <DialogDescription>
+              Yakin ingin menghapus instruktur <strong>{deleteTarget?.name}</strong>? Mahasiswa yang di-assign ke instruktur ini akan dilepas. Tindakan ini tidak dapat dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>Batal</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+              {deleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageTransition>
   )
 }

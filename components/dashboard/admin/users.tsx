@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Search, Loader2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import api from "@/lib/api/client"
 
 interface UserData {
   id: string
@@ -38,9 +39,8 @@ export function AdminUsers() {
     if (roleFilter !== "all") params.set("role", roleFilter)
     if (searchQuery) params.set("search", searchQuery)
 
-    fetch(`/api/admin/users?${params}`)
-      .then(res => res.json())
-      .then(data => { setUsers(data.users || []); setLoading(false) })
+    api.get(`/admin/users?${params}`)
+      .then(res => { setUsers(res.data.users || []); setLoading(false) })
       .catch(() => setLoading(false))
   }, [roleFilter, searchQuery])
 

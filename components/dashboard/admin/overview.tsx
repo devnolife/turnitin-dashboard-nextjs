@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, GraduationCap, FileText, ClipboardCheck } from "lucide-react"
+import api from "@/lib/api/client"
 
 interface Stats {
   totalUsers: number
@@ -18,9 +19,8 @@ export function AdminOverview() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/admin/stats")
-      .then(res => res.json())
-      .then(data => { setStats(data); setLoading(false) })
+    api.get("/admin/stats")
+      .then(res => { setStats(res.data); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
 

@@ -12,7 +12,6 @@ import {
   FileText,
   Home,
   BookOpen,
-  GraduationCap,
   MessageSquare,
   LogOut,
   Shield,
@@ -39,9 +38,8 @@ const adminRoutes = [
   { href: "/dashboard/admin", icon: Home, title: "Dashboard" },
   { href: "/dashboard/admin/students", icon: Users, title: "Mahasiswa" },
   { href: "/dashboard/admin/instructors", icon: Shield, title: "Instruktur" },
-  { href: "/dashboard/admin/faculties", icon: BookOpen, title: "Fakultas" },
-  { href: "/dashboard/admin/prodi", icon: GraduationCap, title: "Program Studi" },
-  { href: "/dashboard/admin/exam-approvals", icon: CheckSquare, title: "Persetujuan Ujian", badge: "New" },
+  { href: "/dashboard/admin/faculties", icon: BookOpen, title: "Fakultas & Prodi" },
+  { href: "/dashboard/admin/exam-approvals", icon: CheckSquare, title: "Persetujuan Akun" },
   { href: "/dashboard/admin/payments", icon: CreditCard, title: "Pembayaran" },
   { href: "/dashboard/admin/settings", icon: Settings, title: "Pengaturan" },
 ]
@@ -50,8 +48,8 @@ const instructorRoutes = [
   { href: "/dashboard/instructor", icon: Home, title: "Dashboard" },
   { href: "/dashboard/instructor/students", icon: Users, title: "Mahasiswa" },
   { href: "/dashboard/instructor/submissions", icon: Send, title: "Pengiriman" },
-  { href: "/dashboard/instructor/messages", icon: MessageSquare, title: "Pesan", badge: "3" },
   { href: "/dashboard/instructor/analytics", icon: BarChart2, title: "Analitik" },
+  { href: "/dashboard/instructor/profile", icon: User, title: "Profil" },
   { href: "/dashboard/instructor/settings", icon: Settings, title: "Pengaturan" },
 ]
 
@@ -94,7 +92,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       {/* Header */}
       <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
         <div className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="Logo Unismuh" className="w-10 h-10 rounded-full shadow-md" />
+          <img src="/logo.jpg" alt="Logo Perpusmu - Universitas Muhammadiyah Makassar" className="w-10 h-10 rounded-full shadow-md" />
           <h1 className="text-2xl font-bold text-white">Perpusmu</h1>
         </div>
       </div>
@@ -102,7 +100,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       {/* User Profile - Compact inline */}
       <div className="px-5 py-4 flex items-center gap-4 border-b border-gray-100 dark:border-gray-700">
         <Avatar className="w-14 h-14 shrink-0 border-2 border-primary-lighter dark:border-primary/50">
-          <AvatarImage src="/placeholder.svg?height=56&width=56" alt="User" />
+          {role !== "instructor" && (
+            <AvatarImage src="/placeholder.svg?height=56&width=56" alt="User" />
+          )}
           <AvatarFallback className="bg-primary text-white text-base">
             {getInitials(user?.email)}
           </AvatarFallback>
@@ -172,7 +172,7 @@ export function Sidebar({ className, mobileOpen, onMobileOpenChange }: SidebarPr
       {/* Desktop sidebar */}
       <div
         className={cn(
-          "hidden md:block w-72 shrink-0 bg-white dark:bg-gray-800 h-screen rounded-r-[2rem] shadow-lg theme-transition relative z-20",
+          "hidden md:block w-64 xl:w-72 shrink-0 bg-white dark:bg-gray-800 h-screen rounded-r-[2rem] shadow-lg theme-transition relative z-20",
           className,
         )}
       >

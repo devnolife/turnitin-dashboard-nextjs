@@ -11,6 +11,7 @@ import { Search, MoreHorizontal, CheckCircle, XCircle, Eye, Loader2 } from "luci
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import api from "@/lib/api/client"
 
 interface ExamDetailData {
   id: string
@@ -43,14 +44,14 @@ export default function ExamApprovalsPage() {
       const params = new URLSearchParams()
       if (statusFilter !== "all") params.set("status", statusFilter)
 
-      const res = await fetch(`/api/admin/exam-approvals?${params}`)
-      const data = await res.json()
+      const res = await api.get(`/admin/exam-approvals?${params}`)
+      const data = res.data
       setExamDetails(data.examDetails || [])
     } catch {
       toast({
         variant: "destructive",
         title: "Gagal memuat data",
-        description: "Tidak dapat mengambil data persetujuan ujian.",
+        description: "Tidak dapat mengambil data persetujuan akun.",
       })
     } finally {
       setLoading(false)
@@ -93,17 +94,11 @@ export default function ExamApprovalsPage() {
   const handleUpdateApproval = async (userId: string, approvalStatus: "APPROVED" | "REJECTED") => {
     setUpdating(userId)
     try {
-      const res = await fetch("/api/admin/update-exam-approval", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, approvalStatus }),
-      })
-
-      if (!res.ok) throw new Error("Failed")
+      await api.post("/admin/update-exam-approval", { userId, approvalStatus })
 
       toast({
-        title: `Ujian berhasil ${approvalStatus === "APPROVED" ? "disetujui" : "ditolak"}`,
-        description: "Status persetujuan telah diperbarui.",
+        title: `Akun berhasil ${approvalStatus === "APPROVED" ? "disetujui" : "ditolak"}`,
+        description: "Status persetujuan akun telah diperbarui.",
       })
 
       await fetchExamDetails()
@@ -119,11 +114,11 @@ export default function ExamApprovalsPage() {
   }
 
   return (
-    <DashboardMainCard title="Persetujuan Detail Ujian" subtitle="Kelola dan verifikasi detail ujian mahasiswa ✅" icon={CheckCircle}>
+    <DashboardMainCard title="Persetujuan Akun" subtitle="Kelola dan verifikasi akun mahasiswa yang mendaftar untuk Turnitin ✅" icon={CheckCircle}>
       <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Detail Ujian Mahasiswa</CardTitle>
-          <CardDescription>Verifikasi dan setujui detail ujian yang diajukan oleh mahasiswa</CardDescription>
+          <CardTitle>Pendaftaran Akun Turnitin</CardTitle>
+          <CardDescription>Verifikasi dan setujui akun mahasiswa yang baru mendaftar</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-col gap-4 sm:flex-row">
@@ -170,7 +165,7 @@ export default function ExamApprovalsPage() {
                   {filteredExamDetails.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                        Tidak ada data pengajuan ujian
+                        Tidak ada data pengajuan akun
                       </TableCell>
                     </TableRow>
                   ) : (

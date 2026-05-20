@@ -1,10 +1,22 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { logger } from "@/lib/logger"
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAuth(request)
+    requireRole(auth, "ADMIN")
     const { searchParams } = new URL(request.url)
-    const facultyId = searchParams.get("facultyId")
+    const rawFacultyId = searchParams.get("facultyId")
+    const facultyId = rawFacultyId ? rawFacultyId.trim().slice(0, 200) : null
+
+    if (rawFacultyId !== null && (!facultyId || facultyId.length === 0)) {
+      return NextResponse.json(
+        { message: "facultyId tidak valid" },
+        { status: 400 }
+      )
+    }
 
     const where = facultyId ? { facultyId } : {}
 
@@ -33,7 +45,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ programs, faculties })
   } catch (error) {
-    console.error("Study programs error:", error)
+    if (error instanceof AuthError) return handleAuthError(error)
+    logger.error("Study programs error:", error)
     return NextResponse.json(
       { message: "Gagal mengambil data program studi" },
       { status: 500 }

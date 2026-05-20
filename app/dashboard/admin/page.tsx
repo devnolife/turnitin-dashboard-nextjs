@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import { ShieldCheck, Users, GraduationCap, FileText, ClipboardCheck, CreditCard, Settings, BookOpen } from "lucide-react"
+import { ShieldCheck, Users, GraduationCap, FileText, ClipboardCheck, CreditCard, Settings, BookOpen, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { AdminUsers } from "@/components/dashboard/admin/users"
 import { AdminPayments } from "@/components/dashboard/admin/payments"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import api from "@/lib/api/client"
 
 const AdminOverview = dynamic(() => import("@/components/dashboard/admin/overview").then(mod => ({ default: mod.AdminOverview })), {
   ssr: false,
@@ -34,11 +35,12 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null)
 
   useEffect(() => {
-    fetch("/api/admin/stats")
-      .then(res => res.json())
-      .then(data => setStats(data))
+    api.get("/admin/stats")
+      .then(res => setStats(res.data))
       .catch(() => setStats(null))
   }, [])
+
+  const pendingCount = stats?.pendingExamApprovals ?? 0
 
   return (
     <DashboardMainCard
@@ -46,7 +48,28 @@ export default function AdminDashboardPage() {
       subtitle="Kelola pengguna, pengajuan, dan pengaturan sistem ⚙️"
       icon={ShieldCheck}
     >
-      <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      {/* Banner notifikasi jika ada akun menunggu persetujuan */}
+      {pendingCount > 0 && (
+        <Card className="mb-6 border-orange-300 bg-orange-50 dark:border-orange-700 dark:bg-orange-950/30">
+          <CardContent className="flex items-center justify-between gap-4 py-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-orange-500 shrink-0" />
+              <div>
+                <p className="font-semibold text-orange-800 dark:text-orange-200">
+                  {pendingCount} akun mahasiswa menunggu persetujuan
+                </p>
+                <p className="text-sm text-orange-600 dark:text-orange-400">
+                  Segera verifikasi agar mahasiswa dapat mengakses layanan Turnitin
+                </p>
+              </div>
+            </div>
+            <Button size="sm" asChild className="shrink-0 bg-orange-500 hover:bg-orange-600">
+              <Link href="/dashboard/admin/exam-approvals">Tinjau Sekarang</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+      <StaggerContainer className="grid gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <StaggerItem>
           <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -103,7 +126,7 @@ export default function AdminDashboardPage() {
               <div className="text-2xl font-bold">
                 <AnimatedCounter value={stats?.pendingExamApprovals ?? 0} />
               </div>
-              <p className="text-xs text-muted-foreground">Ujian perlu diverifikasi</p>
+              <p className="text-xs text-muted-foreground">Akun perlu diverifikasi</p>
             </CardContent>
           </Card>
         </StaggerItem>
@@ -132,7 +155,7 @@ export default function AdminDashboardPage() {
             <Button variant="outline" className="flex h-auto flex-col items-center justify-center gap-2 p-4" asChild>
               <Link href="/dashboard/admin/exam-approvals">
                 <ClipboardCheck className="h-6 w-6 text-primary-dark" />
-                <span>Persetujuan Ujian</span>
+                <span>Persetujuan Akun</span>
               </Link>
             </Button>
             <Button variant="outline" className="flex h-auto flex-col items-center justify-center gap-2 p-4" asChild>

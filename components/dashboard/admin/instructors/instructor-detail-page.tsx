@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ArrowLeft, Mail, Phone, FileCheck, AlertTriangle, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,6 +11,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, FadeIn, SlideUp, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import api from "@/lib/api/client"
 
 interface ReviewedSubmission {
   id: string
@@ -60,12 +70,8 @@ export function InstructorDetailPage({ instructorId }: InstructorDetailPageProps
       setIsLoading(true)
       setError(null)
       try {
-        const res = await fetch(`/api/admin/instructors/${instructorId}`)
-        if (!res.ok) {
-          setError("Instruktur tidak ditemukan")
-          return
-        }
-        const data = await res.json()
+        const res = await api.get(`/admin/instructors/${instructorId}`)
+        const data = res.data
         setInstructor(data.instructor)
       } catch {
         setError("Gagal mengambil detail instruktur")
@@ -129,6 +135,26 @@ export function InstructorDetailPage({ instructorId }: InstructorDetailPageProps
   return (
     <PageTransition>
       <div className="flex flex-col gap-6">
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/admin">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/admin/instructors">Instruktur</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{instructor.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/admin/instructors")}>
             <ArrowLeft className="h-4 w-4" />

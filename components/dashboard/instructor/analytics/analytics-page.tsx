@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { BarChart3 } from "lucide-react"
 import { PageTransition } from "@/components/ui/motion"
+import api from "@/lib/api/client"
 import {
   BarChart,
   Bar,
@@ -42,11 +43,8 @@ export function AnalyticsPage() {
   const fetchAnalytics = useCallback(async (period: string) => {
     setIsLoading(true)
     try {
-      const res = await fetch(`/api/instructor/analytics?period=${period}`)
-      if (res.ok) {
-        const json = await res.json()
-        setData(json)
-      }
+      const res = await api.get(`/instructor/analytics?period=${period}`)
+      setData(res.data)
     } catch (error) {
       console.error("Failed to fetch analytics:", error)
     } finally {
@@ -181,7 +179,7 @@ export function AnalyticsPage() {
                       innerRadius={60}
                       outerRadius={90}
                       dataKey="value"
-                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      label={({ name, percent }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
                     >
                       {data.distribution.map((entry) => (
                         <Cell key={entry.name} fill={entry.color} />

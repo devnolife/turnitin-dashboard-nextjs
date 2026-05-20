@@ -3,6 +3,7 @@
 import React from "react"
 import { useEffect, useState } from "react"
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, GraduationCap, BookOpen } from "lucide-react"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import api from "@/lib/api/client"
 
 interface StudyProgramData {
   id: string
@@ -43,8 +45,8 @@ export function AdminFacultiesPage() {
   const fetchFaculties = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/admin/study-programs")
-      const data = await res.json()
+      const res = await api.get("/admin/study-programs")
+      const data = res.data
       const programs = data.programs || []
 
       // Group by faculty
@@ -210,11 +212,17 @@ export function AdminFacultiesPage() {
                   ))}
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-8 text-center">
-                  <GraduationCap className="h-12 w-12 text-muted-foreground/40" />
-                  <h3 className="mt-4 text-lg font-medium">Fakultas Tidak Ditemukan</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Tidak ada fakultas yang sesuai dengan pencarian Anda.</p>
-                </div>
+                <Empty>
+                  <EmptyMedia variant="icon">
+                    <GraduationCap className="h-6 w-6" />
+                  </EmptyMedia>
+                  <EmptyHeader>
+                    <EmptyTitle>Fakultas Tidak Ditemukan</EmptyTitle>
+                    <EmptyDescription>
+                      Tidak ada fakultas yang sesuai dengan pencarian Anda.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               ) : (
                 <Table>
                   <TableHeader>

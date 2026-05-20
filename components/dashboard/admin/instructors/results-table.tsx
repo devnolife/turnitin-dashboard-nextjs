@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { type TurnitinResult, type ExamStage } from "@/lib/store/student-store"
+import { type TurnitinResult, type ExamStage } from "@/lib/types/student"
 
 export interface ResultsTableProps {
   results: TurnitinResult[]
