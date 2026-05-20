@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get("search")
     const prodi = searchParams.get("prodi")
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"))
+    const limit = Math.min(200, Math.max(1, parseInt(searchParams.get("limit") || "50")))
 
     const where: Record<string, unknown> = { role: "STUDENT" }
 
@@ -26,51 +28,56 @@ export async function GET(request: NextRequest) {
       where.prodi = { contains: prodi, mode: "insensitive" }
     }
 
-    const students = await prisma.user.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        nim: true,
-        email: true,
-        hp: true,
-        prodi: true,
-        hasCompletedPayment: true,
-        whatsappNumber: true,
-        createdAt: true,
-        examDetails: {
-          select: {
-            thesisTitle: true,
-            examType: true,
-            approvalStatus: true,
-            submittedAt: true,
+    const [students, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          nim: true,
+          email: true,
+          hp: true,
+          prodi: true,
+          hasCompletedPayment: true,
+          whatsappNumber: true,
+          createdAt: true,
+          examDetails: {
+            select: {
+              thesisTitle: true,
+              examType: true,
+              approvalStatus: true,
+              submittedAt: true,
+            },
+          },
+          instructor: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          submissions: {
+            select: {
+              id: true,
+              similarityScore: true,
+              status: true,
+              createdAt: true,
+            },
+          },
+          payments: {
+            select: {
+              status: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 1,
           },
         },
-        instructor: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        submissions: {
-          select: {
-            id: true,
-            similarityScore: true,
-            status: true,
-            createdAt: true,
-          },
-        },
-        payments: {
-          select: {
-            status: true,
-          },
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    })
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: (page - 1) * limit,
+      }),
+      prisma.user.count({ where }),
+    ])
 
     const formatted = students.map((s) => {
       const submissionsCount = s.submissions.length
@@ -107,7 +114,10 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({ students: formatted })
+    return NextResponse.json({
+      students: formatted,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)
     logger.error("Admin students error:", error)

@@ -14,7 +14,10 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status")
     const search = searchParams.get("search")
 
-    const where: Record<string, unknown> = {}
+    const where: Record<string, unknown> = {
+      // INSTRUCTOR hanya boleh melihat submission mahasiswa asuhannya
+      user: { instructorId: auth.userId },
+    }
     if (status && ["PENDING", "REVIEWED", "FLAGGED"].includes(status.toUpperCase())) {
       where.status = status.toUpperCase()
     }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { verifyAuth, handleAuthError } from "@/lib/auth/verify-token"
+import { verifyAuth, requireRole, handleAuthError } from "@/lib/auth/verify-token"
 import { z } from "zod"
 
 const whatsappSchema = z.object({
@@ -11,12 +11,13 @@ const whatsappSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request)
+    requireRole(auth, "STUDENT")
     const body = await request.json()
 
     const parsed = whatsappSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { message: parsed.error.errors[0].message },
+        { message: parsed.error.issues[0].message },
         { status: 400 }
       )
     }

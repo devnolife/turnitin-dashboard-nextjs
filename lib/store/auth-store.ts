@@ -7,6 +7,11 @@ export type { ExamType, ExamDetails, User } from "@/lib/types/auth"
 
 interface AuthState {
   user: User | null
+  /**
+   * Token opsional di memori untuk backward-compat.
+   * Sumber kebenaran sekarang adalah cookie HttpOnly `perpusmu_session`.
+   * Token TIDAK lagi di-persist ke localStorage.
+   */
   token: string | null
   isLoading: boolean
   error: string | null
@@ -15,6 +20,7 @@ interface AuthState {
   login: (username: string, password: string) => Promise<User>
   logout: () => void
   checkAuth: () => boolean
+  refreshSession: () => Promise<boolean>
   setToken: (token: string) => void
   updateUser: (userData: Partial<User>) => void
   updateWhatsappNumber: (whatsappNumber: string) => Promise<void>
@@ -39,6 +45,7 @@ export const useAuthStore = create<AuthState>()(
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
+            credentials: "include",
           })
 
           const data = await res.json()
@@ -51,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
 
           set({
             user,
-            token,
+            token: token ?? null,
             isAuthenticated: true,
             isLoading: false,
           })
@@ -69,13 +76,10 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        const token = get().token
-        if (token) {
-          fetch('/api/auth/logout', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
-          }).catch(() => {})
-        }
+        fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        }).catch(() => { })
 
         set({
           user: null,
@@ -84,7 +88,6 @@ export const useAuthStore = create<AuthState>()(
           error: null,
         })
 
-        // Hapus storage secara eksplisit agar tidak ada sisa session
         if (typeof window !== "undefined") {
           localStorage.removeItem("perpusmu-auth-storage")
           window.location.href = "/auth/login"
@@ -92,8 +95,26 @@ export const useAuthStore = create<AuthState>()(
       },
 
       checkAuth: () => {
-        const { token } = get()
-        return !!token
+        return !!get().user
+      },
+
+      /**
+       * Ambil ulang user dari /api/auth/me. Memvalidasi cookie sesi.
+       */
+      refreshSession: async () => {
+        try {
+          const res = await fetch("/api/auth/me", { credentials: "include" })
+          if (!res.ok) {
+            set({ user: null, token: null, isAuthenticated: false })
+            return false
+          }
+          const data = await res.json()
+          set({ user: data.user, isAuthenticated: true })
+          return true
+        } catch {
+          set({ user: null, token: null, isAuthenticated: false })
+          return false
+        }
       },
 
       setToken: (token: string) => {
@@ -102,14 +123,8 @@ export const useAuthStore = create<AuthState>()(
 
       updateUser: (userData: Partial<User>) => {
         const currentUser = get().user
-
         if (currentUser) {
-          set({
-            user: {
-              ...currentUser,
-              ...userData,
-            },
-          })
+          set({ user: { ...currentUser, ...userData } })
         }
       },
 
@@ -118,21 +133,12 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const user = get().user
+          if (!user) throw new Error("User not authenticated")
 
-          if (!user) {
-            throw new Error("User not authenticated")
-          }
+          const response = await api.post("/users/update-whatsapp", { whatsappNumber })
 
-          const response = await api.post("/users/update-whatsapp", {
-            whatsappNumber,
-          })
-
-          // Update user in store
           set({
-            user: {
-              ...user,
-              whatsappNumber,
-            },
+            user: { ...user, whatsappNumber },
             isLoading: false,
           })
 
@@ -151,10 +157,7 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const user = get().user
-
-          if (!user) {
-            throw new Error("User not authenticated")
-          }
+          if (!user) throw new Error("User not authenticated")
 
           const response = await api.post("/users/submit-exam-details", {
             thesisTitle: details.thesisTitle,
@@ -163,12 +166,8 @@ export const useAuthStore = create<AuthState>()(
 
           const examDetails = response.data.examDetails
 
-          // Update user in store
           set({
-            user: {
-              ...user,
-              examDetails,
-            },
+            user: { ...user, examDetails },
             isLoading: false,
           })
 
@@ -184,15 +183,13 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "perpusmu-auth-storage",
+      // Hanya persist user (untuk UX cepat saat reload). Token TIDAK di-persist.
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => {
         return () => {
-          // Defer to avoid ReferenceError: useAuthStore is not yet assigned
-          // during synchronous rehydration in Zustand v5
           setTimeout(() => {
             useAuthStore.setState({ _hasHydrated: true })
           }, 0)
@@ -201,4 +198,3 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 )
-

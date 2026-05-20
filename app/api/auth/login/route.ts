@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createHash } from "crypto"
 import { prisma } from "@/lib/prisma"
 import { fetchMahasiswaByNim } from "@/lib/auth/graphql-client"
-import { createToken } from "@/lib/auth/verify-token"
+import { createSession, setSessionCookie } from "@/lib/auth/verify-token"
+import { hashPassword, md5, verifyBcrypt, verifyMd5 } from "@/lib/auth/password"
 import { rateLimit, getClientIp } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
-
-function md5(input: string): string {
-  return createHash("md5").update(input).digest("hex")
-}
 
 function sanitizeUser(user: {
   id: string
@@ -41,7 +37,8 @@ function sanitizeUser(user: {
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request)
-    const { success, remaining, resetAt } = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)
+    const userAgent = request.headers.get("user-agent")
+    const { success, resetAt } = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)
 
     if (!success) {
       const retryAfter = Math.ceil((resetAt - Date.now()) / 1000)
@@ -64,24 +61,46 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const hashedPassword = md5(password)
-
     // Step A: Check local database first
     const localUser = await prisma.user.findUnique({
       where: { username },
     })
 
     if (localUser) {
-      // Step B: User exists locally — verify password
-      if (localUser.password !== hashedPassword) {
+      // Step B: Verifikasi password. Prefer bcrypt; fallback MD5 untuk user lama,
+      // lalu migrasi otomatis ke bcrypt setelah verifikasi berhasil.
+      const bcryptOk = localUser.passwordHash
+        ? await verifyBcrypt(password, localUser.passwordHash)
+        : false
+      const md5Ok = !bcryptOk && verifyMd5(password, localUser.password)
+
+      if (!bcryptOk && !md5Ok) {
         return NextResponse.json(
           { message: "Username atau password salah" },
           { status: 401 }
         )
       }
 
-      const token = await createToken(localUser.id, localUser.role)
-      return NextResponse.json({ user: sanitizeUser(localUser), token })
+      if (!bcryptOk) {
+        // Upgrade password ke bcrypt secara transparan
+        try {
+          const newHash = await hashPassword(password)
+          await prisma.user.update({
+            where: { id: localUser.id },
+            data: { passwordHash: newHash },
+          })
+        } catch (e) {
+          logger.warn("Failed to upgrade password to bcrypt:", e)
+        }
+      }
+
+      const { token, expiresAt } = await createSession(localUser.id, localUser.role, {
+        ip,
+        userAgent,
+      })
+      const res = NextResponse.json({ user: sanitizeUser(localUser), token })
+      setSessionCookie(res, token, expiresAt)
+      return res
     }
 
     // Step C: User not found locally — try GraphQL (student login with NIM)
@@ -89,9 +108,10 @@ export async function POST(request: NextRequest) {
     try {
       mahasiswa = await fetchMahasiswaByNim(username)
     } catch {
+      // Samakan dengan invalid credentials agar tidak bocor info ketersediaan layanan
       return NextResponse.json(
-        { message: "Gagal menghubungi server akademik. Coba lagi nanti." },
-        { status: 503 }
+        { message: "Username atau password salah" },
+        { status: 401 }
       )
     }
 
@@ -102,19 +122,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Step D: Verify password against GraphQL data (MD5 hash comparison)
-    if (mahasiswa.passwd !== hashedPassword) {
+    // Step D: Verify password against GraphQL data (MD5)
+    if (mahasiswa.passwd !== md5(password)) {
       return NextResponse.json(
         { message: "Username atau password salah" },
         { status: 401 }
       )
     }
 
-    // Step E: Password matches — create user in local database
+    // Step E: Buat user lokal — simpan MD5 (untuk kompat GraphQL) + bcrypt
+    const bcryptHash = await hashPassword(password)
     const newUser = await prisma.user.create({
       data: {
         username: mahasiswa.nim,
-        password: hashedPassword,
+        password: md5(password),
+        passwordHash: bcryptHash,
         name: mahasiswa.nama,
         nim: mahasiswa.nim,
         hp: mahasiswa.hp,
@@ -124,8 +146,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    const token = await createToken(newUser.id, newUser.role)
-    return NextResponse.json({ user: sanitizeUser(newUser), token })
+    const { token, expiresAt } = await createSession(newUser.id, newUser.role, {
+      ip,
+      userAgent,
+    })
+    const res = NextResponse.json({ user: sanitizeUser(newUser), token })
+    setSessionCookie(res, token, expiresAt)
+    return res
   } catch (error) {
     logger.error("Login error:", error)
     return NextResponse.json(

@@ -140,7 +140,7 @@ export async function PUT(
     const parsed = updateInstructorSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { message: parsed.error.errors[0].message },
+        { message: parsed.error.issues[0].message },
         { status: 400 }
       )
     }

@@ -1,55 +1,41 @@
 import { NextRequest, NextResponse } from "next/server"
-import { jwtVerify } from "jose"
+import { verifyJwtEdge, SESSION_COOKIE } from "@/lib/auth/verify-token"
 
-const PUBLIC_ROUTES = [
+const PUBLIC_ROUTES = new Set<string>([
+  "/",
   "/auth/login",
   "/api/auth/login",
   "/payment",
   "/privacy",
   "/terms",
   "/whatsapp-verification",
-]
+])
 
-const PUBLIC_PREFIXES = [
-  "/_next",
-  "/favicon",
-  "/public",
-]
+const PUBLIC_PREFIXES = ["/_next", "/favicon", "/public"]
 
 function isPublicRoute(pathname: string): boolean {
-  if (PUBLIC_ROUTES.some((route) => pathname === route)) return true
-  if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return true
-  if (pathname === "/") return true
+  if (PUBLIC_ROUTES.has(pathname)) return true
+  if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true
   return false
 }
 
-function getJwtSecret(): Uint8Array | null {
-  const secret = process.env.JWT_SECRET
-  if (!secret) return null
-  return new TextEncoder().encode(secret)
-}
-
-async function verifyToken(token: string): Promise<{ userId: string; role: string } | null> {
-  const secret = getJwtSecret()
-  if (!secret) return null
-
-  try {
-    const { payload } = await jwtVerify(token, secret)
-    return {
-      userId: payload.userId as string,
-      role: payload.role as string,
-    }
-  } catch {
-    return null
-  }
-}
-
 function extractToken(request: NextRequest): string | null {
-  const authHeader = request.headers.get("authorization")
-  if (authHeader?.startsWith("Bearer ")) {
-    return authHeader.split(" ")[1]
-  }
+  const cookie = request.cookies.get(SESSION_COOKIE)?.value
+  if (cookie) return cookie
+  const header = request.headers.get("authorization")
+  if (header?.startsWith("Bearer ")) return header.split(" ")[1] ?? null
   return null
+}
+
+function unauthorizedApi(message: string, status: number) {
+  return NextResponse.json({ message }, { status })
+}
+
+function redirectToLogin(request: NextRequest) {
+  const url = request.nextUrl.clone()
+  url.pathname = "/auth/login"
+  url.search = ""
+  return NextResponse.redirect(url)
 }
 
 export async function middleware(request: NextRequest) {
@@ -60,36 +46,55 @@ export async function middleware(request: NextRequest) {
   }
 
   const token = extractToken(request)
+  const isApi = pathname.startsWith("/api/")
 
-  // API routes: return 401 if no valid token
-  if (pathname.startsWith("/api/")) {
-    if (!token) {
-      return NextResponse.json({ message: "Token tidak ditemukan" }, { status: 401 })
-    }
+  if (!token) {
+    return isApi
+      ? unauthorizedApi("Token tidak ditemukan", 401)
+      : redirectToLogin(request)
+  }
 
-    const payload = await verifyToken(token)
-    if (!payload) {
-      return NextResponse.json({ message: "Token tidak valid" }, { status: 401 })
-    }
+  // NOTE: hanya verifikasi JWT signature di edge. Validasi Session DB dilakukan
+  // di route handler (Node runtime) via verifyAuth().
+  const payload = await verifyJwtEdge(token)
+  if (!payload) {
+    return isApi
+      ? unauthorizedApi("Token tidak valid", 401)
+      : redirectToLogin(request)
+  }
 
-    // Role-based API access
-    if (pathname.startsWith("/api/admin") && payload.role !== "ADMIN") {
-      return NextResponse.json({ message: "Akses ditolak" }, { status: 403 })
+  const role = payload.role
+
+  if (isApi) {
+    if (pathname.startsWith("/api/admin") && role !== "ADMIN") {
+      return unauthorizedApi("Akses ditolak", 403)
     }
-    if (pathname.startsWith("/api/instructor") && payload.role !== "INSTRUCTOR") {
-      return NextResponse.json({ message: "Akses ditolak" }, { status: 403 })
+    if (pathname.startsWith("/api/instructor") && role !== "INSTRUCTOR") {
+      return unauthorizedApi("Akses ditolak", 403)
     }
-    if (pathname.startsWith("/api/student") && payload.role !== "STUDENT") {
-      return NextResponse.json({ message: "Akses ditolak" }, { status: 403 })
+    if (pathname.startsWith("/api/student") && role !== "STUDENT") {
+      return unauthorizedApi("Akses ditolak", 403)
     }
 
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set("x-user-id", payload.userId)
     requestHeaders.set("x-user-role", payload.role)
+    return NextResponse.next({ request: { headers: requestHeaders } })
+  }
 
-    return NextResponse.next({
-      request: { headers: requestHeaders },
-    })
+  // Halaman dashboard: cegah cross-role akses
+  const roleLower = role.toLowerCase()
+  const sectionMatches: Array<[string, string]> = [
+    ["/dashboard/admin", "ADMIN"],
+    ["/dashboard/instructor", "INSTRUCTOR"],
+    ["/dashboard/student", "STUDENT"],
+  ]
+  for (const [prefix, requiredRole] of sectionMatches) {
+    if (pathname.startsWith(prefix) && role !== requiredRole) {
+      const url = request.nextUrl.clone()
+      url.pathname = `/dashboard/${roleLower}`
+      return NextResponse.redirect(url)
+    }
   }
 
   return NextResponse.next()
@@ -98,5 +103,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/api/:path*",
+    "/dashboard/:path*",
+    "/exam-details/:path*",
   ],
 }

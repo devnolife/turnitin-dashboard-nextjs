@@ -26,7 +26,7 @@ const formSchema = z.object({
       message: "Judul skripsi tidak boleh lebih dari 200 karakter.",
     }),
   examType: z.enum(["proposal_defense", "results_defense", "final_defense"], {
-    required_error: "Silakan pilih jenis ujian.",
+    message: "Silakan pilih jenis ujian.",
   }),
 })
 
@@ -174,14 +174,14 @@ export function ExamDetailsForm() {
 
                   <StaggerItem className="pt-2">
                     <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isSubmitting}
-                    variant="gradient"
-                    withRipple
-                    isLoading={isSubmitting}
-                    loadingText="Mengirim..."
-                  >
+                      type="submit"
+                      className="w-full"
+                      disabled={isSubmitting}
+                      variant="gradient"
+                      withRipple
+                      isLoading={isSubmitting}
+                      loadingText="Mengirim..."
+                    >
                       Kirim Detail Ujian
                     </Button>
                   </StaggerItem>

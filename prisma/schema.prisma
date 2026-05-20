@@ -11,6 +11,7 @@ model User {
   id                  String          @id @default(cuid())
   username            String          @unique
   password            String
+  passwordHash        String?
   name                String
   nim                 String?         @unique
   hp                  String?
@@ -30,8 +31,26 @@ model User {
   examDetails  ExamDetail?
   submissions  Submission[]
   payments     Payment[]
+  sessions     Session[]
 
   @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  jti       String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
 }
 
 model Faculty {

@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const role = searchParams.get("role")
     const search = searchParams.get("search")
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"))
+    const limit = Math.min(200, Math.max(1, parseInt(searchParams.get("limit") || "50")))
 
     const where: Record<string, unknown> = {}
 
@@ -27,24 +29,32 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    const users = await prisma.user.findMany({
-      where,
-      select: {
-        id: true,
-        username: true,
-        name: true,
-        nim: true,
-        email: true,
-        prodi: true,
-        role: true,
-        hasCompletedPayment: true,
-        whatsappNumber: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    })
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          username: true,
+          name: true,
+          nim: true,
+          email: true,
+          prodi: true,
+          role: true,
+          hasCompletedPayment: true,
+          whatsappNumber: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: (page - 1) * limit,
+      }),
+      prisma.user.count({ where }),
+    ])
 
-    return NextResponse.json({ users })
+    return NextResponse.json({
+      users,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)
     logger.error("Admin users error:", error)

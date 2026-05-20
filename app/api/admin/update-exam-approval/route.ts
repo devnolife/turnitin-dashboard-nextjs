@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger"
 const examApprovalSchema = z.object({
   userId: z.string().min(1, "User ID wajib diisi"),
   approvalStatus: z.enum(["APPROVED", "REJECTED"], {
-    errorMap: () => ({ message: "Status harus APPROVED atau REJECTED" }),
+    message: "Status harus APPROVED atau REJECTED",
   }),
 })
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const parsed = examApprovalSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { message: parsed.error.errors[0].message },
+        { message: parsed.error.issues[0].message },
         { status: 400 }
       )
     }

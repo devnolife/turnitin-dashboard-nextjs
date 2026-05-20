@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
+import { RuleType } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { logger } from "@/lib/logger"
 
 const similarityRuleSchema = z.object({
   studyProgramId: z.string().min(1, "Study program ID wajib diisi"),
-  ruleType: z.string().min(1, "Rule type wajib diisi").max(50),
+  ruleType: z.nativeEnum(RuleType, { message: "Rule type tidak valid" }),
   rules: z.array(z.object({
     label: z.string().min(1, "Label wajib diisi").max(100, "Label maksimal 100 karakter"),
     maxPercentage: z.number().min(0, "Persentase minimal 0").max(100, "Persentase maksimal 100"),
@@ -22,29 +23,32 @@ export async function POST(request: NextRequest) {
     const parsed = similarityRuleSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { message: parsed.error.errors[0].message },
+        { message: parsed.error.issues[0].message },
         { status: 400 }
       )
     }
     const { studyProgramId, ruleType, rules } = parsed.data
 
-    // Delete existing rules for this program with this type
-    await prisma.similarityRule.deleteMany({
-      where: { studyProgramId, ruleType },
-    })
-
-    // Create new rules
-    if (rules.length > 0) {
-      await prisma.similarityRule.createMany({
-        data: rules.map((rule: { label: string; maxPercentage: number }, index: number) => ({
-          studyProgramId,
-          ruleType,
-          label: rule.label,
-          maxPercentage: rule.maxPercentage,
-          orderIndex: index,
-        })),
-      })
-    }
+    // Atomic: delete + insert dalam satu transaksi agar tidak kehilangan data lama
+    // jika createMany gagal.
+    await prisma.$transaction([
+      prisma.similarityRule.deleteMany({
+        where: { studyProgramId, ruleType },
+      }),
+      ...(rules.length > 0
+        ? [
+          prisma.similarityRule.createMany({
+            data: rules.map((rule: { label: string; maxPercentage: number }, index: number) => ({
+              studyProgramId,
+              ruleType,
+              label: rule.label,
+              maxPercentage: rule.maxPercentage,
+              orderIndex: index,
+            })),
+          }),
+        ]
+        : []),
+    ])
 
     const updatedProgram = await prisma.studyProgram.findUnique({
       where: { id: studyProgramId },

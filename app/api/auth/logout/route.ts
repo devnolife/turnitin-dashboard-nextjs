@@ -1,20 +1,31 @@
 import { NextRequest, NextResponse } from "next/server"
-import { verifyAuth, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import {
+  verifyAuth,
+  handleAuthError,
+  AuthError,
+  revokeSession,
+  clearSessionCookie,
+} from "@/lib/auth/verify-token"
 import { logger } from "@/lib/logger"
 
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request)
-
-    // Log logout event for audit trail
+    await revokeSession(auth.jti)
     logger.info(`User ${auth.userId} (role: ${auth.role}) logged out`)
 
-    return NextResponse.json({
-      message: "Berhasil logout",
-      success: true,
-    })
+    const res = NextResponse.json({ message: "Berhasil logout", success: true })
+    clearSessionCookie(res)
+    return res
   } catch (error) {
-    if (error instanceof AuthError) return handleAuthError(error)
-    return NextResponse.json({ message: "Logout berhasil" }, { status: 200 })
+    if (error instanceof AuthError) {
+      // Cookie tetap dihapus walaupun token sudah invalid
+      const res = handleAuthError(error)
+      clearSessionCookie(res)
+      return res
+    }
+    const res = NextResponse.json({ message: "Logout berhasil" }, { status: 200 })
+    clearSessionCookie(res)
+    return res
   }
 }

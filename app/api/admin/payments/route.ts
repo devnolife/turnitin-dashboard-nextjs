@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
     const rawStatus = searchParams.get("status")
     const rawSearch = searchParams.get("search")
     const rawJenis = searchParams.get("jenis")
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"))
+    const limit = Math.min(200, Math.max(1, parseInt(searchParams.get("limit") || "50")))
 
     const allowedStatuses = ["PENDING", "PROCESSING", "COMPLETED", "FAILED"]
     const status = rawStatus && rawStatus !== "all"
@@ -60,9 +62,16 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { createdAt: "desc" },
+      take: limit,
+      skip: (page - 1) * limit,
     })
 
-    return NextResponse.json({ payments })
+    const total = await prisma.payment.count({ where })
+
+    return NextResponse.json({
+      payments,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)
     logger.error("Admin payments error:", error)
