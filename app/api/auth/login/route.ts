@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request)
     const userAgent = request.headers.get("user-agent")
-    const { success, resetAt } = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)
+    const { success, resetAt } = await rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)
 
     if (!success) {
       const retryAfter = Math.ceil((resetAt - Date.now()) / 1000)
@@ -74,15 +74,50 @@ export async function POST(request: NextRequest) {
         : false
       const md5Ok = !bcryptOk && verifyMd5(password, localUser.password)
 
-      if (!bcryptOk && !md5Ok) {
+      let authOk = bcryptOk || md5Ok
+      let syncedFromSimak = false
+
+      // Step B.1: Jika local gagal, sync ke SIMAK untuk STUDENT.
+      // Kasus: user mengganti password di SIMAK setelah login pertama,
+      // jadi hash lokal sudah basi. Verifikasi ulang ke GraphQL — kalau
+      // password yang diinput sekarang cocok di SIMAK, sinkronkan lokal.
+      if (!authOk && localUser.role === "STUDENT" && localUser.nim) {
+        try {
+          const mahasiswa = await fetchMahasiswaByNim(localUser.nim)
+          if (mahasiswa && mahasiswa.passwd === md5(password)) {
+            authOk = true
+            syncedFromSimak = true
+          }
+        } catch (e) {
+          // GraphQL down: jangan ungkap; biarkan authOk tetap false.
+          logger.warn("SIMAK fallback failed during login:", e)
+        }
+      }
+
+      if (!authOk) {
         return NextResponse.json(
           { message: "Username atau password salah" },
           { status: 401 }
         )
       }
 
-      if (!bcryptOk) {
-        // Upgrade password ke bcrypt secara transparan
+      if (syncedFromSimak) {
+        // Password SIMAK berubah → tulis ulang MD5 + bcrypt lokal.
+        try {
+          const newHash = await hashPassword(password)
+          await prisma.user.update({
+            where: { id: localUser.id },
+            data: {
+              password: md5(password),
+              passwordHash: newHash,
+            },
+          })
+          logger.info("Password resynced from SIMAK", { userId: localUser.id })
+        } catch (e) {
+          logger.warn("Failed to persist resynced SIMAK password:", e)
+        }
+      } else if (!bcryptOk) {
+        // Upgrade password MD5-only ke bcrypt secara transparan.
         try {
           const newHash = await hashPassword(password)
           await prisma.user.update({
