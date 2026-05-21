@@ -34,7 +34,13 @@ export type RekapBundle = {
   totals: { biaya: number; count: number }
 }
 
-const RATE: Record<"S1" | "S2" | "S3", number> = {
+const STUDENT_RATE: Record<"S1" | "S2" | "S3", number> = {
+  S1: 100000,
+  S2: 150000,
+  S3: 200000,
+}
+
+const INSTRUCTOR_RATE: Record<"S1" | "S2" | "S3", number> = {
   S1: 50000,
   S2: 75000,
   S3: 100000,
@@ -108,7 +114,7 @@ export async function buildRekap(filter: RekapFilter): Promise<RekapBundle> {
       tahapLabel: tahapLabel(s.examType),
       similarityScore: s.similarityScore,
       status: s.status,
-      biaya: successfulPayment?.amount ?? RATE[degree],
+      biaya: successfulPayment?.amount ?? STUDENT_RATE[degree],
       instruktur: s.reviewer?.name || "-",
       tanggalPembayaran: successfulPayment?.paidAt
         ? successfulPayment.paidAt.toISOString()
@@ -136,7 +142,7 @@ export async function buildRekap(filter: RekapFilter): Promise<RekapBundle> {
     else if (it.degree === "S2") row.totalS2 += 1
     else row.totalS3 += 1
     row.jumlah += 1
-    row.total += it.biaya
+    row.total += INSTRUCTOR_RATE[it.degree]
   }
 
   const rekap = Array.from(byInstructor.values()).sort((a, b) =>
