@@ -84,18 +84,18 @@ export function LoginForm() {
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <FormLabel className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   NIM / Username
                 </FormLabel>
                 <FormControl>
                   <div className="group relative">
                     <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
-                      <User className="h-4 w-4" />
+                      <User className="size-5" />
                     </div>
                     <Input
                       autoComplete="username"
                       placeholder="Masukkan NIM atau username"
-                      className="h-12 rounded-2xl border-border/70 bg-white/70 pl-11 text-[15px] shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 dark:bg-white/5"
+                      className="h-14 rounded-2xl border-border/70 bg-white/70 pl-12 text-[15px] shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 dark:bg-white/5"
                       {...field}
                     />
                   </div>
@@ -110,19 +110,19 @@ export function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <FormLabel className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   Password
                 </FormLabel>
                 <FormControl>
                   <div className="group relative">
                     <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
-                      <Lock className="h-4 w-4" />
+                      <Lock className="size-5" />
                     </div>
                     <Input
                       type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       placeholder="••••••••"
-                      className="h-12 rounded-2xl border-border/70 bg-white/70 pl-11 pr-12 text-[15px] shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 dark:bg-white/5"
+                      className="h-14 rounded-2xl border-border/70 bg-white/70 pl-12 pr-12 text-[15px] shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 dark:bg-white/5"
                       {...field}
                     />
                     <button
@@ -132,12 +132,12 @@ export function LoginForm() {
                       aria-label={
                         showPassword ? "Sembunyikan password" : "Tampilkan password"
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
                     >
                       {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
+                        <EyeOff className="size-4" />
                       ) : (
-                        <Eye className="h-4 w-4" />
+                        <Eye className="size-4" />
                       )}
                     </button>
                   </div>
@@ -151,7 +151,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="group relative h-12 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-dark to-[#2c5f8d] text-[15px] font-semibold tracking-wide text-white shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-90"
+          className="group relative h-14 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-dark to-[#2c5f8d] text-[15px] font-semibold tracking-wide text-white shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-90"
         >
           <span
             aria-hidden
@@ -159,13 +159,13 @@ export function LoginForm() {
           />
           {isLoading ? (
             <span className="relative flex items-center justify-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Memproses...
             </span>
           ) : (
             <span className="relative flex items-center justify-center">
               Masuk ke Dashboard
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
             </span>
           )}
         </Button>
