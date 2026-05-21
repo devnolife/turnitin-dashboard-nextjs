@@ -11,14 +11,25 @@ const examApprovalSchema = z.object({
   }),
 })
 
-// Assign ke instruktur terakhir (terbaru) yang terdaftar
-async function getLatestInstructor(): Promise<string | null> {
-  const instructor = await prisma.user.findFirst({
+// Pilih instruktur dengan beban mahasiswa paling sedikit (load-balanced).
+// Jika seri, ambil yang paling lama belum dapat mahasiswa (atau terbaru kalau belum punya sama sekali).
+async function pickInstructorForNewStudent(): Promise<string | null> {
+  const instructors = await prisma.user.findMany({
     where: { role: "INSTRUCTOR" },
-    orderBy: { createdAt: "desc" },
-    select: { id: true },
+    select: {
+      id: true,
+      createdAt: true,
+      _count: { select: { students: true } },
+    },
   })
-  return instructor?.id ?? null
+  if (instructors.length === 0) return null
+  instructors.sort((a, b) => {
+    if (a._count.students !== b._count.students) {
+      return a._count.students - b._count.students
+    }
+    return b.createdAt.getTime() - a.createdAt.getTime()
+  })
+  return instructors[0].id
 }
 
 export async function POST(request: NextRequest) {
@@ -58,7 +69,7 @@ export async function POST(request: NextRequest) {
     // Jika disetujui, otomatis assign ke instruktur terakhir
     let assignedInstructor = null
     if (approvalStatus === "APPROVED") {
-      const instructorId = await getLatestInstructor()
+      const instructorId = await pickInstructorForNewStudent()
       if (instructorId) {
         const updated = await prisma.user.update({
           where: { id: userId },
