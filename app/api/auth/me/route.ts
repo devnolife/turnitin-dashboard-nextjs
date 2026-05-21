@@ -23,6 +23,9 @@ export async function GET(request: NextRequest) {
         hasCompletedPayment: true,
         whatsappNumber: true,
         mustChangePassword: true,
+        accountStatus: true,
+        graduatedAt: true,
+        tourCompletedAt: true,
         createdAt: true,
       },
     })
@@ -44,6 +47,9 @@ export async function GET(request: NextRequest) {
         hasCompletedPayment: user.hasCompletedPayment,
         whatsappNumber: user.whatsappNumber ?? undefined,
         mustChangePassword: user.mustChangePassword ?? false,
+        accountStatus: user.accountStatus,
+        graduatedAt: user.graduatedAt ? user.graduatedAt.toISOString() : null,
+        tourCompletedAt: user.tourCompletedAt ? user.tourCompletedAt.toISOString() : null,
         createdAt: user.createdAt.toISOString(),
       },
     })

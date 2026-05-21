@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get("search")
     const prodi = searchParams.get("prodi")
+    const status = searchParams.get("status")
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"))
     const limit = Math.min(200, Math.max(1, parseInt(searchParams.get("limit") || "50")))
 
@@ -28,6 +29,10 @@ export async function GET(request: NextRequest) {
       where.prodi = { contains: prodi, mode: "insensitive" }
     }
 
+    if (status && ["ACTIVE", "INACTIVE", "GRADUATED"].includes(status)) {
+      where.accountStatus = status
+    }
+
     const [students, total] = await Promise.all([
       prisma.user.findMany({
         where,
@@ -41,6 +46,8 @@ export async function GET(request: NextRequest) {
           prodi: true,
           hasCompletedPayment: true,
           whatsappNumber: true,
+          accountStatus: true,
+          graduatedAt: true,
           createdAt: true,
           examDetails: {
             select: {
@@ -101,6 +108,8 @@ export async function GET(request: NextRequest) {
         hp: s.hp || s.whatsappNumber,
         prodi: s.prodi || "-",
         hasCompletedPayment: s.hasCompletedPayment,
+        accountStatus: s.accountStatus,
+        graduatedAt: s.graduatedAt,
         createdAt: s.createdAt,
         examDetail: s.examDetails || null,
         instructorId: s.instructor?.id || null,

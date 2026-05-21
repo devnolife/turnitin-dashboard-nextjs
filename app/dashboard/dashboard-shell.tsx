@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/dashboard/sidebar"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { ThemeIndicator } from "@/components/ui/theme-indicator"
+import { OnboardingTour } from "@/components/dashboard/onboarding-tour"
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
@@ -95,6 +96,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <DashboardHeader user={user} onMenuClick={() => setMobileOpen(true)} />
         {children}
         <ThemeIndicator />
+        <OnboardingTour />
       </main>
     </div>
   )

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { logger } from "@/lib/logger"
+import { evaluateGraduation } from "@/lib/graduation"
 import { z } from "zod"
 
 const feedbackSchema = z.object({
@@ -63,6 +64,10 @@ export async function POST(
         },
       },
     })
+
+    if (status === "REVIEWED") {
+      void evaluateGraduation(updated.userId)
+    }
 
     return NextResponse.json({
       message: "Feedback berhasil disimpan",

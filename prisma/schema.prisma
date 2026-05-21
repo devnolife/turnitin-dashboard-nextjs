@@ -21,6 +21,9 @@ model User {
   hasCompletedPayment Boolean         @default(false)
   whatsappNumber      String?
   mustChangePassword  Boolean         @default(false)
+  accountStatus       AccountStatus   @default(ACTIVE)
+  graduatedAt         DateTime?
+  tourCompletedAt     DateTime?
   studyProgramId      String?
   instructorId        String?
   createdAt           DateTime        @default(now())
@@ -270,4 +273,10 @@ enum ComplaintStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
 }

@@ -18,6 +18,9 @@ function sanitizeUser(user: {
   hasCompletedPayment: boolean
   whatsappNumber?: string | null
   mustChangePassword?: boolean
+  accountStatus?: "ACTIVE" | "INACTIVE" | "GRADUATED"
+  graduatedAt?: Date | null
+  tourCompletedAt?: Date | null
   createdAt?: Date | null
 }) {
   return {
@@ -32,6 +35,9 @@ function sanitizeUser(user: {
     hasCompletedPayment: user.hasCompletedPayment,
     whatsappNumber: user.whatsappNumber ?? undefined,
     mustChangePassword: user.mustChangePassword ?? false,
+    accountStatus: user.accountStatus,
+    graduatedAt: user.graduatedAt ? user.graduatedAt.toISOString() : null,
+    tourCompletedAt: user.tourCompletedAt ? user.tourCompletedAt.toISOString() : null,
     createdAt: user.createdAt ? user.createdAt.toISOString() : undefined,
   }
 }

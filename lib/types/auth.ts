@@ -19,6 +19,9 @@ export interface User {
   hasCompletedPayment: boolean
   whatsappNumber?: string
   mustChangePassword?: boolean
+  accountStatus?: "ACTIVE" | "INACTIVE" | "GRADUATED"
+  graduatedAt?: string | null
+  tourCompletedAt?: string | null
   examDetails?: ExamDetails | null
   createdAt?: string
 }

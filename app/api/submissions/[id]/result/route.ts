@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { saveUploadedFile, validateFile } from "@/lib/upload"
 import { logger } from "@/lib/logger"
+import { evaluateGraduation } from "@/lib/graduation"
 
 export const runtime = "nodejs"
 
@@ -91,6 +92,10 @@ export async function POST(
     })
 
     logger.info("Submission reviewed", { id, status, similarity, reviewer: auth.userId })
+
+    if (status === "REVIEWED") {
+      void evaluateGraduation(updated.userId)
+    }
 
     return NextResponse.json({ submission: updated })
   } catch (error) {

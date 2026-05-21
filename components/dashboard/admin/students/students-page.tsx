@@ -36,6 +36,8 @@ interface StudentRow {
   email: string | null
   prodi: string
   hasCompletedPayment: boolean
+  accountStatus?: "ACTIVE" | "INACTIVE" | "GRADUATED"
+  graduatedAt?: string | null
   createdAt: string
   examDetail: {
     thesisTitle: string
@@ -62,6 +64,7 @@ export function AdminStudentsPage() {
   const [filtered, setFiltered] = useState<StudentRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
   const router = useRouter()
@@ -127,28 +130,30 @@ export function AdminStudentsPage() {
   }
 
   useEffect(() => {
-    if (!search.trim()) {
-      setFiltered(students)
-    } else {
-      const q = search.toLowerCase()
-      setFiltered(
-        students.filter(
-          (s) =>
-            s.name.toLowerCase().includes(q) ||
-            s.nim.toLowerCase().includes(q) ||
-            s.prodi.toLowerCase().includes(q) ||
-            (s.email && s.email.toLowerCase().includes(q))
-        )
+    const q = search.trim().toLowerCase()
+    let next = students
+    if (q) {
+      next = next.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.nim.toLowerCase().includes(q) ||
+          s.prodi.toLowerCase().includes(q) ||
+          (s.email && s.email.toLowerCase().includes(q))
       )
     }
+    if (statusFilter !== "all") {
+      next = next.filter((s) => (s.accountStatus ?? "ACTIVE") === statusFilter)
+    }
+    setFiltered(next)
     setCurrentPage(1)
-  }, [search, students])
+  }, [search, statusFilter, students])
 
   const totalStudents = students.length
   const totalSubmissions = students.reduce((a, s) => a + s.submissionsCount, 0)
   const totalReviewed = students.reduce((a, s) => a + s.reviewedCount, 0)
   const totalFlagged = students.reduce((a, s) => a + s.flaggedCount, 0)
   const paidCount = students.filter((s) => s.hasCompletedPayment).length
+  const graduatedCount = students.filter((s) => s.accountStatus === "GRADUATED").length
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage)
   const currentItems = filtered.slice(
@@ -250,14 +255,27 @@ export function AdminStudentsPage() {
             <CardDescription>Lihat dan kelola semua data mahasiswa</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Search className="size-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari nama, NIM, prodi, atau email..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-9"
-              />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <div className="flex flex-1 items-center gap-2">
+                <Search className="size-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari nama, NIM, prodi, atau email..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-9 w-full sm:w-[180px]">
+                  <SelectValue placeholder="Status akun" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua status</SelectItem>
+                  <SelectItem value="ACTIVE">Aktif</SelectItem>
+                  <SelectItem value="GRADUATED">Lulus</SelectItem>
+                  <SelectItem value="INACTIVE">Nonaktif</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="rounded-md border overflow-x-auto">
@@ -287,6 +305,7 @@ export function AdminStudentsPage() {
                       <TableHead>Rata-rata Similarity</TableHead>
                       <TableHead>Instruktur</TableHead>
                       <TableHead>Pembayaran</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead className="w-[60px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -333,6 +352,15 @@ export function AdminStudentsPage() {
                           <Badge variant={s.hasCompletedPayment ? "success" : "secondary"}>
                             {s.hasCompletedPayment ? "Lunas" : "Belum"}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {s.accountStatus === "GRADUATED" ? (
+                            <Badge variant="success">🎓 Lulus</Badge>
+                          ) : s.accountStatus === "INACTIVE" ? (
+                            <Badge variant="secondary">Nonaktif</Badge>
+                          ) : (
+                            <Badge variant="outline">Aktif</Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Button
