@@ -83,7 +83,7 @@ export default function StudentDashboardClientPage() {
               <ExamDetailsForm />
             </div>
             <div className="lg:col-span-2 space-y-6">
-              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+              <Card className="rounded-3xl border border-border shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📋 Cara Kerja</CardTitle>
                 </CardHeader>
@@ -119,7 +119,7 @@ export default function StudentDashboardClientPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+              <Card className="rounded-3xl border border-border shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">💡 Tips</CardTitle>
                 </CardHeader>
@@ -156,7 +156,7 @@ export default function StudentDashboardClientPage() {
               <PendingApproval />
             </div>
             <div className="space-y-6">
-              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+              <Card className="rounded-3xl border border-border shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📊 Status Anda</CardTitle>
                 </CardHeader>
@@ -180,7 +180,7 @@ export default function StudentDashboardClientPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+              <Card className="rounded-3xl border border-border shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📞 Butuh Bantuan?</CardTitle>
                 </CardHeader>
@@ -216,7 +216,7 @@ export default function StudentDashboardClientPage() {
       >
         <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
                 <FileText className="size-4 text-muted-foreground" />
@@ -231,7 +231,7 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
                 <BarChart3 className="size-4 text-muted-foreground" />
@@ -246,7 +246,7 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Menunggu Hasil</CardTitle>
                 <Clock className="size-4 text-muted-foreground" />
@@ -261,7 +261,7 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Status Pembayaran</CardTitle>
                 <CheckCircle className="size-4 text-muted-foreground" />

@@ -183,7 +183,7 @@ export function AdminStudentsPage() {
       >
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
                 <Users className="size-4 text-muted-foreground" />
@@ -195,7 +195,7 @@ export function AdminStudentsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
                 <FileText className="size-4 text-muted-foreground" />
@@ -207,7 +207,7 @@ export function AdminStudentsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Direview</CardTitle>
                 <CheckCircle className="size-4 text-green-500" />
@@ -219,7 +219,7 @@ export function AdminStudentsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Ditandai</CardTitle>
                 <AlertTriangle className="size-4 text-orange-500" />
@@ -231,7 +231,7 @@ export function AdminStudentsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Sudah Bayar</CardTitle>
                 <CheckCircle className="size-4 text-blue-500" />
@@ -244,7 +244,7 @@ export function AdminStudentsPage() {
           </StaggerItem>
         </StaggerContainer>
 
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle>Database Mahasiswa</CardTitle>
             <CardDescription>Lihat dan kelola semua data mahasiswa</CardDescription>

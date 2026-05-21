@@ -111,7 +111,7 @@ export function InstructorDashboardClient() {
       >
         {/* Instructor Profile */}
         <div className="grid gap-6 md:grid-cols-3 mb-6">
-          <Card className="md:col-span-1 border border-border/60 shadow-sm dark:border-white/10 rounded-3xl">
+          <Card className="md:col-span-1 border border-border shadow-sm rounded-3xl">
             <CardHeader>
               <div className="flex flex-col items-center">
                 <Avatar className="size-24">

@@ -181,7 +181,7 @@ export function AdminProdiPage() {
         {/* Stats */}
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Prodi</CardTitle>
                 <BookOpen className="size-4 text-muted-foreground" />
@@ -196,7 +196,7 @@ export function AdminProdiPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
                 <Users className="size-4 text-muted-foreground" />
@@ -211,7 +211,7 @@ export function AdminProdiPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Aturan Aktif</CardTitle>
                 <FileCheck className="size-4 text-muted-foreground" />
@@ -228,7 +228,7 @@ export function AdminProdiPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Program S1</CardTitle>
                 <GraduationCap className="size-4 text-muted-foreground" />
@@ -246,7 +246,7 @@ export function AdminProdiPage() {
         </StaggerContainer>
 
         {/* Table */}
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle>Daftar Program Studi</CardTitle>
             <CardDescription>Kelola aturan similarity per program studi</CardDescription>

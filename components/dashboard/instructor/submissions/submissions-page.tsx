@@ -206,7 +206,7 @@ export function SubmissionsPage() {
       <div className="flex flex-col gap-6">
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
                 <FileText className="size-4 text-muted-foreground" />
@@ -219,7 +219,7 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Menunggu Upload</CardTitle>
                 <Clock className="size-4 text-muted-foreground" />
@@ -234,7 +234,7 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Sudah Ditinjau</CardTitle>
                 <CheckCircle className="size-4 text-muted-foreground" />
@@ -249,7 +249,7 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Ditandai</CardTitle>
                 <AlertTriangle className="size-4 text-muted-foreground" />

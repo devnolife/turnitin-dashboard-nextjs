@@ -115,7 +115,7 @@ export default function ExamApprovalsPage() {
 
   return (
     <DashboardMainCard title="Persetujuan Akun" subtitle="Kelola dan verifikasi akun mahasiswa yang mendaftar untuk Turnitin ✅" icon={CheckCircle}>
-      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+      <Card className="rounded-3xl border border-border shadow-sm">
         <CardHeader>
           <CardTitle>Pendaftaran Akun Turnitin</CardTitle>
           <CardDescription>Verifikasi dan setujui akun mahasiswa yang baru mendaftar</CardDescription>

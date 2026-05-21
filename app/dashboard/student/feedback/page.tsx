@@ -116,7 +116,7 @@ export default function StudentFeedbackPage() {
     >
       <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <StaggerItem>
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+          <Card className="rounded-3xl border border-border shadow-sm hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Feedback</CardTitle>
               <MessageSquare className="size-4 text-muted-foreground" />
@@ -128,7 +128,7 @@ export default function StudentFeedbackPage() {
           </Card>
         </StaggerItem>
         <StaggerItem>
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+          <Card className="rounded-3xl border border-border shadow-sm hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Lolos Perpusmu</CardTitle>
               <CheckCircle className="size-4 text-green-500" />
@@ -140,7 +140,7 @@ export default function StudentFeedbackPage() {
           </Card>
         </StaggerItem>
         <StaggerItem>
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+          <Card className="rounded-3xl border border-border shadow-sm hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Perlu Revisi</CardTitle>
               <AlertCircle className="size-4 text-red-500" />
@@ -152,7 +152,7 @@ export default function StudentFeedbackPage() {
           </Card>
         </StaggerItem>
         <StaggerItem>
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+          <Card className="rounded-3xl border border-border shadow-sm hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
               <FileText className="size-4 text-muted-foreground" />
@@ -165,7 +165,7 @@ export default function StudentFeedbackPage() {
         </StaggerItem>
       </StaggerContainer>
 
-      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+      <Card className="rounded-3xl border border-border shadow-sm">
         <CardHeader>
           <CardTitle>Riwayat Umpan Balik</CardTitle>
           <CardDescription>Hasil Perpusmu dan komentar dari instruktur pengawas</CardDescription>
@@ -209,7 +209,7 @@ export default function StudentFeedbackPage() {
                   </div>
                 ) : (
                   filteredFeedback.map((item) => (
-                    <div key={item.id} className="rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-5 hover:shadow-md transition-shadow">
+                    <div key={item.id} className="rounded-2xl border border-border shadow-sm p-5 hover:shadow-md transition-shadow">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 flex-wrap">

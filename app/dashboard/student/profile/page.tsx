@@ -51,7 +51,7 @@ export default function StudentProfilePage() {
       icon={User}
     >
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Pribadi</CardTitle>
             <CardDescription>Data akun Anda</CardDescription>
@@ -87,7 +87,7 @@ export default function StudentProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle className="gradient-text">Detail Ujian</CardTitle>
             <CardDescription>Informasi sidang dan skripsi Anda</CardDescription>

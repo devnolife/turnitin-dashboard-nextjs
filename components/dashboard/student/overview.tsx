@@ -44,7 +44,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
   return (
     <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <StaggerItem>
-        <Card className="col-span-1 rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+        <Card className="col-span-1 rounded-3xl border border-border shadow-sm hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
           <CardHeader>
             <CardTitle className="text-primary-dark">Aksi Cepat</CardTitle>
             <CardDescription>Tugas yang sering dilakukan</CardDescription>
@@ -67,7 +67,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="col-span-1 rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader>
             <CardTitle className="gradient-text">Statistik Pengiriman</CardTitle>
             <CardDescription>Ringkasan dokumen Anda</CardDescription>
@@ -108,7 +108,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 md:col-span-2 lg:col-span-1 rounded-3xl border border-border/60 shadow-sm dark:border-white/10 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-1 rounded-3xl border border-border shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Akun</CardTitle>
             <CardDescription>Informasi pribadi Anda</CardDescription>

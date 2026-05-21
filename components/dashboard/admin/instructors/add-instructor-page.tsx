@@ -93,7 +93,7 @@ export function AddInstructorPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Required fields */}
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Wajib</CardTitle>
             <CardDescription>Username dan password untuk login instruktur</CardDescription>
@@ -149,7 +149,7 @@ export function AddInstructorPage() {
         </Card>
 
         {/* Optional fields */}
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Tambahan</CardTitle>
             <CardDescription>Opsional — bisa diisi nanti</CardDescription>

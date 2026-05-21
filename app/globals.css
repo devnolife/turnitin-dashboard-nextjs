@@ -25,8 +25,8 @@
     --success-foreground: 0 0% 98%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 98%;
-    --border: 210 20% 88%;
-    --input: 210 20% 88%;
+    --border: 210 25% 82%;
+    --input: 210 20% 86%;
     --ring: 210 100% 68%;
 
     /* Chart colors */
@@ -77,8 +77,8 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
-    --border: 210 40% 20%;
-    --input: 210 40% 20%;
+    --border: 210 35% 26%;
+    --input: 210 35% 24%;
     --ring: 210 100% 68%;
 
     /* Chart colors - dark mode */

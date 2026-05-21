@@ -18,7 +18,7 @@ export function StudentStats() {
   return (
     <>
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
             <UserPlus className="size-4 text-muted-foreground" />
@@ -35,7 +35,7 @@ export function StudentStats() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
             <FileCheck className="size-4 text-muted-foreground" />
@@ -50,7 +50,7 @@ export function StudentStats() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Fakultas & Program</CardTitle>
             <GraduationCap className="size-4 text-muted-foreground" />
@@ -65,7 +65,7 @@ export function StudentStats() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
             <Award className="size-4 text-muted-foreground" />

@@ -22,7 +22,7 @@ export function InstructorsStats({
   return (
     <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Instruktur</CardTitle>
             <Users className="size-4 text-muted-foreground" />
@@ -39,7 +39,7 @@ export function InstructorsStats({
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Fakultas Terkait</CardTitle>
             <Building className="size-4 text-muted-foreground" />
@@ -54,7 +54,7 @@ export function InstructorsStats({
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Senior</CardTitle>
             <Award className="size-4 text-muted-foreground" />
@@ -69,7 +69,7 @@ export function InstructorsStats({
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+        <Card className="rounded-3xl border border-border shadow-sm hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Cuti</CardTitle>
             <Clock className="size-4 text-muted-foreground" />

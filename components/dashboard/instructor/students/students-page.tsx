@@ -80,7 +80,7 @@ export function InstructorStudentsPage() {
       <div className="flex flex-col gap-6">
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
               </CardHeader>
@@ -94,7 +94,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
               </CardHeader>
@@ -108,7 +108,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Ujian Aktif</CardTitle>
               </CardHeader>
@@ -122,7 +122,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="hover-lift rounded-3xl border border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
               </CardHeader>
@@ -138,7 +138,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
         </StaggerContainer>
 
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle>Mahasiswa</CardTitle>
             <CardDescription>Daftar mahasiswa dalam sistem</CardDescription>

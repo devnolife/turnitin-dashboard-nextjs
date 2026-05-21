@@ -473,7 +473,7 @@ function SubmissionCard({
   onDetail: () => void
 }) {
   return (
-    <Card className="rounded-3xl border border-border/60 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-white/10 dark:bg-gray-900/80">
+    <Card className="rounded-3xl border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
       <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-1 items-start gap-4">
           <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10">

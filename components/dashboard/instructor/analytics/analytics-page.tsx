@@ -92,7 +92,7 @@ export function AnalyticsPage() {
 
       {/* Summary cards */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="hover-lift rounded-3xl border border-border shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription>Total Pengiriman</CardDescription>
             <CardTitle className="text-3xl">{data.totalSubmissions}</CardTitle>
@@ -103,7 +103,7 @@ export function AnalyticsPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="hover-lift rounded-3xl border border-border shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription>Rata-rata Similarity</CardDescription>
             <CardTitle className="text-3xl">{data.avgSimilarity}%</CardTitle>
@@ -114,7 +114,7 @@ export function AnalyticsPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="hover-lift rounded-3xl border border-border shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription>Mahasiswa Aktif</CardDescription>
             <CardTitle className="text-3xl">{data.activeStudents}</CardTitle>
@@ -123,7 +123,7 @@ export function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">Terdaftar dalam sistem</p>
           </CardContent>
         </Card>
-        <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="hover-lift rounded-3xl border border-border shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription>Selesai Ditinjau</CardDescription>
             <CardTitle className="text-3xl">{data.reviewedSubmissions}</CardTitle>
@@ -136,7 +136,7 @@ export function AnalyticsPage() {
 
       {/* Charts */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle>Pengiriman per Bulan</CardTitle>
             <CardDescription>Jumlah pengiriman dan rata-rata similarity</CardDescription>
@@ -162,7 +162,7 @@ export function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle>Distribusi Similarity Score</CardTitle>
             <CardDescription>Persentase dokumen berdasarkan similarity</CardDescription>
@@ -200,7 +200,7 @@ export function AnalyticsPage() {
       </div>
 
       {/* Trend line chart */}
-      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+      <Card className="rounded-3xl border border-border shadow-sm">
         <CardHeader>
           <CardTitle>Trend Rata-rata Similarity</CardTitle>
           <CardDescription>Perubahan rata-rata similarity score per bulan</CardDescription>

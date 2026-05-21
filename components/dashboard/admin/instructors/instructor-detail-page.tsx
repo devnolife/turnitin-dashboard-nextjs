@@ -165,7 +165,7 @@ export function InstructorDetailPage({ instructorId }: InstructorDetailPageProps
         <div className="grid gap-6 md:grid-cols-3">
           {/* Info Card */}
           <FadeIn className="md:col-span-1">
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="size-20 mb-4">
@@ -245,7 +245,7 @@ export function InstructorDetailPage({ instructorId }: InstructorDetailPageProps
               </StaggerItem>
             </StaggerContainer>
 
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardHeader>
                 <CardTitle>Riwayat Review ({instructor.reviewedSubmissions.length})</CardTitle>
               </CardHeader>

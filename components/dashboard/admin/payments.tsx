@@ -60,7 +60,7 @@ export function AdminPayments() {
   }, [statusFilter, jenisFilter, searchQuery])
 
   return (
-    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+    <Card className="rounded-3xl border border-border shadow-sm">
       <CardHeader>
         <div>
           <CardTitle>Transaksi Pembayaran</CardTitle>

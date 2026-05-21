@@ -53,7 +53,7 @@ export function InstructorProfile() {
       <DashboardMainCard title="Profil" subtitle="Lihat dan kelola informasi profil Anda 👤" icon={User}>
         <div className="space-y-6">
           {/* Profile Header */}
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+          <Card className="rounded-3xl border border-border shadow-sm">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center gap-4 sm:flex-row">
                 <Avatar className="size-20">
@@ -72,7 +72,7 @@ export function InstructorProfile() {
           </Card>
 
           {/* Edit Form */}
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+          <Card className="rounded-3xl border border-border shadow-sm">
             <CardHeader>
               <CardTitle>Edit Profil</CardTitle>
               <CardDescription>Perbarui informasi profil Anda</CardDescription>
@@ -147,7 +147,7 @@ export function InstructorProfile() {
 
           {/* Info Cards */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Mail className="size-4" /> Kontak
@@ -168,7 +168,7 @@ export function InstructorProfile() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Shield className="size-4" /> Peran

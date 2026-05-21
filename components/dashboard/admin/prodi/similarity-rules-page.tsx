@@ -241,7 +241,7 @@ export function SimilarityRulesPage() {
         </div>
 
         {/* Rule Type Tabs */}
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader>
             <CardTitle>Tipe Aturan Similarity</CardTitle>
             <CardDescription>
@@ -276,7 +276,7 @@ export function SimilarityRulesPage() {
         </Card>
 
         {/* Rules Editor */}
-        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+        <Card className="rounded-3xl border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>

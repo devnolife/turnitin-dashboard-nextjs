@@ -46,7 +46,7 @@ export function StudentFeedback() {
 
   if (isLoading) {
     return (
-      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+      <Card className="rounded-3xl border border-border shadow-sm">
         <CardHeader>
           <CardTitle>Umpan Balik Terbaru</CardTitle>
           <CardDescription>Hasil Perpusmu dan komentar dari instruktur</CardDescription>
@@ -62,7 +62,7 @@ export function StudentFeedback() {
   }
 
   return (
-    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+    <Card className="rounded-3xl border border-border shadow-sm">
       <CardHeader>
         <CardTitle>Umpan Balik Terbaru</CardTitle>
         <CardDescription>Hasil Perpusmu dan komentar dari instruktur</CardDescription>
@@ -75,7 +75,7 @@ export function StudentFeedback() {
             items.map((item) => {
               const type = item.rawStatus === "FLAGGED" ? "Revisi" : "Hasil"
               return (
-                <div key={item.id} className="rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-4">
+                <div key={item.id} className="rounded-2xl border border-border shadow-sm p-4">
                   <div className="mb-2 flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
                     <div>
                       <div className="font-medium">{item.title}</div>

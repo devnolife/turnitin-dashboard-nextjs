@@ -47,7 +47,7 @@ export function InstructorSettings() {
     <PageTransition>
       <DashboardMainCard title="Pengaturan" subtitle="Kelola preferensi dan informasi akun Anda ⚙️" icon={Settings}>
         <div className="space-y-6">
-          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+          <Card className="rounded-3xl border border-border shadow-sm">
             <CardHeader>
               <CardTitle>Akun</CardTitle>
               <CardDescription>Kelola informasi akun Anda</CardDescription>

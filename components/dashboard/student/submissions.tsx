@@ -17,7 +17,7 @@ export function StudentSubmissions() {
 
   if (isLoading) {
     return (
-      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+      <Card className="rounded-3xl border border-border shadow-sm">
         <CardHeader>
           <CardTitle>Dokumen Saya</CardTitle>
           <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
@@ -29,7 +29,7 @@ export function StudentSubmissions() {
               .map((_, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-4 sm:flex-row sm:items-center"
+                  className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-border shadow-sm p-4 sm:flex-row sm:items-center"
                 >
                   <div className="grid gap-1 w-full">
                     <div className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export function StudentSubmissions() {
 
   if (error) {
     return (
-      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+      <Card className="rounded-3xl border border-border shadow-sm">
         <CardHeader>
           <CardTitle>Dokumen Saya</CardTitle>
           <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
@@ -75,7 +75,7 @@ export function StudentSubmissions() {
   }
 
   return (
-    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+    <Card className="rounded-3xl border border-border shadow-sm">
       <CardHeader>
         <CardTitle>Dokumen Saya</CardTitle>
         <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
@@ -88,7 +88,7 @@ export function StudentSubmissions() {
             submissions.map((submission) => (
               <div
                 key={submission.id}
-                className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-4 sm:flex-row sm:items-center"
+                className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-border shadow-sm p-4 sm:flex-row sm:items-center"
               >
                 <div className="grid gap-1">
                   <div className="flex items-center gap-2">

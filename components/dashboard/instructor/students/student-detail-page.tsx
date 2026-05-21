@@ -225,7 +225,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
         <div className="grid gap-6 md:grid-cols-3">
           <FadeIn className="md:col-span-1">
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="size-20 mb-4">
@@ -259,7 +259,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
             </Card>
 
             {student.examDetail && (
-              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 mt-4">
+              <Card className="rounded-3xl border border-border shadow-sm mt-4">
                 <CardHeader>
                   <CardTitle className="text-base">Info Ujian</CardTitle>
                 </CardHeader>
@@ -343,7 +343,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
               </StaggerItem>
             </StaggerContainer>
 
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardHeader>
                 <CardTitle>Riwayat Pengajuan</CardTitle>
                 <CardDescription>Dokumen yang telah diajukan oleh mahasiswa</CardDescription>

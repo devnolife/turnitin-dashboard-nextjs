@@ -209,7 +209,7 @@ export function AcademicManagementPage() {
         {/* Stats */}
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Fakultas</CardTitle>
                 <GraduationCap className="size-4 text-muted-foreground" />
@@ -221,7 +221,7 @@ export function AcademicManagementPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Program Studi</CardTitle>
                 <BookOpen className="size-4 text-muted-foreground" />
@@ -233,7 +233,7 @@ export function AcademicManagementPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
                 <Users className="size-4 text-muted-foreground" />
@@ -245,7 +245,7 @@ export function AcademicManagementPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
+            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Aturan Aktif</CardTitle>
                 <FileCheck className="size-4 text-muted-foreground" />
@@ -267,7 +267,7 @@ export function AcademicManagementPage() {
 
           {/* === Fakultas Tab === */}
           <TabsContent value="faculties">
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardHeader>
                 <CardTitle>Daftar Fakultas</CardTitle>
                 <CardDescription>Fakultas beserta program studi di dalamnya</CardDescription>
@@ -334,7 +334,7 @@ export function AcademicManagementPage() {
 
           {/* === Program Studi Tab === */}
           <TabsContent value="prodi">
-            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
+            <Card className="rounded-3xl border border-border shadow-sm">
               <CardHeader>
                 <CardTitle>Daftar Program Studi</CardTitle>
                 <CardDescription>Kelola aturan similarity per program studi</CardDescription>
