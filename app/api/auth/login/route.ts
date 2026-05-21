@@ -17,6 +17,7 @@ function sanitizeUser(user: {
   prodi?: string | null
   hasCompletedPayment: boolean
   whatsappNumber?: string | null
+  mustChangePassword?: boolean
   createdAt?: Date | null
 }) {
   return {
@@ -30,6 +31,7 @@ function sanitizeUser(user: {
     prodi: user.prodi ?? undefined,
     hasCompletedPayment: user.hasCompletedPayment,
     whatsappNumber: user.whatsappNumber ?? undefined,
+    mustChangePassword: user.mustChangePassword ?? false,
     createdAt: user.createdAt ? user.createdAt.toISOString() : undefined,
   }
 }

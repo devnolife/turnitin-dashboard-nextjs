@@ -28,6 +28,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { type Student } from "@/lib/store/student-store"
+import { ResetPasswordButton } from "@/components/dashboard/admin/reset-password-button"
 
 export interface InstructorInfo {
   id: string
@@ -96,7 +97,7 @@ export function StudentInfoCard({
     <Card>
       <CardHeader>
         <div className="flex flex-col items-center">
-          <Avatar className="h-24 w-24">
+          <Avatar className="size-24">
             <AvatarFallback className="text-2xl">
               {student.name
                 .split(" ")
@@ -114,19 +115,19 @@ export function StudentInfoCard({
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <Mail className="size-4 text-muted-foreground" />
             <span>{student.email || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
-            <Phone className="h-4 w-4 text-muted-foreground" />
+            <Phone className="size-4 text-muted-foreground" />
             <span>{student.hp || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
+            <GraduationCap className="size-4 text-muted-foreground" />
             <span>{student.prodi}</span>
           </div>
           <div className="flex items-center gap-3">
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="size-4 text-muted-foreground" />
             <span>Terdaftar: {new Date(student.createdAt).toLocaleDateString("id-ID")}</span>
           </div>
 
@@ -141,7 +142,7 @@ export function StudentInfoCard({
                   <Dialog open={instructorDialogOpen} onOpenChange={onInstructorDialogOpenChange}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm">
-                        <UserPlus className="mr-2 h-3 w-3" />
+                        <UserPlus className="mr-2 size-3" />
                         Ubah
                       </Button>
                     </DialogTrigger>
@@ -149,7 +150,7 @@ export function StudentInfoCard({
                   </Dialog>
 
                   <Button variant="outline" size="sm" onClick={onRemoveInstructor}>
-                    <UserMinus className="mr-2 h-3 w-3" />
+                    <UserMinus className="mr-2 size-3" />
                     Hapus
                   </Button>
                 </div>
@@ -157,7 +158,7 @@ export function StudentInfoCard({
                 <Dialog open={instructorDialogOpen} onOpenChange={onInstructorDialogOpenChange}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <UserPlus className="mr-2 h-3 w-3" />
+                      <UserPlus className="mr-2 size-3" />
                       Tetapkan
                     </Button>
                   </DialogTrigger>
@@ -168,7 +169,7 @@ export function StudentInfoCard({
 
             {instructor ? (
               <div className="flex items-center gap-2 rounded-md border p-3">
-                <Avatar className="h-8 w-8">
+                <Avatar className="size-8">
                   <AvatarFallback className="text-xs">
                     {instructor.name
                       .split(" ")
@@ -185,22 +186,27 @@ export function StudentInfoCard({
                   size="icon"
                   onClick={() => onViewInstructor(instructor.id)}
                 >
-                  <Eye className="h-4 w-4" />
+                  <Eye className="size-4" />
                 </Button>
               </div>
             ) : (
               <div className="flex items-center justify-center rounded-md border p-3 text-center">
-                <User className="mr-2 h-4 w-4 text-muted-foreground" />
+                <User className="mr-2 size-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">Belum ada instruktur ditugaskan</span>
               </div>
             )}
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-center border-t pt-4">
+      <CardFooter className="flex flex-col gap-3 border-t pt-4">
         <Badge variant={student.hasCompletedPayment ? "success" : "secondary"}>
           {student.paymentStatus}
         </Badge>
+        <ResetPasswordButton
+          userId={student.id}
+          userName={student.name}
+          username={student.nim || student.name}
+        />
       </CardFooter>
     </Card>
   )

@@ -49,23 +49,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
       if (!currentUser) return
 
+      if (currentUser.mustChangePassword) {
+        router.push("/auth/change-password")
+        return
+      }
+
       if (currentUser.role === "student" && !currentUser.hasCompletedPayment) {
-        toastRef.current({
-          variant: "destructive",
-          title: "Pembayaran Diperlukan",
-          description: "Silakan periksa status pembayaran Anda untuk mengakses dashboard.",
-        })
-        router.push("/payment")
+        router.push("/onboarding")
         return
       }
 
       if (currentUser.role === "student" && currentUser.hasCompletedPayment && !currentUser.whatsappNumber) {
-        toastRef.current({
-          variant: "destructive",
-          title: "Nomor WhatsApp Diperlukan",
-          description: "Silakan lengkapi nomor WhatsApp Anda untuk mengakses dashboard.",
-        })
-        router.push("/payment")
+        router.push("/onboarding")
         return
       }
 
@@ -87,7 +82,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background" role="status" aria-label="Memuat...">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         <span className="sr-only">Memuat...</span>
       </div>
     )

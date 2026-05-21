@@ -18,6 +18,7 @@ export interface User {
   prodi?: string
   hasCompletedPayment: boolean
   whatsappNumber?: string
+  mustChangePassword?: boolean
   examDetails?: ExamDetails | null
   createdAt?: string
 }

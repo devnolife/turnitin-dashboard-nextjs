@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ResetPasswordButton } from "@/components/dashboard/admin/reset-password-button"
 import { PageTransition, FadeIn, SlideUp, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import {
   Breadcrumb,
@@ -191,6 +192,13 @@ export function InstructorDetailPage({ instructorId }: InstructorDetailPageProps
                     <span className="text-muted-foreground">Bergabung</span>
                     <span className="font-medium">{formatDate(instructor.createdAt)}</span>
                   </div>
+                </div>
+                <div className="mt-6 border-t pt-4 flex justify-center">
+                  <ResetPasswordButton
+                    userId={instructor.id}
+                    userName={instructor.name}
+                    username={instructor.username}
+                  />
                 </div>
               </CardContent>
             </Card>

@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         prodi: true,
         hasCompletedPayment: true,
         whatsappNumber: true,
+        mustChangePassword: true,
         createdAt: true,
       },
     })
@@ -42,6 +43,7 @@ export async function GET(request: NextRequest) {
         prodi: user.prodi ?? undefined,
         hasCompletedPayment: user.hasCompletedPayment,
         whatsappNumber: user.whatsappNumber ?? undefined,
+        mustChangePassword: user.mustChangePassword ?? false,
         createdAt: user.createdAt.toISOString(),
       },
     })

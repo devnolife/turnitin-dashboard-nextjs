@@ -18,6 +18,7 @@ import {
   CheckSquare,
   Send,
   FileBarChart,
+  MessageSquareWarning,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/lib/store/auth-store"
@@ -43,6 +44,7 @@ const adminRoutes = [
   { href: "/dashboard/admin/exam-approvals", icon: CheckSquare, title: "Persetujuan Akun" },
   { href: "/dashboard/admin/payments", icon: CreditCard, title: "Pembayaran" },
   { href: "/dashboard/admin/rekap", icon: FileBarChart, title: "Rekap Plagiasi" },
+  { href: "/dashboard/admin/complaints", icon: MessageSquareWarning, title: "Pengaduan" },
   { href: "/dashboard/admin/settings", icon: Settings, title: "Pengaturan" },
 ]
 
@@ -59,6 +61,7 @@ const studentRoutes = [
   { href: "/dashboard/student", icon: Home, title: "Dashboard" },
   { href: "/dashboard/student/submissions", icon: Send, title: "Pengiriman" },
   { href: "/dashboard/student/feedback", icon: MessageSquare, title: "Umpan Balik" },
+  { href: "/dashboard/student/complaint", icon: MessageSquareWarning, title: "Pengaduan" },
   { href: "/dashboard/student/profile", icon: User, title: "Profil" },
 ]
 

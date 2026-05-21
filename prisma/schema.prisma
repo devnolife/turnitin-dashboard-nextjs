@@ -20,6 +20,7 @@ model User {
   role                Role            @default(STUDENT)
   hasCompletedPayment Boolean         @default(false)
   whatsappNumber      String?
+  mustChangePassword  Boolean         @default(false)
   studyProgramId      String?
   instructorId        String?
   createdAt           DateTime        @default(now())
@@ -33,6 +34,8 @@ model User {
   reviewedSubmissions Submission[]    @relation("ReviewerSubmissions")
   payments            Payment[]
   sessions            Session[]
+  complaints          Complaint[]     @relation("UserComplaints")
+  respondedComplaints Complaint[]     @relation("ResponderComplaints")
 
   @@map("users")
 }
@@ -205,6 +208,26 @@ model Payment {
   @@map("payments")
 }
 
+model Complaint {
+  id              String           @id @default(cuid())
+  userId          String
+  subject         String
+  message         String           @db.Text
+  status          ComplaintStatus  @default(OPEN)
+  response        String?          @db.Text
+  respondedById   String?
+  createdAt       DateTime         @default(now())
+  respondedAt     DateTime?
+  updatedAt       DateTime         @updatedAt
+
+  user        User  @relation("UserComplaints", fields: [userId], references: [id], onDelete: Cascade)
+  respondedBy User? @relation("ResponderComplaints", fields: [respondedById], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("complaints")
+}
+
 enum Role {
   STUDENT
   INSTRUCTOR
@@ -240,4 +263,11 @@ enum PaymentStatus {
 enum RuleType {
   PER_CHAPTER
   PER_EXAM
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }
