@@ -339,6 +339,21 @@ async function main() {
     await seedProdiFromFallback()
   }
 
+  // Default pricing tiers (kalau belum ada)
+  const defaultTiers: Array<{ degree: string; studentRate: number; instructorRate: number }> = [
+    { degree: "S1", studentRate: 100_000, instructorRate: 50_000 },
+    { degree: "S2", studentRate: 150_000, instructorRate: 75_000 },
+    { degree: "S3", studentRate: 200_000, instructorRate: 100_000 },
+  ]
+  for (const tier of defaultTiers) {
+    await prisma.pricingTier.upsert({
+      where: { degree: tier.degree },
+      update: {},
+      create: tier,
+    })
+  }
+  console.log("  ✓ Pricing tiers seeded (S1/S2/S3)")
+
   console.log("\nSeeding complete!")
 }
 

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { getPricingMap, type Degree } from "@/lib/pricing"
 
 export type RekapItem = {
   id: string
@@ -15,7 +16,7 @@ export type RekapItem = {
   instruktur: string
   tanggalPembayaran: string | null
   namaBank: string
-  degree: "S1" | "S2" | "S3"
+  degree: Degree
 }
 
 export type InstructorRekap = {
@@ -34,24 +35,12 @@ export type RekapBundle = {
   totals: { biaya: number; count: number }
 }
 
-const STUDENT_RATE: Record<"S1" | "S2" | "S3", number> = {
-  S1: 100000,
-  S2: 150000,
-  S3: 200000,
-}
-
-const INSTRUCTOR_RATE: Record<"S1" | "S2" | "S3", number> = {
-  S1: 50000,
-  S2: 75000,
-  S3: 100000,
-}
-
 const MONTH_NAMES = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
   "Juli", "Agustus", "September", "Oktober", "November", "Desember",
 ]
 
-function normalizeDegree(raw?: string | null): "S1" | "S2" | "S3" {
+function normalizeDegree(raw?: string | null): Degree {
   const d = (raw || "").toUpperCase()
   if (d.includes("S3") || d.includes("DOKTOR")) return "S3"
   if (d.includes("S2") || d.includes("MAGISTER")) return "S2"
@@ -79,25 +68,28 @@ export async function buildRekap(filter: RekapFilter): Promise<RekapBundle> {
   const start = new Date(Date.UTC(year, month - 1, 1))
   const end = new Date(Date.UTC(year, month, 1))
 
-  const submissions = await prisma.submission.findMany({
-    where: {
-      reviewedAt: { gte: start, lt: end },
-      status: { in: ["REVIEWED", "FLAGGED"] },
-      ...(filter.studyProgramId ? { user: { studyProgramId: filter.studyProgramId } } : {}),
-      ...(filter.instructorId ? { reviewedBy: filter.instructorId } : {}),
-    },
-    include: {
-      user: {
-        include: {
-          studyProgram: true,
-          examDetails: true,
-          payments: { orderBy: { paidAt: "desc" } },
-        },
+  const [submissions, pricing] = await Promise.all([
+    prisma.submission.findMany({
+      where: {
+        reviewedAt: { gte: start, lt: end },
+        status: { in: ["REVIEWED", "FLAGGED"] },
+        ...(filter.studyProgramId ? { user: { studyProgramId: filter.studyProgramId } } : {}),
+        ...(filter.instructorId ? { reviewedBy: filter.instructorId } : {}),
       },
-      reviewer: true,
-    },
-    orderBy: [{ reviewedAt: "asc" }],
-  })
+      include: {
+        user: {
+          include: {
+            studyProgram: true,
+            examDetails: true,
+            payments: { orderBy: { paidAt: "desc" } },
+          },
+        },
+        reviewer: true,
+      },
+      orderBy: [{ reviewedAt: "asc" }],
+    }),
+    getPricingMap(),
+  ])
 
   const items: RekapItem[] = submissions.map((s, idx) => {
     const u = s.user
@@ -114,7 +106,7 @@ export async function buildRekap(filter: RekapFilter): Promise<RekapBundle> {
       tahapLabel: tahapLabel(s.examType),
       similarityScore: s.similarityScore,
       status: s.status,
-      biaya: successfulPayment?.amount ?? STUDENT_RATE[degree],
+      biaya: successfulPayment?.amount ?? pricing[degree].studentRate,
       instruktur: s.reviewer?.name || "-",
       tanggalPembayaran: successfulPayment?.paidAt
         ? successfulPayment.paidAt.toISOString()
@@ -142,7 +134,7 @@ export async function buildRekap(filter: RekapFilter): Promise<RekapBundle> {
     else if (it.degree === "S2") row.totalS2 += 1
     else row.totalS3 += 1
     row.jumlah += 1
-    row.total += INSTRUCTOR_RATE[it.degree]
+    row.total += pricing[it.degree].instructorRate
   }
 
   const rekap = Array.from(byInstructor.values()).sort((a, b) =>

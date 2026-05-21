@@ -25,13 +25,14 @@ model User {
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
-  studyProgram StudyProgram? @relation(fields: [studyProgramId], references: [id])
-  instructor   User?         @relation("InstructorStudents", fields: [instructorId], references: [id])
-  students     User[]        @relation("InstructorStudents")
-  examDetails  ExamDetail?
-  submissions  Submission[]
-  payments     Payment[]
-  sessions     Session[]
+  studyProgram        StudyProgram?   @relation(fields: [studyProgramId], references: [id])
+  instructor          User?           @relation("InstructorStudents", fields: [instructorId], references: [id])
+  students            User[]          @relation("InstructorStudents")
+  examDetails         ExamDetail?
+  submissions         Submission[]    @relation("UserSubmissions")
+  reviewedSubmissions Submission[]    @relation("ReviewerSubmissions")
+  payments            Payment[]
+  sessions            Session[]
 
   @@map("users")
 }
@@ -93,6 +94,8 @@ model SimilarityRule {
 
   studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
 
+  @@unique([studyProgramId, label])
+  @@index([studyProgramId, ruleType])
   @@map("similarity_rules")
 }
 
@@ -141,7 +144,8 @@ model Submission {
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
-  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User         @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer User?        @relation("ReviewerSubmissions", fields: [reviewedBy], references: [id], onDelete: SetNull)
   parent   Submission?  @relation("SubmissionResubmits", fields: [parentSubmissionId], references: [id], onDelete: SetNull)
   children Submission[] @relation("SubmissionResubmits")
 
@@ -149,6 +153,39 @@ model Submission {
   @@index([status])
   @@index([reviewedBy])
   @@map("submissions")
+}
+
+model PricingTier {
+  id             String   @id @default(cuid())
+  degree         String   @unique
+  studentRate    Int
+  instructorRate Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("pricing_tiers")
+}
+
+model RekapArchive {
+  id              String   @id @default(cuid())
+  periodeMonth    Int
+  periodeYear     Int
+  periodeLabel    String
+  studyProgramId  String?
+  instructorId    String?
+  filterSummary   String?
+  fileName        String
+  fileSize        Int
+  fileData        Bytes
+  totalItems      Int      @default(0)
+  totalAmount     Int      @default(0)
+  generatedById   String?
+  generatedByName String?
+  createdAt       DateTime @default(now())
+
+  @@index([periodeYear, periodeMonth])
+  @@index([createdAt])
+  @@map("rekap_archives")
 }
 
 model Payment {

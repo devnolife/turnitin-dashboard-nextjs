@@ -17,10 +17,22 @@ const AdminOverview = dynamic(() => import("@/components/dashboard/admin/overvie
   ssr: false,
   loading: () => (
     <div className="flex h-64 items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
   ),
 })
+
+const AdminDashboardCharts = dynamic(
+  () => import("@/components/dashboard/admin/dashboard-charts").then((mod) => ({ default: mod.AdminDashboardCharts })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-64 items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    ),
+  },
+)
 
 interface AdminStats {
   totalUsers: number
@@ -53,7 +65,7 @@ export default function AdminDashboardPage() {
         <Card className="mb-6 border-orange-300 bg-orange-50 dark:border-orange-700 dark:bg-orange-950/30">
           <CardContent className="flex items-center justify-between gap-4 py-4">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-orange-500 shrink-0" />
+              <AlertCircle className="size-5 text-orange-500 shrink-0" />
               <div>
                 <p className="font-semibold text-orange-800 dark:text-orange-200">
                   {pendingCount} akun mahasiswa menunggu persetujuan
@@ -74,7 +86,7 @@ export default function AdminDashboardPage() {
           <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Pengguna</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -90,7 +102,7 @@ export default function AdminDashboardPage() {
           <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Mahasiswa</CardTitle>
-              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              <GraduationCap className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -106,7 +118,7 @@ export default function AdminDashboardPage() {
           <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <FileText className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -120,7 +132,7 @@ export default function AdminDashboardPage() {
           <Card className="hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Menunggu Persetujuan</CardTitle>
-              <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+              <ClipboardCheck className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -142,31 +154,35 @@ export default function AdminDashboardPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Button variant="outline" className="flex h-auto flex-col items-center justify-center gap-2 p-4" asChild>
               <Link href="/dashboard/admin/students">
-                <Users className="h-6 w-6 text-primary-dark" />
+                <Users className="size-6 text-primary-dark" />
                 <span>Kelola Mahasiswa</span>
               </Link>
             </Button>
             <Button variant="outline" className="flex h-auto flex-col items-center justify-center gap-2 p-4" asChild>
               <Link href="/dashboard/admin/instructors">
-                <GraduationCap className="h-6 w-6 text-primary-dark" />
+                <GraduationCap className="size-6 text-primary-dark" />
                 <span>Kelola Instruktur</span>
               </Link>
             </Button>
             <Button variant="outline" className="flex h-auto flex-col items-center justify-center gap-2 p-4" asChild>
               <Link href="/dashboard/admin/exam-approvals">
-                <ClipboardCheck className="h-6 w-6 text-primary-dark" />
+                <ClipboardCheck className="size-6 text-primary-dark" />
                 <span>Persetujuan Akun</span>
               </Link>
             </Button>
             <Button variant="outline" className="flex h-auto flex-col items-center justify-center gap-2 p-4" asChild>
               <Link href="/dashboard/admin/settings">
-                <Settings className="h-6 w-6 text-primary-dark" />
+                <Settings className="size-6 text-primary-dark" />
                 <span>Pengaturan</span>
               </Link>
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      <div className="mb-8">
+        <AdminDashboardCharts />
+      </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="bg-gray-100 dark:bg-gray-700 p-1.5 rounded-full">

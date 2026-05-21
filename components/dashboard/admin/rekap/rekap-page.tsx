@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Download, FileBarChart, Loader2, Users, Wallet } from "lucide-react"
+import { Archive, Download, FileBarChart, Loader2, Users, Wallet } from "lucide-react"
 import api from "@/lib/api/client"
 import { useToast } from "@/components/ui/use-toast"
+import Link from "next/link"
 
 type RekapItem = {
   id: string
@@ -198,15 +199,22 @@ export function RekapPage() {
           sub="Akumulasi pembayaran"
         />
         <Card className="rounded-3xl">
-          <CardContent className="flex h-full items-center justify-between p-6">
+          <CardContent className="flex h-full items-center justify-between gap-3 p-6 flex-wrap">
             <div>
               <p className="text-sm text-muted-foreground">Export ke Excel</p>
               <p className="text-base font-semibold">Template Turnitin</p>
             </div>
-            <Button onClick={handleExport} disabled={exporting || loading} className="rounded-2xl">
-              {exporting ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Download className="mr-2 size-4" />}
-              Unduh .xlsx
-            </Button>
+            <div className="flex flex-col items-end gap-2">
+              <Button onClick={handleExport} disabled={exporting || loading} className="rounded-2xl">
+                {exporting ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Download className="mr-2 size-4" />}
+                Unduh .xlsx
+              </Button>
+              <Button asChild variant="link" size="sm" className="h-auto p-0 text-xs">
+                <Link href="/dashboard/admin/rekap/history">
+                  <Archive className="mr-1 size-3" /> Lihat riwayat arsip
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
