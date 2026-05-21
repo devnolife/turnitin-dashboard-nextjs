@@ -17,6 +17,7 @@ import {
   Shield,
   CheckSquare,
   Send,
+  FileBarChart,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/lib/store/auth-store"
@@ -41,6 +42,7 @@ const adminRoutes = [
   { href: "/dashboard/admin/faculties", icon: BookOpen, title: "Fakultas & Prodi" },
   { href: "/dashboard/admin/exam-approvals", icon: CheckSquare, title: "Persetujuan Akun" },
   { href: "/dashboard/admin/payments", icon: CreditCard, title: "Pembayaran" },
+  { href: "/dashboard/admin/rekap", icon: FileBarChart, title: "Rekap Plagiasi" },
   { href: "/dashboard/admin/settings", icon: Settings, title: "Pengaturan" },
 ]
 
@@ -92,14 +94,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       {/* Header */}
       <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
         <div className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="Logo Perpusmu - Universitas Muhammadiyah Makassar" className="w-10 h-10 rounded-full shadow-md" />
+          <img src="/logo.jpg" alt="Logo Perpusmu - Universitas Muhammadiyah Makassar" className="size-10 rounded-full shadow-md" />
           <h1 className="text-2xl font-bold text-white">Perpusmu</h1>
         </div>
       </div>
 
       {/* User Profile - Compact inline */}
       <div className="px-5 py-4 flex items-center gap-4 border-b border-gray-100 dark:border-gray-700">
-        <Avatar className="w-14 h-14 shrink-0 border-2 border-primary-lighter dark:border-primary/50">
+        <Avatar className="size-14 shrink-0 border-2 border-primary-lighter dark:border-primary/50">
           {role !== "instructor" && (
             <AvatarImage src="/placeholder.svg?height=56&width=56" alt="User" />
           )}
