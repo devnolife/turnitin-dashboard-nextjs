@@ -231,6 +231,25 @@ model Complaint {
   @@map("complaints")
 }
 
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String?
+  actorRole    String?
+  action       String
+  targetType   String?
+  targetId     String?
+  ip           String?
+  userAgent    String?  @db.Text
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
 enum Role {
   STUDENT
   INSTRUCTOR

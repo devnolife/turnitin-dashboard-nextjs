@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 
 export async function GET(request: NextRequest) {
@@ -24,6 +25,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request)
+
+    const rl = await rateLimit(`complaint:${auth.userId}`, 5, 60 * 60 * 1000)
+    if (!rl.success) {
+      const retryAfter = Math.ceil((rl.resetAt - Date.now()) / 1000)
+      return NextResponse.json(
+        { message: "Anda sudah mengirim cukup banyak pengaduan. Coba lagi nanti." },
+        { status: 429, headers: { "Retry-After": String(retryAfter) } }
+      )
+    }
+
     const body = await request.json().catch(() => ({}))
     const subject = typeof body.subject === "string" ? body.subject.trim() : ""
     const message = typeof body.message === "string" ? body.message.trim() : ""

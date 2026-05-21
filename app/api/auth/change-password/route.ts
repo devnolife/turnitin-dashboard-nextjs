@@ -2,11 +2,23 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { hashPassword, md5, verifyBcrypt, verifyMd5 } from "@/lib/auth/password"
+import { rateLimit } from "@/lib/rate-limit"
+import { audit } from "@/lib/audit"
 import { logger } from "@/lib/logger"
 
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request)
+
+    const rl = await rateLimit(`change-password:${auth.userId}`, 5, 15 * 60 * 1000)
+    if (!rl.success) {
+      const retryAfter = Math.ceil((rl.resetAt - Date.now()) / 1000)
+      return NextResponse.json(
+        { message: `Terlalu banyak percobaan ganti password. Coba lagi dalam ${Math.ceil(retryAfter / 60)} menit.` },
+        { status: 429, headers: { "Retry-After": String(retryAfter) } }
+      )
+    }
+
     const body = await request.json().catch(() => ({}))
     const currentPassword = typeof body.currentPassword === "string" ? body.currentPassword : ""
     const newPassword = typeof body.newPassword === "string" ? body.newPassword : ""
@@ -62,6 +74,13 @@ export async function POST(request: NextRequest) {
     })
 
     logger.info("user.password_changed", { userId: user.id })
+    void audit("auth.password_changed", {
+      request,
+      actorId: user.id,
+      actorRole: user.role,
+      targetType: "user",
+      targetId: user.id,
+    })
 
     return NextResponse.json({ message: "Password berhasil diubah" })
   } catch (error) {

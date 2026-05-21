@@ -50,7 +50,7 @@ export async function POST(
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "File report wajib di-upload" }, { status: 400 })
     }
-    const v = validateFile(file, "report")
+    const v = await validateFile(file, "report")
     if (!v.ok) return NextResponse.json({ error: v.reason }, { status: 400 })
 
     const parsed = schema.safeParse({

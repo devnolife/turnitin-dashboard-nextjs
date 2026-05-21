@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { hashPassword, md5 } from "@/lib/auth/password"
+import { rateLimit } from "@/lib/rate-limit"
+import { audit } from "@/lib/audit"
 import { logger } from "@/lib/logger"
 
 function generateTempPassword(length = 10): string {
@@ -20,6 +22,15 @@ export async function POST(
   try {
     const auth = await verifyAuth(request)
     requireRole(auth, "ADMIN")
+
+    const rl = await rateLimit(`reset-password:${auth.userId}`, 30, 60 * 60 * 1000)
+    if (!rl.success) {
+      const retryAfter = Math.ceil((rl.resetAt - Date.now()) / 1000)
+      return NextResponse.json(
+        { message: "Terlalu banyak reset password. Coba lagi nanti." },
+        { status: 429, headers: { "Retry-After": String(retryAfter) } }
+      )
+    }
 
     const { id } = await params
 
@@ -56,6 +67,14 @@ export async function POST(
     ])
 
     logger.info("admin.password_reset", { adminId: auth.userId, targetUserId: id })
+    void audit("admin.password_reset", {
+      request,
+      actorId: auth.userId,
+      actorRole: "ADMIN",
+      targetType: "user",
+      targetId: id,
+      metadata: { targetUsername: user.username, targetRole: user.role },
+    })
 
     return NextResponse.json({
       message: "Password berhasil direset",

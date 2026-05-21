@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
+import { audit } from "@/lib/audit"
 import { logger } from "@/lib/logger"
 
 const ALLOWED_STATUS = ["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"] as const
@@ -56,6 +57,14 @@ export async function PATCH(
     })
 
     logger.info("admin.complaints.updated", { adminId: auth.userId, complaintId: id })
+    void audit("admin.complaint_responded", {
+      request,
+      actorId: auth.userId,
+      actorRole: "ADMIN",
+      targetType: "complaint",
+      targetId: id,
+      metadata: { newStatus: data.status, hasResponse: Boolean(data.response) },
+    })
     return NextResponse.json({ complaint: updated })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)

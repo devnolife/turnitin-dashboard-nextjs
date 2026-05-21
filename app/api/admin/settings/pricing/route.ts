@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { logger } from "@/lib/logger"
+import { audit } from "@/lib/audit"
 import { getPricingList } from "@/lib/pricing"
 
 const ALLOWED_DEGREES = ["S1", "S2", "S3"] as const
@@ -72,6 +73,13 @@ export async function PUT(request: NextRequest) {
     )
 
     const updated = await getPricingList()
+    void audit("admin.pricing_changed", {
+      request,
+      actorId: auth.userId,
+      actorRole: "ADMIN",
+      targetType: "pricing",
+      metadata: { tiers: sanitized },
+    })
     return NextResponse.json({ message: "Tarif berhasil diperbarui", tiers: updated })
   } catch (error) {
     if (error instanceof AuthError) return handleAuthError(error)
