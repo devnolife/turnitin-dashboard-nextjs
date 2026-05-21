@@ -38,6 +38,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import api from "@/lib/api/client"
+import { buildWaMeUrl } from "@/lib/phone"
+
+interface UploadedInstructor {
+  id: string
+  name: string
+  whatsappNumber: string | null
+}
 
 interface Submission {
   id: string
@@ -197,10 +204,16 @@ export default function StudentSubmissionsClient() {
     })
   }, [rules, ruleType, submissions])
 
-  const handleUploaded = () => {
+  const [notifyAfterUpload, setNotifyAfterUpload] = useState<{
+    instructor: UploadedInstructor | null
+    documentTitle: string
+  } | null>(null)
+
+  const handleUploaded = (instructor: UploadedInstructor | null, documentTitle: string) => {
     setUploadOpen(false)
     setResubmitFor(null)
     void load()
+    setNotifyAfterUpload({ instructor, documentTitle })
   }
 
   return (
@@ -344,6 +357,11 @@ export default function StudentSubmissionsClient() {
         ruleType={ruleType}
         rules={rules}
         onUploaded={handleUploaded}
+      />
+
+      <NotifyInstructorDialog
+        data={notifyAfterUpload}
+        onClose={() => setNotifyAfterUpload(null)}
       />
 
       <DetailDialog
@@ -543,7 +561,7 @@ function UploadDialog({
   resubmitFor: Submission | null
   ruleType: "PER_CHAPTER" | "PER_EXAM" | null
   rules: Rule[]
-  onUploaded: () => void
+  onUploaded: (instructor: UploadedInstructor | null, documentTitle: string) => void
 }) {
   const { toast } = useToast()
   const [title, setTitle] = useState("")
@@ -590,11 +608,15 @@ function UploadDialog({
     if (resubmitFor) fd.append("parentSubmissionId", resubmitFor.id)
 
     try {
-      await api.post("/submissions/upload", fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      const res = await api.post<{ submission: { documentTitle: string }; instructor: UploadedInstructor | null }>(
+        "/submissions/upload",
+        fd,
+        { headers: { "Content-Type": "multipart/form-data" } },
+      )
       toast({ title: "Berhasil", description: "Dokumen Anda terkirim ke instruktur." })
-      onUploaded()
+      const instructor = res.data?.instructor ?? null
+      const docTitle = res.data?.submission?.documentTitle || title
+      onUploaded(instructor, docTitle)
     } catch (e) {
       const msg =
         (e as { response?: { data?: { error?: string } } })?.response?.data?.error ||
@@ -813,6 +835,75 @@ function DetailDialog({
           <Button variant="ghost" onClick={onClose}>
             Tutup
           </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function NotifyInstructorDialog({
+  data,
+  onClose,
+}: {
+  data: { instructor: UploadedInstructor | null; documentTitle: string } | null
+  onClose: () => void
+}) {
+  const open = Boolean(data)
+  const instructor = data?.instructor ?? null
+  const docTitle = data?.documentTitle ?? ""
+  const message = `Halo Kak ${instructor?.name ?? ""}, saya telah upload file turnitin${docTitle ? ` (${docTitle})` : ""}, mohon dicek yah kak 🙏`
+  const waUrl = buildWaMeUrl(instructor?.whatsappNumber, message)
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent className="sm:max-w-[460px] rounded-3xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <CheckCircle className="size-5 text-emerald-600" />
+            Upload Berhasil
+          </DialogTitle>
+          <DialogDescription>
+            {instructor
+              ? `Beritahu instruktur Anda, ${instructor.name}, agar dokumen segera diperiksa.`
+              : "Dokumen Anda sudah masuk antrian instruktur."}
+          </DialogDescription>
+        </DialogHeader>
+
+        {instructor && waUrl ? (
+          <div className="space-y-3 pt-2">
+            <div className="rounded-2xl border bg-muted/40 p-3 text-sm">
+              <p className="font-medium text-foreground">Pesan yang akan dikirim:</p>
+              <p className="mt-1 text-muted-foreground italic">&ldquo;{message}&rdquo;</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              WhatsApp akan terbuka di tab/aplikasi baru. Tinggal tekan kirim.
+            </p>
+          </div>
+        ) : instructor ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
+            Instruktur Anda belum mengisi nomor WhatsApp. Silakan hubungi langsung saat di kampus.
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
+            Anda belum memiliki instruktur yang ditugaskan. Hubungi admin bila perlu segera diperiksa.
+          </div>
+        )}
+
+        <DialogFooter className="gap-2 sm:gap-2">
+          <Button variant="ghost" onClick={onClose}>
+            Nanti saja
+          </Button>
+          {waUrl && (
+            <Button
+              asChild
+              className="rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={onClose}>
+                <Sparkles className="mr-2 size-4" />
+                Hubungi via WhatsApp
+              </a>
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

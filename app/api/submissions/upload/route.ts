@@ -101,6 +101,20 @@ export async function POST(request: NextRequest) {
     const submissionId = (await import("crypto")).randomBytes(12).toString("hex")
     const saved = await saveUploadedFile(file, "submission", submissionId)
 
+    const student = await prisma.user.findUnique({
+      where: { id: auth.userId },
+      select: {
+        instructor: {
+          select: {
+            id: true,
+            name: true,
+            whatsappNumber: true,
+            hp: true,
+          },
+        },
+      },
+    })
+
     const created = await prisma.submission.create({
       data: {
         id: submissionId,
@@ -120,7 +134,16 @@ export async function POST(request: NextRequest) {
 
     logger.info("Submission created", { submissionId: created.id, userId: auth.userId })
 
-    return NextResponse.json({ submission: created }, { status: 201 })
+    const instructor = student?.instructor
+      ? {
+          id: student.instructor.id,
+          name: student.instructor.name,
+          whatsappNumber:
+            student.instructor.whatsappNumber || student.instructor.hp || null,
+        }
+      : null
+
+    return NextResponse.json({ submission: created, instructor }, { status: 201 })
   } catch (error) {
     logger.error("Submission upload failed", { error })
     return handleAuthError(error)
