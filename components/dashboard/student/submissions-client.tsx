@@ -174,6 +174,29 @@ export default function StudentSubmissionsClient() {
     [submissions],
   )
 
+  // Untuk setiap rule prodi, cari submission terakhir yang relevan.
+  // PER_CHAPTER → match rule.label dengan submission.chapter.
+  // PER_EXAM    → match rule.label dengan submission.examType atau label-nya.
+  const latestByRule = useMemo(() => {
+    if (!ruleType || rules.length === 0) return []
+    const ruleMatches = (r: Rule, s: Submission) => {
+      if (ruleType === "PER_CHAPTER") {
+        return !!s.chapter && r.label.toLowerCase() === s.chapter.toLowerCase()
+      }
+      if (!s.examType) return false
+      const lbl = r.label.toLowerCase()
+      return (
+        lbl === s.examType.toLowerCase() ||
+        lbl === (EXAM_LABELS[s.examType] ?? s.examType).toLowerCase()
+      )
+    }
+    return rules.map((rule) => {
+      const match =
+        submissions.find((s) => ruleMatches(rule, s)) ?? null
+      return { rule, latest: match }
+    })
+  }, [rules, ruleType, submissions])
+
   const handleUploaded = () => {
     setUploadOpen(false)
     setResubmitFor(null)
@@ -221,6 +244,27 @@ export default function StudentSubmissionsClient() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Ringkasan per Bab/Ujian */}
+      {latestByRule.length > 0 && (
+        <div className="mb-6">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Ringkasan {ruleType === "PER_CHAPTER" ? "per Bab" : "per Ujian"}
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {latestByRule.map(({ rule, latest }) => (
+              <RuleSummaryCard
+                key={rule.id}
+                rule={rule}
+                latest={latest}
+                onUpload={() => setUploadOpen(true)}
+                onDetail={() => latest && setDetailFor(latest)}
+                onResubmit={() => latest && setResubmitFor(latest)}
+              />
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Toolbar */}
@@ -311,6 +355,79 @@ export default function StudentSubmissionsClient() {
         }}
       />
     </DashboardMainCard>
+  )
+}
+
+function RuleSummaryCard({
+  rule,
+  latest,
+  onUpload,
+  onDetail,
+  onResubmit,
+}: {
+  rule: Rule
+  latest: Submission | null
+  onUpload: () => void
+  onDetail: () => void
+  onResubmit: () => void
+}) {
+  const status = latest?.rawStatus
+  const tone =
+    status === "REVIEWED"
+      ? "border-emerald-200 dark:border-emerald-900/60"
+      : status === "FLAGGED"
+        ? "border-rose-200 dark:border-rose-900/60"
+        : status === "PROCESSING" || status === "PENDING"
+          ? "border-amber-200 dark:border-amber-900/60"
+          : "border-dashed border-gray-200 dark:border-gray-800"
+
+  return (
+    <Card className={`rounded-3xl border-2 ${tone}`}>
+      <CardContent className="flex h-full flex-col gap-3 p-4">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">{rule.label}</p>
+            <p className="text-xs text-muted-foreground">Batas ≤ {rule.maxPercentage}%</p>
+          </div>
+          {latest && <StatusBadge status={latest.rawStatus} />}
+        </div>
+
+        {latest ? (
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span className="truncate">{latest.title}</span>
+            <SimilarityChip value={latest.similarity} />
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">Belum ada pengiriman untuk kategori ini.</p>
+        )}
+
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+          {!latest && (
+            <Button
+              size="sm"
+              onClick={onUpload}
+              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
+            >
+              <Plus className="mr-1.5 size-3.5" /> Mulai Upload
+            </Button>
+          )}
+          {latest && (
+            <Button variant="outline" size="sm" onClick={onDetail} className="rounded-xl">
+              <FileText className="mr-1.5 size-3.5" /> Detail
+            </Button>
+          )}
+          {latest?.rawStatus === "FLAGGED" && (
+            <Button
+              size="sm"
+              onClick={onResubmit}
+              className="rounded-xl bg-rose-600 text-white hover:bg-rose-700"
+            >
+              <Upload className="mr-1.5 size-3.5" /> Resubmit
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
