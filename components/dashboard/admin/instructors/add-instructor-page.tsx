@@ -85,7 +85,7 @@ export function AddInstructorPage() {
     >
       <div className="flex items-center gap-2 mb-6">
         <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/admin/instructors")}>
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="size-4" />
           <span className="sr-only">Kembali</span>
         </Button>
         <span className="text-sm text-muted-foreground">Kembali ke daftar instruktur</span>
@@ -93,7 +93,7 @@ export function AddInstructorPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Required fields */}
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Wajib</CardTitle>
             <CardDescription>Username dan password untuk login instruktur</CardDescription>
@@ -149,7 +149,7 @@ export function AddInstructorPage() {
         </Card>
 
         {/* Optional fields */}
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Tambahan</CardTitle>
             <CardDescription>Opsional — bisa diisi nanti</CardDescription>
@@ -210,7 +210,7 @@ export function AddInstructorPage() {
           Batal
         </Button>
         <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting}>
-          <Save className="mr-2 h-4 w-4" />
+          <Save className="mr-2 size-4" />
           {isSubmitting ? "Menyimpan..." : "Simpan Instruktur"}
         </Button>
       </div>

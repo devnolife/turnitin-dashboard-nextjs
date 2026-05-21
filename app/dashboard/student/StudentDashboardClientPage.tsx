@@ -83,34 +83,34 @@ export default function StudentDashboardClientPage() {
               <ExamDetailsForm />
             </div>
             <div className="lg:col-span-2 space-y-6">
-              <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📋 Cara Kerja</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">1</div>
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">1</div>
                     <div>
                       <p className="font-medium text-sm">Isi Detail Ujian</p>
                       <p className="text-xs text-muted-foreground">Masukkan judul skripsi dan jenis ujian</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">2</div>
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">2</div>
                     <div>
                       <p className="font-medium text-sm">Verifikasi Admin</p>
                       <p className="text-xs text-muted-foreground">Admin akan memverifikasi detail ujian Anda</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">3</div>
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">3</div>
                     <div>
                       <p className="font-medium text-sm">Upload Dokumen</p>
                       <p className="text-xs text-muted-foreground">Kirim dokumen untuk dicek plagiarisme</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">4</div>
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">4</div>
                     <div>
                       <p className="font-medium text-sm">Terima Hasil</p>
                       <p className="text-xs text-muted-foreground">Instruktur akan mengirim hasil Perpusmu</p>
@@ -119,7 +119,7 @@ export default function StudentDashboardClientPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">💡 Tips</CardTitle>
                 </CardHeader>
@@ -156,7 +156,7 @@ export default function StudentDashboardClientPage() {
               <PendingApproval />
             </div>
             <div className="space-y-6">
-              <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📊 Status Anda</CardTitle>
                 </CardHeader>
@@ -180,7 +180,7 @@ export default function StudentDashboardClientPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📞 Butuh Bantuan?</CardTitle>
                 </CardHeader>
@@ -216,10 +216,10 @@ export default function StudentDashboardClientPage() {
       >
         <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <FileText className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -231,10 +231,10 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                <BarChart3 className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -246,10 +246,10 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Menunggu Hasil</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -261,10 +261,10 @@ export default function StudentDashboardClientPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Status Pembayaran</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                <CheckCircle className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className={`text-2xl font-bold ${paymentActive ? "text-green-600" : "text-yellow-600"}`}>
@@ -283,7 +283,7 @@ export default function StudentDashboardClientPage() {
           <Card className="rounded-3xl border-2 border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/10 mb-8">
             <CardHeader>
               <div className="flex items-center gap-2">
-                <FileCheck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <FileCheck className="size-5 text-blue-600 dark:text-blue-400" />
                 <CardTitle className="text-blue-700 dark:text-blue-400">
                   Batas Similarity Prodi Anda
                 </CardTitle>

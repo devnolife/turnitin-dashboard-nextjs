@@ -53,10 +53,10 @@ export function InstructorProfile() {
       <DashboardMainCard title="Profil" subtitle="Lihat dan kelola informasi profil Anda 👤" icon={User}>
         <div className="space-y-6">
           {/* Profile Header */}
-          <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center gap-4 sm:flex-row">
-                <Avatar className="h-20 w-20">
+                <Avatar className="size-20">
                   <AvatarImage alt={user?.name || "Instructor"} />
                   <AvatarFallback className="bg-primary-dark text-white text-xl">
                     {(user?.name || "IN").substring(0, 2).toUpperCase()}
@@ -72,7 +72,7 @@ export function InstructorProfile() {
           </Card>
 
           {/* Edit Form */}
-          <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
             <CardHeader>
               <CardTitle>Edit Profil</CardTitle>
               <CardDescription>Perbarui informasi profil Anda</CardDescription>
@@ -92,7 +92,7 @@ export function InstructorProfile() {
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-3 size-4 text-muted-foreground" />
                       <Input
                         id="email"
                         type="email"
@@ -106,7 +106,7 @@ export function InstructorProfile() {
                   <div className="space-y-2">
                     <Label htmlFor="hp">No. Telepon</Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Phone className="absolute left-3 top-3 size-4 text-muted-foreground" />
                       <Input
                         id="hp"
                         value={hp}
@@ -119,7 +119,7 @@ export function InstructorProfile() {
                   <div className="space-y-2">
                     <Label htmlFor="wa">WhatsApp</Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Phone className="absolute left-3 top-3 size-4 text-muted-foreground" />
                       <Input
                         id="wa"
                         value={whatsappNumber}
@@ -135,9 +135,9 @@ export function InstructorProfile() {
               <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={isSaving} className="gap-2">
                   {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="size-4 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4" />
+                    <Save className="size-4" />
                   )}
                   {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
                 </Button>
@@ -147,10 +147,10 @@ export function InstructorProfile() {
 
           {/* Info Cards */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Mail className="h-4 w-4" /> Kontak
+                  <Mail className="size-4" /> Kontak
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -168,10 +168,10 @@ export function InstructorProfile() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Shield className="h-4 w-4" /> Peran
+                  <Shield className="size-4" /> Peran
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">

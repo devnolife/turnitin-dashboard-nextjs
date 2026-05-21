@@ -80,7 +80,7 @@ export function InstructorStudentsPage() {
       <div className="flex flex-col gap-6">
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
               </CardHeader>
@@ -94,7 +94,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
               </CardHeader>
@@ -108,7 +108,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Ujian Aktif</CardTitle>
               </CardHeader>
@@ -122,7 +122,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
               </CardHeader>
@@ -138,7 +138,7 @@ export function InstructorStudentsPage() {
           </StaggerItem>
         </StaggerContainer>
 
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle>Mahasiswa</CardTitle>
             <CardDescription>Daftar mahasiswa dalam sistem</CardDescription>
@@ -146,7 +146,7 @@ export function InstructorStudentsPage() {
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Cari mahasiswa..."
@@ -174,7 +174,7 @@ export function InstructorStudentsPage() {
                     <TableRow>
                       <TableCell colSpan={6} className="h-24 text-center">
                         <div className="flex items-center justify-center">
-                          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                          <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
                           <span className="ml-2">Memuat data...</span>
                         </div>
                       </TableCell>
@@ -209,7 +209,7 @@ export function InstructorStudentsPage() {
                         <TableCell>
                           <div className="flex justify-end gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleViewStudent(student.id)}>
-                              <Eye className="h-4 w-4" />
+                              <Eye className="size-4" />
                               <span className="sr-only">Lihat</span>
                             </Button>
                           </div>

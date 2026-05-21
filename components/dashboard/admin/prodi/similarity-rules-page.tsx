@@ -207,7 +207,7 @@ export function SimilarityRulesPage() {
       <PageTransition>
         <DashboardMainCard title="Tidak Ditemukan" subtitle="Program studi tidak ditemukan" icon={AlertCircle}>
           <Button onClick={() => router.push("/dashboard/admin/prodi")} variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Kembali ke Daftar Prodi
           </Button>
         </DashboardMainCard>
@@ -229,7 +229,7 @@ export function SimilarityRulesPage() {
             variant="outline"
             className="w-fit"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Kembali
           </Button>
 
@@ -241,7 +241,7 @@ export function SimilarityRulesPage() {
         </div>
 
         {/* Rule Type Tabs */}
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle>Tipe Aturan Similarity</CardTitle>
             <CardDescription>
@@ -276,7 +276,7 @@ export function SimilarityRulesPage() {
         </Card>
 
         {/* Rules Editor */}
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>
@@ -295,7 +295,7 @@ export function SimilarityRulesPage() {
                 </Button>
               )}
               <Button onClick={handleAddRule}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 size-4" />
                 Tambah Aturan
               </Button>
             </div>
@@ -303,7 +303,7 @@ export function SimilarityRulesPage() {
           <CardContent className="space-y-4">
             {currentRules.length === 0 ? (
               <FadeIn className="flex flex-col items-center justify-center py-12 text-center">
-                <FileCheck className="h-16 w-16 text-muted-foreground/30" />
+                <FileCheck className="size-16 text-muted-foreground/30" />
                 <h3 className="mt-4 text-lg font-medium">Belum Ada Aturan</h3>
                 <p className="mt-2 text-sm text-muted-foreground max-w-md">
                   Klik &quot;Template Default&quot; untuk memuat aturan standar, atau
@@ -316,7 +316,7 @@ export function SimilarityRulesPage() {
                   <FadeIn key={index}>
                     <div className="flex items-center gap-3 rounded-xl border p-4 transition-colors hover:bg-muted/50">
                       {/* Order number */}
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary shrink-0">
+                      <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary shrink-0">
                         {index + 1}
                       </div>
 
@@ -369,7 +369,7 @@ export function SimilarityRulesPage() {
                         className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => handleRemoveRule(index)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </FadeIn>
@@ -397,9 +397,9 @@ export function SimilarityRulesPage() {
               <div className="flex justify-end pt-4 border-t">
                 <Button onClick={handleSave} disabled={isSaving} className="gap-2">
                   {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="size-4 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4" />
+                    <Save className="size-4" />
                   )}
                   {isSaving ? "Menyimpan..." : "Simpan Aturan"}
                 </Button>

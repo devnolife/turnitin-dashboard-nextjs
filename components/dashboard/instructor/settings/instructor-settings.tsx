@@ -47,7 +47,7 @@ export function InstructorSettings() {
     <PageTransition>
       <DashboardMainCard title="Pengaturan" subtitle="Kelola preferensi dan informasi akun Anda ⚙️" icon={Settings}>
         <div className="space-y-6">
-          <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+          <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
             <CardHeader>
               <CardTitle>Akun</CardTitle>
               <CardDescription>Kelola informasi akun Anda</CardDescription>
@@ -93,9 +93,9 @@ export function InstructorSettings() {
               <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={isSaving} className="gap-2">
                   {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="size-4 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4" />
+                    <Save className="size-4" />
                   )}
                   {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
                 </Button>

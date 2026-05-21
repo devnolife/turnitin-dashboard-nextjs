@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, MoreHorizontal, CheckCircle, XCircle, Eye, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
@@ -115,7 +115,7 @@ export default function ExamApprovalsPage() {
 
   return (
     <DashboardMainCard title="Persetujuan Akun" subtitle="Kelola dan verifikasi akun mahasiswa yang mendaftar untuk Turnitin ✅" icon={CheckCircle}>
-      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
         <CardHeader>
           <CardTitle>Pendaftaran Akun Turnitin</CardTitle>
           <CardDescription>Verifikasi dan setujui akun mahasiswa yang baru mendaftar</CardDescription>
@@ -123,7 +123,7 @@ export default function ExamApprovalsPage() {
         <CardContent>
           <div className="mb-4 flex flex-col gap-4 sm:flex-row">
             <div className="flex items-center gap-2 flex-1">
-              <Search className="h-4 w-4 text-muted-foreground" />
+              <Search className="size-4 text-muted-foreground" />
               <Input
                 placeholder="Cari berdasarkan nama, NIM, atau judul..."
                 value={searchQuery}
@@ -146,7 +146,7 @@ export default function ExamApprovalsPage() {
 
           {loading ? (
             <div className="flex h-32 items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <Loader2 className="size-6 animate-spin text-primary" />
             </div>
           ) : (
             <div className="rounded-md border overflow-x-auto">
@@ -209,21 +209,23 @@ export default function ExamApprovalsPage() {
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" disabled={updating === detail.userId}>
                                   {updating === detail.userId ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <Loader2 className="size-4 animate-spin" />
                                   ) : (
-                                    <MoreHorizontal className="h-4 w-4" />
+                                    <MoreHorizontal className="size-4" />
                                   )}
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleUpdateApproval(detail.userId, "APPROVED")}>
-                                  <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                                  <span>Setujui</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleUpdateApproval(detail.userId, "REJECTED")}>
-                                  <XCircle className="mr-2 h-4 w-4 text-red-500" />
-                                  <span>Tolak</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuGroup>
+                                  <DropdownMenuItem onClick={() => handleUpdateApproval(detail.userId, "APPROVED")}>
+                                    <CheckCircle className="mr-2 size-4 text-success" />
+                                    <span>Setujui</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleUpdateApproval(detail.userId, "REJECTED")}>
+                                    <XCircle className="mr-2 size-4 text-destructive" />
+                                    <span>Tolak</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           ) : null}

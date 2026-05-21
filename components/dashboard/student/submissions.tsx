@@ -17,7 +17,7 @@ export function StudentSubmissions() {
 
   if (isLoading) {
     return (
-      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
         <CardHeader>
           <CardTitle>Dokumen Saya</CardTitle>
           <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
@@ -29,11 +29,11 @@ export function StudentSubmissions() {
               .map((_, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-start justify-between gap-2 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:flex-row sm:items-center"
+                  className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-4 sm:flex-row sm:items-center"
                 >
                   <div className="grid gap-1 w-full">
                     <div className="flex items-center gap-2">
-                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="size-4 rounded-full" />
                       <Skeleton className="h-4 w-40" />
                       <Skeleton className="h-5 w-16 rounded-full" />
                     </div>
@@ -57,7 +57,7 @@ export function StudentSubmissions() {
 
   if (error) {
     return (
-      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
         <CardHeader>
           <CardTitle>Dokumen Saya</CardTitle>
           <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
@@ -75,7 +75,7 @@ export function StudentSubmissions() {
   }
 
   return (
-    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
       <CardHeader>
         <CardTitle>Dokumen Saya</CardTitle>
         <CardDescription>Dokumen yang telah Anda kirimkan untuk dicek Perpusmu</CardDescription>
@@ -88,11 +88,11 @@ export function StudentSubmissions() {
             submissions.map((submission) => (
               <div
                 key={submission.id}
-                className="flex flex-col items-start justify-between gap-2 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:flex-row sm:items-center"
+                className="flex flex-col items-start justify-between gap-2 rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-4 sm:flex-row sm:items-center"
               >
                 <div className="grid gap-1">
                   <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <FileText className="size-4 text-muted-foreground" />
                     <span className="font-medium">{submission.title}</span>
                     <Badge variant={
                       submission.status === "Graded" ? "default" :
@@ -125,12 +125,12 @@ export function StudentSubmissions() {
                 </div>
                 <div className="flex w-full gap-2 sm:w-auto">
                   <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                    <Eye className="mr-2 h-4 w-4" />
+                    <Eye className="mr-2 size-4" />
                     Lihat
                   </Button>
                   {submission.status === "Graded" && (
                     <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                      <Download className="mr-2 h-4 w-4" />
+                      <Download className="mr-2 size-4" />
                       Unduh Hasil
                     </Button>
                   )}

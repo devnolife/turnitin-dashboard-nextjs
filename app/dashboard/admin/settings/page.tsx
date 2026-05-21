@@ -55,12 +55,12 @@ export default function AdminSettingsPage() {
         {settingsGroups.map((group) => (
           <Card
             key={group.title}
-            className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift"
+            className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift"
           >
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                  <group.icon className="h-5 w-5 text-primary" />
+                <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                  <group.icon className="size-5 text-primary" />
                 </div>
                 <div>
                   <CardTitle className="text-base">{group.title}</CardTitle>

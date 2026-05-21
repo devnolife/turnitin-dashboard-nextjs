@@ -18,10 +18,10 @@ export function StudentStats() {
   return (
     <>
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
+            <UserPlus className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -35,10 +35,10 @@ export function StudentStats() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Pengajuan</CardTitle>
-            <FileCheck className="h-4 w-4 text-muted-foreground" />
+            <FileCheck className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -50,10 +50,10 @@ export function StudentStats() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Fakultas & Program</CardTitle>
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
+            <GraduationCap className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -65,10 +65,10 @@ export function StudentStats() {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

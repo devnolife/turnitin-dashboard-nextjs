@@ -19,19 +19,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { DataPagination } from "@/components/ui/data-pagination"
 import { FadeIn } from "@/components/ui/motion"
 import type { Instructor } from "@/lib/types"
 import type { Faculty, StudyProgram } from "@/lib/types"
@@ -104,21 +97,21 @@ export function InstructorsTable({
   onAddInstructor,
 }: InstructorsTableProps) {
   return (
-    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>Daftar Instruktur</CardTitle>
           <CardDescription>Kelola instruktur dan lihat mahasiswa yang diawasi</CardDescription>
         </div>
         <Button onClick={onAddInstructor}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 size-4" />
           Tambah Instruktur
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
             <Input
               placeholder="Cari berdasarkan nama, ID, atau spesialisasi..."
               onChange={onSearch}
@@ -132,13 +125,13 @@ export function InstructorsTable({
               onClick={onToggleFilters}
               className="gap-2"
             >
-              <Filter className="h-4 w-4" />
+              <Filter className="size-4" />
               Filters
             </Button>
 
             {(facultyFilter || programFilter || positionFilter || statusFilter) && (
               <Button variant="outline" onClick={onResetFilters} className="gap-2">
-                <X className="h-4 w-4" />
+                <X className="size-4" />
                 Reset
               </Button>
             )}
@@ -155,7 +148,7 @@ export function InstructorsTable({
                   onClick={() => onFacultyFilterChange(null)}
                   className="ml-1 rounded-full hover:bg-secondary-foreground/20"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Remove</span>
                 </button>
               </Badge>
@@ -168,7 +161,7 @@ export function InstructorsTable({
                   onClick={() => onProgramFilterChange(null)}
                   className="ml-1 rounded-full hover:bg-secondary-foreground/20"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Remove</span>
                 </button>
               </Badge>
@@ -181,7 +174,7 @@ export function InstructorsTable({
                   onClick={() => onPositionFilterChange(null)}
                   className="ml-1 rounded-full hover:bg-secondary-foreground/20"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Remove</span>
                 </button>
               </Badge>
@@ -194,7 +187,7 @@ export function InstructorsTable({
                   onClick={() => onStatusFilterChange(null)}
                   className="ml-1 rounded-full hover:bg-secondary-foreground/20"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Remove</span>
                 </button>
               </Badge>
@@ -293,14 +286,14 @@ export function InstructorsTable({
                   .fill(0)
                   .map((_, i) => (
                     <div key={i} className="flex items-center gap-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <Skeleton className="size-10 rounded-full" />
                       <div className="space-y-2">
                         <Skeleton className="h-4 w-40" />
                         <Skeleton className="h-3 w-32" />
                       </div>
                       <div className="ml-auto flex gap-2">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="size-8 rounded-full" />
+                        <Skeleton className="size-8 rounded-full" />
                       </div>
                     </div>
                   ))}
@@ -308,7 +301,7 @@ export function InstructorsTable({
             </div>
           ) : filteredInstructors.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 text-center">
-              <Users className="h-12 w-12 text-muted-foreground/40" />
+              <Users className="size-12 text-muted-foreground/40" />
               <h3 className="mt-4 text-lg font-medium">Instruktur Tidak Ditemukan</h3>
               <p className="mt-2 text-sm text-muted-foreground">Tidak ada instruktur yang sesuai dengan pencarian Anda.</p>
             </div>
@@ -320,25 +313,25 @@ export function InstructorsTable({
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("faculty")}>
                       Fakultas
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="size-3" />
                     </div>
                   </TableHead>
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("position")}>
                       Jabatan
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="size-3" />
                     </div>
                   </TableHead>
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("students")}>
                       Mahasiswa
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="size-3" />
                     </div>
                   </TableHead>
                   <TableHead>
                     <div className="flex items-center gap-1 cursor-pointer" onClick={() => onSortBy("status")}>
                       Status
-                      <ArrowUpDown className="h-3 w-3" />
+                      <ArrowUpDown className="size-3" />
                     </div>
                   </TableHead>
                   <TableHead className="w-[60px]"></TableHead>
@@ -349,7 +342,7 @@ export function InstructorsTable({
                   <TableRow key={instructor.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="size-10">
                           <AvatarFallback>
                             {instructor.name
                               .split(" ")
@@ -375,27 +368,29 @@ export function InstructorsTable({
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="size-4" />
                             <span className="sr-only">Actions</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onViewInstructor(instructor.id)}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            <span>Lihat Detail</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            <span>Edit</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Mail className="mr-2 h-4 w-4" />
-                            <span>Kirim Email</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Hapus</span>
-                          </DropdownMenuItem>
+                          <DropdownMenuGroup>
+                            <DropdownMenuItem onClick={() => onViewInstructor(instructor.id)}>
+                              <Eye className="mr-2 size-4" />
+                              <span>Lihat Detail</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit className="mr-2 size-4" />
+                              <span>Edit</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Mail className="mr-2 size-4" />
+                              <span>Kirim Email</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">
+                              <Trash2 className="mr-2 size-4" />
+                              <span>Hapus</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -407,51 +402,12 @@ export function InstructorsTable({
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-                  disabled={currentPage === 1}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter((page) => {
-                  // Show first page, last page, current page, and pages around current page
-                  return page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1
-                })
-                .map((page, i, array) => {
-                  // Add ellipsis if there are gaps
-                  const prevPage = array[i - 1]
-                  const showEllipsis = prevPage && page - prevPage > 1
-
-                  return (
-                    <React.Fragment key={page}>
-                      {showEllipsis && (
-                        <PaginationItem>
-                          <span className="flex h-10 w-10 items-center justify-center">...</span>
-                        </PaginationItem>
-                      )}
-                      <PaginationItem>
-                        <PaginationLink onClick={() => onPageChange(page)} isActive={page === currentPage}>
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </React.Fragment>
-                  )
-                })}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+        <DataPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          className="justify-center"
+        />
       </CardContent>
     </Card>
   )

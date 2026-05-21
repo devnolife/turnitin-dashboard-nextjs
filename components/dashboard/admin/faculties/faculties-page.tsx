@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
@@ -142,10 +141,10 @@ export function AdminFacultiesPage() {
       <DashboardMainCard title="Manajemen Fakultas" subtitle="Kelola fakultas dan program studi 🏛️" icon={GraduationCap}>
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Fakultas</CardTitle>
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                <GraduationCap className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={faculties.length} /></div>
@@ -154,10 +153,10 @@ export function AdminFacultiesPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Program Studi</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <BookOpen className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={totalPrograms} /></div>
@@ -166,10 +165,10 @@ export function AdminFacultiesPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Rata-rata Prodi</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -181,14 +180,14 @@ export function AdminFacultiesPage() {
           </StaggerItem>
         </StaggerContainer>
 
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle>Daftar Fakultas</CardTitle>
             <CardDescription>Kelola fakultas dan program studi</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+              <Search className="size-4 text-muted-foreground" />
               <Input
                 placeholder="Cari fakultas atau program..."
                 value={searchQuery}
@@ -214,7 +213,7 @@ export function AdminFacultiesPage() {
               ) : filtered.length === 0 ? (
                 <Empty>
                   <EmptyMedia variant="icon">
-                    <GraduationCap className="h-6 w-6" />
+                    <GraduationCap className="size-6" />
                   </EmptyMedia>
                   <EmptyHeader>
                     <EmptyTitle>Fakultas Tidak Ditemukan</EmptyTitle>

@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataPagination } from "@/components/ui/data-pagination"
 import { PageTransition, StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
@@ -169,10 +170,10 @@ export function AdminInstructorsPage() {
       >
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Instruktur</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={totalInstructors} /></div>
@@ -181,10 +182,10 @@ export function AdminInstructorsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Review</CardTitle>
-                <FileCheck className="h-4 w-4 text-green-500" />
+                <FileCheck className="size-4 text-green-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={totalReviewed} /></div>
@@ -193,10 +194,10 @@ export function AdminInstructorsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Menunggu Review</CardTitle>
-                <Clock className="h-4 w-4 text-yellow-500" />
+                <Clock className="size-4 text-yellow-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={totalPending} /></div>
@@ -205,10 +206,10 @@ export function AdminInstructorsPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Rata-rata Review</CardTitle>
-                <FileCheck className="h-4 w-4 text-blue-500" />
+                <FileCheck className="size-4 text-blue-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -220,20 +221,20 @@ export function AdminInstructorsPage() {
           </StaggerItem>
         </StaggerContainer>
 
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Daftar Instruktur</CardTitle>
               <CardDescription>Lihat dan kelola semua instruktur</CardDescription>
             </div>
             <Button onClick={() => router.push("/dashboard/admin/instructors/new")}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Tambah Instruktur
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+              <Search className="size-4 text-muted-foreground" />
               <Input
                 placeholder="Cari nama, username, email, atau prodi..."
                 value={search}
@@ -251,7 +252,7 @@ export function AdminInstructorsPage() {
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-8 text-center">
-                  <Shield className="h-12 w-12 text-muted-foreground/40" />
+                  <Shield className="size-12 text-muted-foreground/40" />
                   <h3 className="mt-4 text-lg font-medium">Tidak Ada Instruktur</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     {search ? "Tidak ada hasil yang cocok." : "Belum ada instruktur terdaftar."}
@@ -278,7 +279,7 @@ export function AdminInstructorsPage() {
                         <TableRow key={inst.id}>
                           <TableCell>
                             <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
+                              <Avatar className="size-8">
                                 <AvatarFallback className="text-xs bg-primary/10 text-primary">{initials}</AvatarFallback>
                               </Avatar>
                               <div>
@@ -303,25 +304,27 @@ export function AdminInstructorsPage() {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="h-4 w-4" />
+                                  <MoreHorizontal className="size-4" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => router.push(`/dashboard/admin/instructors/${inst.id}`)}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  <span>Lihat Detail</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openEdit(inst)}>
-                                  <Pencil className="mr-2 h-4 w-4" />
-                                  <span>Edit</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-red-600"
-                                  onClick={() => { setDeleteTarget(inst); setDeleteOpen(true) }}
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  <span>Hapus</span>
-                                </DropdownMenuItem>
+                                <DropdownMenuGroup>
+                                  <DropdownMenuItem onClick={() => router.push(`/dashboard/admin/instructors/${inst.id}`)}>
+                                    <Eye className="mr-2 size-4" />
+                                    <span>Lihat Detail</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openEdit(inst)}>
+                                    <Pencil className="mr-2 size-4" />
+                                    <span>Edit</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() => { setDeleteTarget(inst); setDeleteOpen(true) }}
+                                  >
+                                    <Trash2 className="mr-2 size-4" />
+                                    <span>Hapus</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
@@ -334,29 +337,15 @@ export function AdminInstructorsPage() {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-2">
-                <p className="text-sm text-muted-foreground">
-                  Menampilkan {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filtered.length)} dari {filtered.length}
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+              <DataPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                itemsPerPage={itemsPerPage}
+                onPageChange={setCurrentPage}
+                showPageNumbers={false}
+                className="pt-2"
+              />
             )}
           </CardContent>
         </Card>
@@ -390,7 +379,7 @@ export function AdminInstructorsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)}>Batal</Button>
             <Button onClick={handleEdit} disabled={saving}>
-              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {saving ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               Simpan
             </Button>
           </DialogFooter>
@@ -409,7 +398,7 @@ export function AdminInstructorsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteOpen(false)}>Batal</Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {deleting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               Hapus
             </Button>
           </DialogFooter>

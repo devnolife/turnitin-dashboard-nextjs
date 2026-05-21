@@ -209,10 +209,10 @@ export function AcademicManagementPage() {
         {/* Stats */}
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Fakultas</CardTitle>
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                <GraduationCap className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={facultyGroups.length} /></div>
@@ -221,10 +221,10 @@ export function AcademicManagementPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Program Studi</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <BookOpen className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={totalPrograms} /></div>
@@ -233,10 +233,10 @@ export function AcademicManagementPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={totalStudents} /></div>
@@ -245,10 +245,10 @@ export function AcademicManagementPage() {
             </Card>
           </StaggerItem>
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Aturan Aktif</CardTitle>
-                <FileCheck className="h-4 w-4 text-muted-foreground" />
+                <FileCheck className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"><AnimatedCounter value={withRules} /></div>
@@ -267,14 +267,14 @@ export function AcademicManagementPage() {
 
           {/* === Fakultas Tab === */}
           <TabsContent value="faculties">
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader>
                 <CardTitle>Daftar Fakultas</CardTitle>
                 <CardDescription>Fakultas beserta program studi di dalamnya</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <Search className="size-4 text-muted-foreground" />
                   <Input placeholder="Cari fakultas atau program..." value={facultySearch} onChange={(e) => setFacultySearch(e.target.value)} className="h-9" />
                 </div>
                 <div className="rounded-md border overflow-x-auto">
@@ -289,7 +289,7 @@ export function AcademicManagementPage() {
                     </div>
                   ) : filteredFaculties.length === 0 ? (
                     <Empty>
-                      <EmptyMedia variant="icon"><GraduationCap className="h-6 w-6" /></EmptyMedia>
+                      <EmptyMedia variant="icon"><GraduationCap className="size-6" /></EmptyMedia>
                       <EmptyHeader>
                         <EmptyTitle>Fakultas Tidak Ditemukan</EmptyTitle>
                         <EmptyDescription>Tidak ada fakultas yang sesuai dengan pencarian Anda.</EmptyDescription>
@@ -334,7 +334,7 @@ export function AcademicManagementPage() {
 
           {/* === Program Studi Tab === */}
           <TabsContent value="prodi">
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader>
                 <CardTitle>Daftar Program Studi</CardTitle>
                 <CardDescription>Kelola aturan similarity per program studi</CardDescription>
@@ -342,15 +342,15 @@ export function AcademicManagementPage() {
               <CardContent className="space-y-4">
                 <div className="flex flex-col gap-4 sm:flex-row">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
                     <Input placeholder="Cari program studi atau fakultas..." value={prodiSearch} onChange={(e) => setProdiSearch(e.target.value)} className="pl-10" />
                   </div>
                   <div className="flex gap-2">
                     <Button variant={showFilters ? "default" : "outline"} onClick={() => setShowFilters(!showFilters)} className="gap-2">
-                      <Filter className="h-4 w-4" />Filter
+                      <Filter className="size-4" />Filter
                     </Button>
                     {(facultyFilter || degreeFilter) && (
-                      <Button variant="outline" onClick={handleResetFilters} className="gap-2"><X className="h-4 w-4" />Reset</Button>
+                      <Button variant="outline" onClick={handleResetFilters} className="gap-2"><X className="size-4" />Reset</Button>
                     )}
                   </div>
                 </div>
@@ -360,13 +360,13 @@ export function AcademicManagementPage() {
                     {facultyFilter && (
                       <Badge variant="secondary" className="gap-1">
                         Fakultas: {faculties.find((f) => f.id === facultyFilter)?.name}
-                        <button onClick={() => setFacultyFilter(null)} className="ml-1 rounded-full hover:bg-secondary-foreground/20"><X className="h-3 w-3" /></button>
+                        <button onClick={() => setFacultyFilter(null)} className="ml-1 rounded-full hover:bg-secondary-foreground/20"><X className="size-3" /></button>
                       </Badge>
                     )}
                     {degreeFilter && (
                       <Badge variant="secondary" className="gap-1">
                         Jenjang: {degreeFilter}
-                        <button onClick={() => setDegreeFilter(null)} className="ml-1 rounded-full hover:bg-secondary-foreground/20"><X className="h-3 w-3" /></button>
+                        <button onClick={() => setDegreeFilter(null)} className="ml-1 rounded-full hover:bg-secondary-foreground/20"><X className="size-3" /></button>
                       </Badge>
                     )}
                   </div>
@@ -409,7 +409,7 @@ export function AcademicManagementPage() {
                     </div>
                   ) : filteredPrograms.length === 0 ? (
                     <Empty>
-                      <EmptyMedia variant="icon"><BookOpen className="h-6 w-6" /></EmptyMedia>
+                      <EmptyMedia variant="icon"><BookOpen className="size-6" /></EmptyMedia>
                       <EmptyHeader>
                         <EmptyTitle>Program Studi Tidak Ditemukan</EmptyTitle>
                         <EmptyDescription>Tidak ada program studi yang sesuai dengan pencarian Anda.</EmptyDescription>
@@ -420,17 +420,17 @@ export function AcademicManagementPage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>
-                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("name")}>Program Studi<ArrowUpDown className="h-3 w-3" /></div>
+                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("name")}>Program Studi<ArrowUpDown className="size-3" /></div>
                           </TableHead>
                           <TableHead>
-                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("faculty")}>Fakultas<ArrowUpDown className="h-3 w-3" /></div>
+                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("faculty")}>Fakultas<ArrowUpDown className="size-3" /></div>
                           </TableHead>
                           <TableHead>Jenjang</TableHead>
                           <TableHead>
-                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("students")}>Mahasiswa<ArrowUpDown className="h-3 w-3" /></div>
+                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("students")}>Mahasiswa<ArrowUpDown className="size-3" /></div>
                           </TableHead>
                           <TableHead>
-                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("rules")}>Aturan Similarity<ArrowUpDown className="h-3 w-3" /></div>
+                            <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("rules")}>Aturan Similarity<ArrowUpDown className="size-3" /></div>
                           </TableHead>
                           <TableHead className="w-[120px]">Aksi</TableHead>
                         </TableRow>
@@ -442,11 +442,11 @@ export function AcademicManagementPage() {
                               <div><div className="font-medium">{program.name}</div><div className="text-xs text-muted-foreground">{program.code}</div></div>
                             </TableCell>
                             <TableCell>
-                              <div className="flex items-center gap-2"><Building className="h-4 w-4 text-muted-foreground" /><span className="text-sm">{program.facultyName}</span></div>
+                              <div className="flex items-center gap-2"><Building className="size-4 text-muted-foreground" /><span className="text-sm">{program.facultyName}</span></div>
                             </TableCell>
                             <TableCell><Badge variant="outline">{program.degree}</Badge></TableCell>
                             <TableCell>
-                              <div className="flex items-center gap-1"><Users className="h-3 w-3 text-muted-foreground" /><span>{program.students}</span></div>
+                              <div className="flex items-center gap-1"><Users className="size-3 text-muted-foreground" /><span>{program.students}</span></div>
                             </TableCell>
                             <TableCell>
                               {program.rulesCount > 0 ? (
@@ -457,7 +457,7 @@ export function AcademicManagementPage() {
                             </TableCell>
                             <TableCell>
                               <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/admin/prodi/${program.id}/rules`)} className="gap-1">
-                                <Settings className="h-3 w-3" />Kelola Aturan
+                                <Settings className="size-3" />Kelola Aturan
                               </Button>
                             </TableCell>
                           </TableRow>

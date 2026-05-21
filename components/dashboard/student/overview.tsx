@@ -44,7 +44,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
   return (
     <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <StaggerItem>
-        <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
+        <Card className="col-span-1 rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover:shadow-md hover:shadow-primary/20 transition-all duration-300">
           <CardHeader>
             <CardTitle className="text-primary-dark">Aksi Cepat</CardTitle>
             <CardDescription>Tugas yang sering dilakukan</CardDescription>
@@ -52,13 +52,13 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
           <CardContent className="flex flex-col gap-4">
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/submissions">
-                <FileText className="mr-2 h-4 w-4" />
+                <FileText className="mr-2 size-4" />
                 Lihat Pengiriman
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start" withRipple>
               <Link href="/dashboard/student/feedback">
-                <Bell className="mr-2 h-4 w-4" />
+                <Bell className="mr-2 size-4" />
                 Cek Hasil Perpusmu
               </Link>
             </Button>
@@ -67,7 +67,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="col-span-1 rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader>
             <CardTitle className="gradient-text">Statistik Pengiriman</CardTitle>
             <CardDescription>Ringkasan dokumen Anda</CardDescription>
@@ -108,7 +108,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="col-span-1 md:col-span-2 lg:col-span-1 rounded-3xl border-2 border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-1 rounded-3xl border border-border/60 shadow-sm dark:border-white/10 transition-all duration-300 hover:shadow-md hover:shadow-primary/20">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Akun</CardTitle>
             <CardDescription>Informasi pribadi Anda</CardDescription>
@@ -125,7 +125,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">WhatsApp</p>
                   <p className="font-medium flex items-center">
-                    <Phone className="mr-1 h-3 w-3 text-primary" />
+                    <Phone className="mr-1 size-3 text-primary" />
                     {formatWhatsAppNumber(user?.whatsappNumber)}
                   </p>
                 </div>
@@ -140,7 +140,7 @@ export function StudentOverview({ stats }: StudentOverviewProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Jenis Ujian</p>
                   <p className="font-medium flex items-center">
-                    <BookOpen className="mr-1 h-3 w-3 text-primary" />
+                    <BookOpen className="mr-1 size-3 text-primary" />
                     {formatExamType(user?.examDetails?.examType)}
                   </p>
                 </div>

@@ -46,14 +46,14 @@ export function StudentFeedback() {
 
   if (isLoading) {
     return (
-      <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+      <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
         <CardHeader>
           <CardTitle>Umpan Balik Terbaru</CardTitle>
           <CardDescription>Hasil Perpusmu dan komentar dari instruktur</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Loader2 className="size-6 animate-spin text-primary" />
             <span className="ml-2 text-sm text-muted-foreground">Memuat...</span>
           </div>
         </CardContent>
@@ -62,7 +62,7 @@ export function StudentFeedback() {
   }
 
   return (
-    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
       <CardHeader>
         <CardTitle>Umpan Balik Terbaru</CardTitle>
         <CardDescription>Hasil Perpusmu dan komentar dari instruktur</CardDescription>
@@ -75,7 +75,7 @@ export function StudentFeedback() {
             items.map((item) => {
               const type = item.rawStatus === "FLAGGED" ? "Revisi" : "Hasil"
               return (
-                <div key={item.id} className="rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4">
+                <div key={item.id} className="rounded-2xl border border-border/60 shadow-sm dark:border-white/10 p-4">
                   <div className="mb-2 flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
                     <div>
                       <div className="font-medium">{item.title}</div>
@@ -87,8 +87,8 @@ export function StudentFeedback() {
                       <Badge
                         variant={type === "Hasil" ? "default" : "secondary"}
                       >
-                        {type === "Hasil" && <ThumbsUp className="mr-1 h-3 w-3" />}
-                        {type === "Revisi" && <AlertCircle className="mr-1 h-3 w-3" />}
+                        {type === "Hasil" && <ThumbsUp className="mr-1 size-3" />}
+                        {type === "Revisi" && <AlertCircle className="mr-1 size-3" />}
                         {type}
                       </Badge>
                       {item.similarity > 0 && (

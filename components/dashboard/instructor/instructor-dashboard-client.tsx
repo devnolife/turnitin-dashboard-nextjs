@@ -33,7 +33,7 @@ const DashboardAnalytics = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     ),
   },
@@ -74,7 +74,7 @@ export function InstructorDashboardClient() {
   if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     )
   }
@@ -111,10 +111,10 @@ export function InstructorDashboardClient() {
       >
         {/* Instructor Profile */}
         <div className="grid gap-6 md:grid-cols-3 mb-6">
-          <Card className="md:col-span-1 border-2 border-gray-100 dark:border-gray-700 rounded-3xl">
+          <Card className="md:col-span-1 border border-border/60 shadow-sm dark:border-white/10 rounded-3xl">
             <CardHeader>
               <div className="flex flex-col items-center">
-                <Avatar className="h-24 w-24">
+                <Avatar className="size-24">
                   <AvatarFallback className="bg-primary-dark text-white text-xl">
                     {user.name
                       .split(" ")

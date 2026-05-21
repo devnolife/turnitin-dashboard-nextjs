@@ -181,10 +181,10 @@ export function AdminProdiPage() {
         {/* Stats */}
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Prodi</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <BookOpen className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -196,10 +196,10 @@ export function AdminProdiPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Mahasiswa</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -211,10 +211,10 @@ export function AdminProdiPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Aturan Aktif</CardTitle>
-                <FileCheck className="h-4 w-4 text-muted-foreground" />
+                <FileCheck className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -228,10 +228,10 @@ export function AdminProdiPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Program S1</CardTitle>
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                <GraduationCap className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -246,7 +246,7 @@ export function AdminProdiPage() {
         </StaggerContainer>
 
         {/* Table */}
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle>Daftar Program Studi</CardTitle>
             <CardDescription>Kelola aturan similarity per program studi</CardDescription>
@@ -255,7 +255,7 @@ export function AdminProdiPage() {
             {/* Search & filter controls */}
             <div className="flex flex-col gap-4 sm:flex-row">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
                 <Input
                   placeholder="Cari program studi atau fakultas..."
                   value={searchQuery}
@@ -270,13 +270,13 @@ export function AdminProdiPage() {
                   onClick={() => setShowFilters(!showFilters)}
                   className="gap-2"
                 >
-                  <Filter className="h-4 w-4" />
+                  <Filter className="size-4" />
                   Filter
                 </Button>
 
                 {(facultyFilter || degreeFilter) && (
                   <Button variant="outline" onClick={handleResetFilters} className="gap-2">
-                    <X className="h-4 w-4" />
+                    <X className="size-4" />
                     Reset
                   </Button>
                 )}
@@ -290,7 +290,7 @@ export function AdminProdiPage() {
                   <Badge variant="secondary" className="gap-1">
                     Fakultas: {faculties.find((f) => f.id === facultyFilter)?.name}
                     <button onClick={() => setFacultyFilter(null)} className="ml-1 rounded-full hover:bg-secondary-foreground/20">
-                      <X className="h-3 w-3" />
+                      <X className="size-3" />
                     </button>
                   </Badge>
                 )}
@@ -298,7 +298,7 @@ export function AdminProdiPage() {
                   <Badge variant="secondary" className="gap-1">
                     Jenjang: {degreeFilter}
                     <button onClick={() => setDegreeFilter(null)} className="ml-1 rounded-full hover:bg-secondary-foreground/20">
-                      <X className="h-3 w-3" />
+                      <X className="size-3" />
                     </button>
                   </Badge>
                 )}
@@ -363,7 +363,7 @@ export function AdminProdiPage() {
               ) : filteredPrograms.length === 0 ? (
                 <Empty>
                   <EmptyMedia variant="icon">
-                    <BookOpen className="h-6 w-6" />
+                    <BookOpen className="size-6" />
                   </EmptyMedia>
                   <EmptyHeader>
                     <EmptyTitle>Program Studi Tidak Ditemukan</EmptyTitle>
@@ -379,26 +379,26 @@ export function AdminProdiPage() {
                       <TableHead>
                         <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("name")}>
                           Program Studi
-                          <ArrowUpDown className="h-3 w-3" />
+                          <ArrowUpDown className="size-3" />
                         </div>
                       </TableHead>
                       <TableHead>
                         <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("faculty")}>
                           Fakultas
-                          <ArrowUpDown className="h-3 w-3" />
+                          <ArrowUpDown className="size-3" />
                         </div>
                       </TableHead>
                       <TableHead>Jenjang</TableHead>
                       <TableHead>
                         <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("students")}>
                           Mahasiswa
-                          <ArrowUpDown className="h-3 w-3" />
+                          <ArrowUpDown className="size-3" />
                         </div>
                       </TableHead>
                       <TableHead>
                         <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("rules")}>
                           Aturan Similarity
-                          <ArrowUpDown className="h-3 w-3" />
+                          <ArrowUpDown className="size-3" />
                         </div>
                       </TableHead>
                       <TableHead className="w-[120px]">Aksi</TableHead>
@@ -415,7 +415,7 @@ export function AdminProdiPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <Building className="h-4 w-4 text-muted-foreground" />
+                            <Building className="size-4 text-muted-foreground" />
                             <span className="text-sm">{program.facultyName}</span>
                           </div>
                         </TableCell>
@@ -424,7 +424,7 @@ export function AdminProdiPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
-                            <Users className="h-3 w-3 text-muted-foreground" />
+                            <Users className="size-3 text-muted-foreground" />
                             <span>{program.students}</span>
                           </div>
                         </TableCell>
@@ -444,7 +444,7 @@ export function AdminProdiPage() {
                             onClick={() => router.push(`/dashboard/admin/prodi/${program.id}/rules`)}
                             className="gap-1"
                           >
-                            <Settings className="h-3 w-3" />
+                            <Settings className="size-3" />
                             Kelola Aturan
                           </Button>
                         </TableCell>

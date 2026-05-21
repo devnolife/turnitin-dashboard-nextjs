@@ -22,10 +22,10 @@ export function InstructorsStats({
   return (
     <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Instruktur</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -39,10 +39,10 @@ export function InstructorsStats({
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Fakultas Terkait</CardTitle>
-            <Building className="h-4 w-4 text-muted-foreground" />
+            <Building className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -54,10 +54,10 @@ export function InstructorsStats({
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Senior</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -69,10 +69,10 @@ export function InstructorsStats({
       </StaggerItem>
 
       <StaggerItem>
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover-lift">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 hover-lift">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Cuti</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

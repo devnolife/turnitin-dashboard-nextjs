@@ -51,15 +51,15 @@ export default function StudentProfilePage() {
       icon={User}
     >
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle className="gradient-text">Informasi Pribadi</CardTitle>
             <CardDescription>Data akun Anda</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <User className="h-5 w-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <User className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Nama</p>
@@ -67,8 +67,8 @@ export default function StudentProfilePage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Mail className="h-5 w-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <Mail className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Email</p>
@@ -76,8 +76,8 @@ export default function StudentProfilePage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Phone className="h-5 w-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <Phone className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">WhatsApp</p>
@@ -87,15 +87,15 @@ export default function StudentProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+        <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
           <CardHeader>
             <CardTitle className="gradient-text">Detail Ujian</CardTitle>
             <CardDescription>Informasi sidang dan skripsi Anda</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <BookOpen className="h-5 w-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <BookOpen className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Judul Skripsi</p>
@@ -103,8 +103,8 @@ export default function StudentProfilePage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Calendar className="h-5 w-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <Calendar className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Jenis Ujian</p>
@@ -112,8 +112,8 @@ export default function StudentProfilePage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Shield className="h-5 w-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <Shield className="size-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Status Pembayaran</p>

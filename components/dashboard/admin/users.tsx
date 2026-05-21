@@ -45,7 +45,7 @@ export function AdminUsers() {
   }, [roleFilter, searchQuery])
 
   return (
-    <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+    <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
       <CardHeader>
         <div>
           <CardTitle>Manajemen Pengguna</CardTitle>
@@ -55,7 +55,7 @@ export function AdminUsers() {
       <CardContent>
         <div className="mb-4 flex flex-col gap-4 sm:flex-row">
           <div className="flex items-center gap-2 flex-1">
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <Search className="size-4 text-muted-foreground" />
             <Input
               placeholder="Cari pengguna..."
               value={searchQuery}
@@ -78,7 +78,7 @@ export function AdminUsers() {
 
         {loading ? (
           <div className="flex h-32 items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Loader2 className="size-6 animate-spin text-primary" />
           </div>
         ) : (
           <div className="rounded-md border overflow-x-auto">

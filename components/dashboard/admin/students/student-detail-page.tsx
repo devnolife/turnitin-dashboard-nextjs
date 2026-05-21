@@ -126,7 +126,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-10 w-10" />
+          <Skeleton className="size-10" />
           <Skeleton className="h-8 w-48" />
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -143,7 +143,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
         <h2 className="text-2xl font-bold">Mahasiswa Tidak Ditemukan</h2>
         <p className="text-muted-foreground">{error || "Data tidak tersedia."}</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard/admin/students")}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 size-4" />
           Kembali ke Daftar Mahasiswa
         </Button>
       </div>
@@ -177,7 +177,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/admin/students")}>
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="size-4" />
           </Button>
           <h1 className="text-3xl font-bold tracking-tight gradient-text">Detail Mahasiswa</h1>
         </div>
@@ -185,10 +185,10 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
         <div className="grid gap-6 md:grid-cols-3">
           {/* Student Info Card */}
           <FadeIn className="md:col-span-1">
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
-                  <Avatar className="h-20 w-20 mb-4">
+                  <Avatar className="size-20 mb-4">
                     <AvatarFallback className="text-xl bg-primary/10 text-primary">{initials}</AvatarFallback>
                   </Avatar>
                   <h2 className="text-xl font-bold">{student.name}</h2>
@@ -220,7 +220,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
 
             {/* Exam Info */}
             {student.examDetail && (
-              <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700 mt-4">
+              <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10 mt-4">
                 <CardHeader>
                   <CardTitle className="text-base">Info Ujian</CardTitle>
                 </CardHeader>
@@ -263,7 +263,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                 <Card className="rounded-2xl hover-lift">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-blue-500" />
+                      <FileText className="size-4 text-blue-500" />
                       <span className="text-xs text-muted-foreground">Pengajuan</span>
                     </div>
                     <p className="text-2xl font-bold mt-1"><AnimatedCounter value={student.stats.submissionsCount} /></p>
@@ -274,7 +274,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                 <Card className="rounded-2xl hover-lift">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <CheckCircle className="size-4 text-green-500" />
                       <span className="text-xs text-muted-foreground">Direview</span>
                     </div>
                     <p className="text-2xl font-bold mt-1"><AnimatedCounter value={student.stats.reviewedCount} /></p>
@@ -285,7 +285,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                 <Card className="rounded-2xl hover-lift">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-orange-500" />
+                      <AlertTriangle className="size-4 text-orange-500" />
                       <span className="text-xs text-muted-foreground">Ditandai</span>
                     </div>
                     <p className="text-2xl font-bold mt-1"><AnimatedCounter value={student.stats.flaggedCount} /></p>
@@ -296,7 +296,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                 <Card className="rounded-2xl hover-lift">
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-yellow-500" />
+                      <Clock className="size-4 text-yellow-500" />
                       <span className="text-xs text-muted-foreground">Rata-rata</span>
                     </div>
                     <p className="text-2xl font-bold mt-1">{student.stats.avgSimilarity}%</p>
@@ -305,7 +305,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
               </StaggerItem>
             </StaggerContainer>
 
-            <Card className="rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardContent className="pt-6">
                 <Tabs defaultValue="submissions" className="space-y-4">
                   <TabsList>
@@ -316,7 +316,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   <TabsContent value="submissions" className="space-y-4">
                     {student.submissions.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
-                        <FileText className="h-12 w-12 mx-auto mb-2 opacity-40" />
+                        <FileText className="size-12 mx-auto mb-2 opacity-40" />
                         <p>Belum ada pengajuan</p>
                       </div>
                     ) : (
@@ -380,7 +380,7 @@ export function StudentDetailPage({ studentId }: StudentDetailPageProps) {
                   <TabsContent value="payments" className="space-y-4">
                     {student.payments.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
-                        <CreditCard className="h-12 w-12 mx-auto mb-2 opacity-40" />
+                        <CreditCard className="size-12 mx-auto mb-2 opacity-40" />
                         <p>Belum ada riwayat pembayaran</p>
                       </div>
                     ) : (

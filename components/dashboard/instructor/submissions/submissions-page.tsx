@@ -195,7 +195,7 @@ export function SubmissionsPage() {
   if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     )
   }
@@ -206,10 +206,10 @@ export function SubmissionsPage() {
       <div className="flex flex-col gap-6">
         <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
+                <FileText className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{submissions.length}</div>
@@ -219,10 +219,10 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Menunggu Upload</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -234,10 +234,10 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Sudah Ditinjau</CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                <CheckCircle className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -249,10 +249,10 @@ export function SubmissionsPage() {
           </StaggerItem>
 
           <StaggerItem>
-            <Card className="hover-lift rounded-3xl border-2 border-gray-100 dark:border-gray-700">
+            <Card className="hover-lift rounded-3xl border border-border/60 shadow-sm dark:border-white/10">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Ditandai</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                <AlertTriangle className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -266,7 +266,7 @@ export function SubmissionsPage() {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Cari pengiriman..."
@@ -308,7 +308,7 @@ export function SubmissionsPage() {
         {(statusFilter !== "all" || studentFilter !== "all" || searchQuery) && (
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center">
-              <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+              <Filter className="mr-2 size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Filter aktif:</span>
             </div>
 
@@ -318,10 +318,10 @@ export function SubmissionsPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  className="size-4 p-0 hover:bg-transparent"
                   onClick={() => setStatusFilter("all")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Hapus filter status</span>
                 </Button>
               </Badge>
@@ -333,10 +333,10 @@ export function SubmissionsPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  className="size-4 p-0 hover:bg-transparent"
                   onClick={() => setStudentFilter("all")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Hapus filter mahasiswa</span>
                 </Button>
               </Badge>
@@ -348,10 +348,10 @@ export function SubmissionsPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  className="size-4 p-0 hover:bg-transparent"
                   onClick={() => setSearchQuery("")}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="size-3" />
                   <span className="sr-only">Hapus pencarian</span>
                 </Button>
               </Badge>
