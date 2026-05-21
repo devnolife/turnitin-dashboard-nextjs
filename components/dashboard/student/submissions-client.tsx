@@ -374,15 +374,15 @@ function RuleSummaryCard({
   const status = latest?.rawStatus
   const tone =
     status === "REVIEWED"
-      ? "border-emerald-200 dark:border-emerald-900/60"
+      ? "border-emerald-300/70 dark:border-emerald-800"
       : status === "FLAGGED"
-        ? "border-rose-200 dark:border-rose-900/60"
+        ? "border-rose-300/70 dark:border-rose-800"
         : status === "PROCESSING" || status === "PENDING"
-          ? "border-amber-200 dark:border-amber-900/60"
-          : "border-dashed border-gray-200 dark:border-gray-800"
+          ? "border-amber-300/70 dark:border-amber-800"
+          : "border-dashed border-border/70 dark:border-white/10"
 
   return (
-    <Card className={`rounded-3xl border-2 ${tone}`}>
+    <Card className={`rounded-3xl border bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-gray-900/80 ${tone}`}>
       <CardContent className="flex h-full flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -473,7 +473,7 @@ function SubmissionCard({
   onDetail: () => void
 }) {
   return (
-    <Card className="rounded-3xl border-2 border-gray-100 transition-all hover:border-primary/40 hover:shadow-md dark:border-gray-800">
+    <Card className="rounded-3xl border border-border/60 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-white/10 dark:bg-gray-900/80">
       <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-1 items-start gap-4">
           <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10">

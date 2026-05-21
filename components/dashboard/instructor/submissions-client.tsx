@@ -178,9 +178,9 @@ export default function InstructorSubmissionsClient() {
               key={k}
               type="button"
               onClick={() => setTab(k)}
-              className={`group flex items-center justify-between rounded-3xl border-2 p-5 text-left transition-all ${active
-                  ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-                  : "border-gray-100 hover:border-primary/40 dark:border-gray-800"
+              className={`group flex items-center justify-between rounded-3xl border bg-white p-5 text-left shadow-sm transition-all dark:bg-gray-900/80 ${active
+                  ? "border-primary/60 ring-2 ring-primary/20 shadow-md shadow-primary/10"
+                  : "border-border/60 hover:border-primary/40 hover:shadow-md dark:border-white/10"
                 }`}
             >
               <div>
@@ -279,7 +279,7 @@ function QueueRow({
   const meta = STATUS_META[item.status]
   const Icon = meta.icon
   return (
-    <Card className="rounded-3xl border-2 border-gray-100 transition-all hover:border-primary/40 hover:shadow-md dark:border-gray-800">
+    <Card className="rounded-3xl border border-border/60 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md dark:border-white/10 dark:bg-gray-900/80">
       <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex min-w-0 flex-1 items-start gap-4">
           <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10">
