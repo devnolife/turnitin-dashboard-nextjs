@@ -29,7 +29,7 @@ export function DashboardMainCard({ title, subtitle, icon: Icon, children }: Das
       </div>
 
       {/* Content */}
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 space-y-6">{children}</div>
     </div>
   )
 }
