@@ -22,7 +22,7 @@ export function DashboardQuickActions({ onNavigate }: DashboardQuickActionsProps
             className="flex h-auto flex-col items-center justify-center gap-2 p-4"
             onClick={() => onNavigate("/dashboard/instructor/students")}
           >
-            <Users className="h-6 w-6 text-primary-dark" />
+            <Users className="size-6 text-primary-dark" />
             <span>Daftar Mahasiswa</span>
           </Button>
           <Button
@@ -30,7 +30,7 @@ export function DashboardQuickActions({ onNavigate }: DashboardQuickActionsProps
             className="flex h-auto flex-col items-center justify-center gap-2 p-4"
             onClick={() => onNavigate("/dashboard/instructor/submissions")}
           >
-            <Eye className="h-6 w-6 text-primary-dark" />
+            <Eye className="size-6 text-primary-dark" />
             <span>Pantau Pengiriman</span>
           </Button>
           <Button
@@ -38,7 +38,7 @@ export function DashboardQuickActions({ onNavigate }: DashboardQuickActionsProps
             className="flex h-auto flex-col items-center justify-center gap-2 p-4"
             onClick={() => onNavigate("/dashboard/instructor/submissions")}
           >
-            <FileCheck className="h-6 w-6 text-primary-dark" />
+            <FileCheck className="size-6 text-primary-dark" />
             <span>Tinjau Laporan</span>
           </Button>
           <Button
@@ -46,7 +46,7 @@ export function DashboardQuickActions({ onNavigate }: DashboardQuickActionsProps
             className="flex h-auto flex-col items-center justify-center gap-2 p-4"
             onClick={() => onNavigate("/dashboard/instructor/submissions")}
           >
-            <ClipboardList className="h-6 w-6 text-primary-dark" />
+            <ClipboardList className="size-6 text-primary-dark" />
             <span>Cek Similarity</span>
           </Button>
           <Button
@@ -54,7 +54,7 @@ export function DashboardQuickActions({ onNavigate }: DashboardQuickActionsProps
             className="flex h-auto flex-col items-center justify-center gap-2 p-4"
             onClick={() => onNavigate("/dashboard/instructor/analytics")}
           >
-            <BarChart className="h-6 w-6 text-primary-dark" />
+            <BarChart className="size-6 text-primary-dark" />
             <span>Lihat Analitik</span>
           </Button>
         </div>

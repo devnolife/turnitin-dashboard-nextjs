@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Loader2, CheckCircle2, AlertCircle, RefreshCw, LogOut } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useAuthStore } from "@/lib/store/auth-store"
 import { usePaymentStore } from "@/lib/store/payment-store"
 import { WhatsAppForm } from "./whatsapp-form"
@@ -203,7 +204,7 @@ export function PaymentStatusChecker() {
           {status === "checking" && (
             <>
               <div className="flex items-center justify-center py-6">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <Loader2 className="size-12 animate-spin text-primary" />
               </div>
               <Progress
                 value={66}
@@ -226,56 +227,36 @@ export function PaymentStatusChecker() {
           )}
 
           {status === "pending" && (
-            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
-              <div className="flex">
-                <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                    Pembayaran Belum Terdeteksi
-                  </h3>
-                  <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-400">
-                    <p>
-                      Sistem belum mendeteksi pembayaran Anda. Jika Anda sudah melakukan pembayaran, silakan klik tombol
-                      &quot;Perbarui Status&quot; untuk memeriksa kembali.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Alert variant="warning">
+              <AlertCircle className="size-5" />
+              <AlertTitle>Pembayaran Belum Terdeteksi</AlertTitle>
+              <AlertDescription>
+                Sistem belum mendeteksi pembayaran Anda. Jika Anda sudah melakukan pembayaran, silakan klik tombol
+                &quot;Perbarui Status&quot; untuk memeriksa kembali.
+              </AlertDescription>
+            </Alert>
           )}
 
           {status === "processing" && (
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950">
-              <div className="flex">
-                <RefreshCw className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Pembayaran Sedang Diproses</h3>
-                  <div className="mt-2 text-sm text-blue-700 dark:text-blue-400">
-                    <p>
-                      Pembayaran Anda sedang diproses oleh sistem. Proses ini biasanya membutuhkan waktu 5-15 menit.
-                      Silakan periksa kembali nanti.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Alert variant="info">
+              <RefreshCw className="size-5" />
+              <AlertTitle>Pembayaran Sedang Diproses</AlertTitle>
+              <AlertDescription>
+                Pembayaran Anda sedang diproses oleh sistem. Proses ini biasanya membutuhkan waktu 5-15 menit.
+                Silakan periksa kembali nanti.
+              </AlertDescription>
+            </Alert>
           )}
 
           {status === "failed" && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
-              <div className="flex">
-                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800 dark:text-red-300">Pembayaran Gagal</h3>
-                  <div className="mt-2 text-sm text-red-700 dark:text-red-400">
-                    <p>
-                      Sistem tidak dapat mengonfirmasi pembayaran Anda. Silakan hubungi bagian administrasi kampus
-                      untuk bantuan.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Alert variant="destructive">
+              <AlertCircle className="size-5" />
+              <AlertTitle>Pembayaran Gagal</AlertTitle>
+              <AlertDescription>
+                Sistem tidak dapat mengonfirmasi pembayaran Anda. Silakan hubungi bagian administrasi kampus
+                untuk bantuan.
+              </AlertDescription>
+            </Alert>
           )}
         </div>
 
@@ -297,24 +278,24 @@ export function PaymentStatusChecker() {
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-col space-y-4">
+      <CardFooter className="flex flex-col gap-4">
         {status !== "completed" && (
           <>
             <Button onClick={handleCheckPayment} disabled={isLoading || status === "checking"} className="w-full">
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Memeriksa...
                 </>
               ) : (
                 <>
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <RefreshCw className="mr-2 size-4" />
                   Perbarui Status
                 </>
               )}
             </Button>
             <Button variant="outline" onClick={handleLogout} className="w-full">
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 size-4" />
               Keluar
             </Button>
           </>

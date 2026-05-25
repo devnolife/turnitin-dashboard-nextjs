@@ -32,7 +32,7 @@ export default function Loading() {
             <Skeleton className="h-4 w-32" />
             <div className="flex gap-1">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-8 w-8" />
+                <Skeleton key={i} className="size-8" />
               ))}
             </div>
           </div>

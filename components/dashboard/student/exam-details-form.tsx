@@ -82,9 +82,9 @@ export function ExamDetailsForm() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-success/20"
+              className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-success/20"
             >
-              <CheckCircle2 className="h-10 w-10 text-success" />
+              <CheckCircle2 className="size-10 text-success" />
             </motion.div>
             <CardTitle className="text-2xl">Detail Ujian Terkirim!</CardTitle>
             <CardDescription>
@@ -107,7 +107,7 @@ export function ExamDetailsForm() {
       <Card className="shadow-lg border-primary/20 rounded-3xl border-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
-            <BookOpen className="h-6 w-6 text-primary" />
+            <BookOpen className="size-6 text-primary" />
             <span className="gradient-text">Detail Ujian Skripsi</span>
           </CardTitle>
           <CardDescription>
@@ -129,7 +129,7 @@ export function ExamDetailsForm() {
                           <FormLabel>Judul Skripsi</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <FileText className="absolute left-3 top-3 size-4 text-muted-foreground" />
                               <Input
                                 placeholder="Masukkan judul skripsi Anda"
                                 className="pl-10 transition-all focus:ring-2 focus:ring-primary/50"

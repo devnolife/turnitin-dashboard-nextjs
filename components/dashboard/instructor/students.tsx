@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, MoreHorizontal, Mail, FileText, UserPlus } from "lucide-react"
 
 export function InstructorStudents() {
@@ -76,14 +76,14 @@ export function InstructorStudents() {
             <CardDescription>Manage your students and their submissions</CardDescription>
           </div>
           <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
+            <UserPlus className="mr-2 size-4" />
             Add Student
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="size-4 text-muted-foreground" />
           <Input
             placeholder="Search students..."
             value={searchQuery}
@@ -120,19 +120,21 @@ export function InstructorStudents() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="size-4" />
                           <span className="sr-only">Actions</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Mail className="mr-2 h-4 w-4" />
-                          <span>Email</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <FileText className="mr-2 h-4 w-4" />
-                          <span>View Submissions</span>
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem>
+                            <Mail className="mr-2 size-4" />
+                            <span>Email</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <FileText className="mr-2 size-4" />
+                            <span>View Submissions</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

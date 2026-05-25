@@ -29,7 +29,7 @@ export function ResultsFilters({
 
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search results..."
             value={searchQuery}
@@ -40,7 +40,7 @@ export function ResultsFilters({
 
         <Select value={examStageFilter} onValueChange={onExamStageFilterChange}>
           <SelectTrigger className="w-[180px]">
-            <Filter className="mr-2 h-4 w-4" />
+            <Filter className="mr-2 size-4" />
             <span>Filter by Stage</span>
           </SelectTrigger>
           <SelectContent>

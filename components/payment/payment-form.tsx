@@ -111,37 +111,37 @@ export function PaymentForm() {
                       <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="flex flex-col space-y-1"
+                        className="flex flex-col gap-1"
                       >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="flex items-center gap-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="credit_card" />
                           </FormControl>
                           <FormLabel className="font-normal">
                             <div className="flex items-center">
-                              <CreditCard className="mr-2 h-4 w-4" />
+                              <CreditCard className="mr-2 size-4" />
                               Kartu Kredit
                             </div>
                           </FormLabel>
                         </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="flex items-center gap-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="bank_transfer" />
                           </FormControl>
                           <FormLabel className="font-normal">
                             <div className="flex items-center">
-                              <Building className="mr-2 h-4 w-4" />
+                              <Building className="mr-2 size-4" />
                               Transfer Bank
                             </div>
                           </FormLabel>
                         </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="flex items-center gap-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value="direct_debit" />
                           </FormControl>
                           <FormLabel className="font-normal">
                             <div className="flex items-center">
-                              <Landmark className="mr-2 h-4 w-4" />
+                              <Landmark className="mr-2 size-4" />
                               Debit Langsung
                             </div>
                           </FormLabel>
@@ -291,7 +291,7 @@ export function PaymentForm() {
             <Button type="submit" className="w-full bg-primary-dark" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Memproses...
                 </>
               ) : (

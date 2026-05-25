@@ -48,7 +48,7 @@ export function PendingApproval() {
               animate={{ rotate: [0, 10, 0, -10, 0] }}
               transition={{ repeat: Number.POSITIVE_INFINITY, duration: 4 }}
             >
-              <ClockIcon className="h-6 w-6 text-warning" />
+              <ClockIcon className="size-6 text-warning" />
             </motion.div>
             <span className="gradient-text">Menunggu Verifikasi Administrator</span>
           </CardTitle>

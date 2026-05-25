@@ -117,13 +117,13 @@ export function ResultsTable({
                 <TableCell>
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" size="icon" onClick={onViewReport}>
-                      <Eye className="h-4 w-4" />
+                      <Eye className="size-4" />
                       <span className="sr-only">View Report</span>
                     </Button>
 
                     {variant === "all" && (
                       <Button variant="ghost" size="icon" onClick={onDownload}>
-                        <Download className="h-4 w-4" />
+                        <Download className="size-4" />
                         <span className="sr-only">Download</span>
                       </Button>
                     )}
@@ -133,7 +133,7 @@ export function ResultsTable({
                       size="icon"
                       onClick={() => onReview(result)}
                     >
-                      <MessageSquare className="h-4 w-4" />
+                      <MessageSquare className="size-4" />
                       <span className="sr-only">
                         {variant === "reviewed" ? "Edit Review" : "Review"}
                       </span>
@@ -145,7 +145,7 @@ export function ResultsTable({
                         size="icon"
                         onClick={() => onTransfer(result)}
                       >
-                        <ArrowLeft className="h-4 w-4" />
+                        <ArrowLeft className="size-4" />
                         <span className="sr-only">Transfer</span>
                       </Button>
                     )}
@@ -157,7 +157,7 @@ export function ResultsTable({
             <TableRow>
               <TableCell colSpan={showStatusColumn ? 7 : 6} className="h-24 text-center">
                 <div className="flex flex-col items-center justify-center text-center">
-                  <EmptyIcon className="h-8 w-8 text-muted-foreground/40" />
+                  <EmptyIcon className="size-8 text-muted-foreground/40" />
                   <h3 className="mt-2 text-lg font-medium">{emptyConfig.title}</h3>
                   <p className="text-sm text-muted-foreground">{emptyConfig.desc}</p>
                 </div>

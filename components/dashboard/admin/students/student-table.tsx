@@ -9,12 +9,14 @@ import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast"
+import { DataPagination } from "@/components/ui/data-pagination"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,7 +80,7 @@ export function StudentTable() {
         </CardHeader>
         <CardContent>
           <div className="flex h-96 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
           </div>
         </CardContent>
       </Card>
@@ -94,7 +96,7 @@ export function StudentTable() {
         </CardHeader>
         <CardContent>
           <div className="flex h-96 flex-col items-center justify-center">
-            <User className="h-16 w-16 text-muted-foreground/30" />
+            <User className="size-16 text-muted-foreground/30" />
             <h3 className="mt-4 text-xl font-medium">No Students Found</h3>
             <p className="mt-2 text-center text-muted-foreground">No students are registered in the system yet.</p>
           </div>
@@ -121,7 +123,7 @@ export function StudentTable() {
                     Student
                     {sortColumn === "name" && (
                       <span className="ml-2">
-                        {sortDirection === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        {sortDirection === "asc" ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
                       </span>
                     )}
                   </div>
@@ -131,7 +133,7 @@ export function StudentTable() {
                     Program Studi
                     {sortColumn === "prodi" && (
                       <span className="ml-2">
-                        {sortDirection === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        {sortDirection === "asc" ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
                       </span>
                     )}
                   </div>
@@ -165,20 +167,22 @@ export function StudentTable() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewStudent(student.id)}>
-                          <Eye className="mr-2 h-4 w-4" /> View
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => setDeleteStudentId(student.id)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem onClick={() => handleViewStudent(student.id)}>
+                            <Eye className="mr-2 size-4" /> View
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => setDeleteStudentId(student.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 size-4" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -189,19 +193,15 @@ export function StudentTable() {
         </div>
 
         {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, students.length)} of {students.length} students
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
-                Next
-              </Button>
-            </div>
-          </div>
+          <DataPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={students.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            showPageNumbers={false}
+            className="mt-4"
+          />
         )}
       </CardContent>
 

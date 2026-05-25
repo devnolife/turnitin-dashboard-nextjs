@@ -30,7 +30,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <FileText className="h-16 w-16 text-muted-foreground/30" />
+            <FileText className="size-16 text-muted-foreground/30" />
             <h3 className="mt-4 text-xl font-medium">No Results Available</h3>
             <p className="mt-2 text-muted-foreground max-w-md">
               Perpusmu results will appear here when students submit documents for similarity checking.
@@ -40,7 +40,7 @@ export function TurnitinResultsManager({ instructorId }: TurnitinResultsManagerP
               className="mt-4"
               onClick={() => router.push("/dashboard/admin/instructors")}
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-2 size-4" />
               Back to Instructors
             </Button>
           </div>

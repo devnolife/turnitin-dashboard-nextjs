@@ -27,7 +27,7 @@ export function AdminOverview() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     )
   }
@@ -65,7 +65,7 @@ export function AdminOverview() {
         <Card key={item.title}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
-            <item.icon className="h-4 w-4 text-muted-foreground" />
+            <item.icon className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{item.value.toLocaleString("id-ID")}</div>

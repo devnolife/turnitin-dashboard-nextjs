@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, MoreHorizontal, Eye, MessageSquare, Download } from "lucide-react"
 
 export function InstructorSubmissions() {
@@ -75,7 +75,7 @@ export function InstructorSubmissions() {
       </CardHeader>
       <CardContent>
         <div className="mb-4 flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="size-4 text-muted-foreground" />
           <Input
             placeholder="Search submissions..."
             value={searchQuery}
@@ -128,23 +128,25 @@ export function InstructorSubmissions() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal className="size-4" />
                           <span className="sr-only">Actions</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Eye className="mr-2 h-4 w-4" />
-                          <span>View</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <MessageSquare className="mr-2 h-4 w-4" />
-                          <span>Provide Feedback</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Download className="mr-2 h-4 w-4" />
-                          <span>Download</span>
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem>
+                            <Eye className="mr-2 size-4" />
+                            <span>View</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <MessageSquare className="mr-2 size-4" />
+                            <span>Provide Feedback</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Download className="mr-2 size-4" />
+                            <span>Download</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

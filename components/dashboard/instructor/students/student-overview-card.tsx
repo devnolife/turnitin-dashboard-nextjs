@@ -30,7 +30,7 @@ export function StudentOverviewCard({
     <Card>
       <CardHeader>
         <div className="flex flex-col items-center">
-          <Avatar className="h-24 w-24">
+          <Avatar className="size-24">
             <AvatarFallback className="text-2xl">
               {student.name
                 .split(" ")
@@ -50,15 +50,15 @@ export function StudentOverviewCard({
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <Mail className="h-4 w-4 text-muted-foreground" />
+            <Mail className="size-4 text-muted-foreground" />
             <span>{student.email || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
-            <Phone className="h-4 w-4 text-muted-foreground" />
+            <Phone className="size-4 text-muted-foreground" />
             <span>{student.hp || "-"}</span>
           </div>
           <div className="flex items-center gap-3">
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="size-4 text-muted-foreground" />
             <span>Prodi: {student.prodi}</span>
           </div>
 

@@ -15,7 +15,7 @@ export default function TermsPage() {
           href="/auth/login"
           className="mb-8 inline-flex items-center gap-2 text-sm text-primary hover:text-primary-dark hover:underline font-medium"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="size-4" />
           Kembali ke Halaman Login
         </Link>
 

@@ -20,7 +20,7 @@ export interface StudentSubmissionsTabProps {
 export function TurnitinResultsContent({ student }: StudentSubmissionsTabProps) {
   return (
     <div className="flex flex-col items-center justify-center rounded-md border p-8 text-center">
-      <FileText className="h-12 w-12 text-muted-foreground/40" />
+      <FileText className="size-12 text-muted-foreground/40" />
       <h3 className="mt-4 text-lg font-medium">Info Pengajuan</h3>
       <p className="mt-2 text-sm text-muted-foreground">
         Total pengajuan: {student.submissionsCount} | Direview: {student.reviewedCount} | Ditandai: {student.flaggedCount}
@@ -49,7 +49,7 @@ export function SubmissionsContent({ student }: { student: Student }) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-md border p-8 text-center">
-          <FileText className="h-12 w-12 text-muted-foreground/40" />
+          <FileText className="size-12 text-muted-foreground/40" />
           <h3 className="mt-4 text-lg font-medium">Belum Ada Pengajuan</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Mahasiswa ini belum mengajukan dokumen apapun.
@@ -73,7 +73,7 @@ export function FeedbackContent({ student }: FeedbackContentProps) {
         <p className="text-sm text-muted-foreground">Umpan balik yang diberikan kepada mahasiswa</p>
       </div>
       <div className="flex flex-col items-center justify-center p-8 text-center">
-        <MessageSquare className="h-12 w-12 text-muted-foreground/40" />
+        <MessageSquare className="size-12 text-muted-foreground/40" />
         <h3 className="mt-4 text-lg font-medium">Belum Ada Umpan Balik</h3>
         <p className="mt-2 text-sm text-muted-foreground">
           Belum ada umpan balik yang diberikan kepada mahasiswa ini.
@@ -126,7 +126,7 @@ export function ExamInfoCard({ student, formatDate }: ExamInfoCardProps) {
 
         {!student.examDetail && (
           <div className="flex flex-col items-center justify-center py-6 text-center">
-            <FileText className="h-12 w-12 text-muted-foreground/40" />
+            <FileText className="size-12 text-muted-foreground/40" />
             <h3 className="mt-4 text-lg font-medium">Belum Ada Data Ujian</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Mahasiswa ini belum mengajukan ujian.

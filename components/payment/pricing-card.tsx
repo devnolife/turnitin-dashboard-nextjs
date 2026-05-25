@@ -15,27 +15,27 @@ export function PricingCard() {
       <CardContent className="flex-1">
         <ul className="space-y-2">
           <li className="flex items-center">
-            <Check className="mr-2 h-4 w-4 text-primary" />
+            <Check className="mr-2 size-4 text-primary" />
             <span>Pengiriman dokumen tidak terbatas</span>
           </li>
           <li className="flex items-center">
-            <Check className="mr-2 h-4 w-4 text-primary" />
+            <Check className="mr-2 size-4 text-primary" />
             <span>Laporan keaslian</span>
           </li>
           <li className="flex items-center">
-            <Check className="mr-2 h-4 w-4 text-primary" />
+            <Check className="mr-2 size-4 text-primary" />
             <span>Pemeriksaan tata bahasa dan ejaan</span>
           </li>
           <li className="flex items-center">
-            <Check className="mr-2 h-4 w-4 text-primary" />
+            <Check className="mr-2 size-4 text-primary" />
             <span>Umpan balik instruktur</span>
           </li>
           <li className="flex items-center">
-            <Check className="mr-2 h-4 w-4 text-primary" />
+            <Check className="mr-2 size-4 text-primary" />
             <span>Dukungan teknis 24/7</span>
           </li>
           <li className="flex items-center">
-            <Check className="mr-2 h-4 w-4 text-primary" />
+            <Check className="mr-2 size-4 text-primary" />
             <span>Akses mobile</span>
           </li>
         </ul>

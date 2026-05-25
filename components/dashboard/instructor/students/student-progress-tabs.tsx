@@ -69,7 +69,7 @@ export function StudentProgressTabs({
 
               {!student.examDetail && student.submissionsCount === 0 && (
                 <div className="mt-6 flex flex-col items-center justify-center py-6 text-center">
-                  <FileText className="h-12 w-12 text-muted-foreground/40" />
+                  <FileText className="size-12 text-muted-foreground/40" />
                   <h3 className="mt-4 text-lg font-medium">No Submissions Yet</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     No similarity reports are available for this student.
@@ -83,7 +83,7 @@ export function StudentProgressTabs({
             <div className="rounded-md border p-4">
               <h3 className="text-lg font-medium mb-4">Instructor Notes</h3>
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <MessageSquare className="h-12 w-12 text-muted-foreground/40" />
+                <MessageSquare className="size-12 text-muted-foreground/40" />
                 <h3 className="mt-4 text-lg font-medium">No Notes Yet</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Add notes to track student progress.
@@ -92,7 +92,7 @@ export function StudentProgressTabs({
 
               <div className="mt-6">
                 <Button className="w-full">
-                  <Send className="mr-2 h-4 w-4" />
+                  <Send className="mr-2 size-4" />
                   Add New Note
                 </Button>
               </div>

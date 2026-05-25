@@ -31,17 +31,17 @@ export function DashboardActivityFeed({ activities }: DashboardActivityFeedProps
             const Icon = activity.icon
             return (
               <div key={activity.id} className="flex">
-                <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                  <Icon className="h-5 w-5 text-primary-dark" />
+                <div className="mr-4 flex size-10 items-center justify-center rounded-full bg-muted">
+                  <Icon className="size-5 text-primary-dark" />
                 </div>
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 gap-1">
                   <p className="text-sm font-medium leading-none">{activity.title}</p>
                   <p className="text-sm text-muted-foreground">{activity.description}</p>
                   <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
                 </div>
                 <div>
                   <Button variant="ghost" size="icon">
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="size-4" />
                   </Button>
                 </div>
               </div>

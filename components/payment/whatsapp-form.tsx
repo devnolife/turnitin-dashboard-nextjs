@@ -81,7 +81,7 @@ export function WhatsAppForm() {
           <CardDescription className="text-center">Nomor WhatsApp Anda telah berhasil disimpan</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-6">
-          <CheckCircle2 className="h-16 w-16 text-green-500" />
+          <CheckCircle2 className="size-16 text-green-500" />
           <p className="mt-4 text-center">Anda akan dialihkan ke dashboard dalam beberapa detik...</p>
         </CardContent>
       </Card>
@@ -126,7 +126,7 @@ export function WhatsAppForm() {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Menyimpan...
                 </>
               ) : (

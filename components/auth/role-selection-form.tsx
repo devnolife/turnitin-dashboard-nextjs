@@ -43,7 +43,7 @@ export function RoleSelectionForm() {
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn>
               <div className="rounded-full bg-primary-lighter p-3">
-                <GraduationCap className="h-6 w-6 text-primary-dark" />
+                <GraduationCap className="size-6 text-primary-dark" />
               </div>
             </BounceIn>
             <div className="flex-1">
@@ -51,7 +51,7 @@ export function RoleSelectionForm() {
               <p className="text-sm text-muted-foreground">Akses dashboard mahasiswa</p>
             </div>
             {isLoading && selectedRole === "student" && (
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
             )}
           </CardContent>
         </Card>
@@ -67,7 +67,7 @@ export function RoleSelectionForm() {
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn delay={0.1}>
               <div className="rounded-full bg-primary-lighter p-3">
-                <BookOpen className="h-6 w-6 text-primary-dark" />
+                <BookOpen className="size-6 text-primary-dark" />
               </div>
             </BounceIn>
             <div className="flex-1">
@@ -75,7 +75,7 @@ export function RoleSelectionForm() {
               <p className="text-sm text-muted-foreground">Akses dashboard instruktur</p>
             </div>
             {isLoading && selectedRole === "instructor" && (
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
             )}
           </CardContent>
         </Card>
@@ -91,7 +91,7 @@ export function RoleSelectionForm() {
           <CardContent className="flex items-center gap-4 p-4">
             <BounceIn delay={0.2}>
               <div className="rounded-full bg-primary-lighter p-3">
-                <ShieldCheck className="h-6 w-6 text-primary-dark" />
+                <ShieldCheck className="size-6 text-primary-dark" />
               </div>
             </BounceIn>
             <div className="flex-1">
@@ -99,7 +99,7 @@ export function RoleSelectionForm() {
               <p className="text-sm text-muted-foreground">Akses dashboard admin</p>
             </div>
             {isLoading && selectedRole === "admin" && (
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
             )}
           </CardContent>
         </Card>

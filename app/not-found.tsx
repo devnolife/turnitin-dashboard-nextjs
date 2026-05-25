@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
       <div className="rounded-full bg-muted p-4">
-        <FileQuestion className="h-10 w-10 text-muted-foreground" />
+        <FileQuestion className="size-10 text-muted-foreground" />
       </div>
       <h2 className="text-2xl font-bold">Halaman Tidak Ditemukan</h2>
       <p className="max-w-md text-muted-foreground">

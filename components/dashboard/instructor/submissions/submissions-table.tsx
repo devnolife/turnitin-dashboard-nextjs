@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
@@ -62,7 +63,7 @@ export function SubmissionsTable({
                   <TableRow key={submission.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-primary" />
+                        <FileText className="size-4 text-primary" />
                         <div>
                           <div className="font-medium">{submission.documentTitle}</div>
                           <div className="text-xs text-muted-foreground">
@@ -73,7 +74,7 @@ export function SubmissionsTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
+                        <Avatar className="size-8">
                           <AvatarFallback>
                             {submission.studentName
                               .split(" ")
@@ -121,40 +122,42 @@ export function SubmissionsTable({
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Button variant="outline" size="sm" onClick={() => onViewSubmission(submission.id)}>
-                          <Eye className="mr-1 h-3 w-3" />
+                          <Eye className="mr-1 size-3" />
                           Lihat
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="size-8">
+                              <MoreHorizontal className="size-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onViewSubmission(submission.id)}>
-                              <Eye className="mr-2 h-4 w-4" />
-                              Lihat Laporan
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onProvideFeedback(submission)}>
-                              <MessageSquare className="mr-2 h-4 w-4" />
-                              Kirim Hasil
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Download className="mr-2 h-4 w-4" />
-                              Unduh
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className={
-                                submission.status !== "flagged"
-                                  ? "text-amber-500 focus:text-amber-500"
-                                  : "text-muted-foreground"
-                              }
-                              disabled={submission.status === "flagged"}
-                            >
-                              <AlertTriangle className="mr-2 h-4 w-4" />
-                              Tandai Pengiriman
-                            </DropdownMenuItem>
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem onClick={() => onViewSubmission(submission.id)}>
+                                <Eye className="mr-2 size-4" />
+                                Lihat Laporan
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => onProvideFeedback(submission)}>
+                                <MessageSquare className="mr-2 size-4" />
+                                Kirim Hasil
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Download className="mr-2 size-4" />
+                                Unduh
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className={
+                                  submission.status !== "flagged"
+                                    ? "text-amber-500 focus:text-amber-500"
+                                    : "text-muted-foreground"
+                                }
+                                disabled={submission.status === "flagged"}
+                              >
+                                <AlertTriangle className="mr-2 size-4" />
+                                Tandai Pengiriman
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -165,7 +168,7 @@ export function SubmissionsTable({
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center">
                     <div className="flex flex-col items-center justify-center">
-                      <FileText className="h-8 w-8 text-muted-foreground/60" />
+                      <FileText className="size-8 text-muted-foreground/60" />
                       <h3 className="mt-2 text-lg font-medium">Tidak Ada Pengiriman</h3>
                       <p className="text-sm text-muted-foreground">
                         {totalSubmissions === 0

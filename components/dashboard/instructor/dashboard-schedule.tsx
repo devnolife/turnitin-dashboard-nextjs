@@ -28,14 +28,14 @@ export function DashboardSchedule({ events }: DashboardScheduleProps) {
       <CardContent>
         <div className="space-y-6">
           {events.map((event) => (
-            <div key={event.id} className="flex items-start space-x-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-md bg-muted">
-                {event.type === "defense" && <FileCheck className="h-6 w-6 text-primary-dark" />}
-                {event.type === "meeting" && <Users className="h-6 w-6 text-primary" />}
-                {event.type === "deadline" && <Clock className="h-6 w-6 text-amber-500" />}
-                {event.type === "lecture" && <BookOpen className="h-6 w-6 text-green-500" />}
+            <div key={event.id} className="flex items-start gap-4">
+              <div className="flex size-12 items-center justify-center rounded-md bg-muted">
+                {event.type === "defense" && <FileCheck className="size-6 text-primary-dark" />}
+                {event.type === "meeting" && <Users className="size-6 text-primary" />}
+                {event.type === "deadline" && <Clock className="size-6 text-amber-500" />}
+                {event.type === "lecture" && <BookOpen className="size-6 text-green-500" />}
               </div>
-              <div className="flex-1 space-y-1">
+              <div className="flex-1 gap-1">
                 <div className="flex items-center justify-between">
                   <h4 className="font-medium">{event.title}</h4>
                   <Badge
@@ -54,7 +54,7 @@ export function DashboardSchedule({ events }: DashboardScheduleProps) {
                 </div>
                 <p className="text-sm text-muted-foreground">{event.description}</p>
                 <div className="flex items-center text-xs text-muted-foreground">
-                  <Info className="mr-1 h-3 w-3" />
+                  <Info className="mr-1 size-3" />
                   {event.location}
                 </div>
               </div>

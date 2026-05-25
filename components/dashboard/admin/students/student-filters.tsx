@@ -76,7 +76,7 @@ export function StudentFilters() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Cari mahasiswa..."
@@ -105,7 +105,7 @@ export function StudentFilters() {
           {activeFilters.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center">
-                <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                <Filter className="mr-2 size-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">Active filters:</span>
               </div>
               {activeFilters.map((filter) => (
@@ -114,10 +114,10 @@ export function StudentFilters() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-4 w-4 p-0 hover:bg-transparent"
+                    className="size-4 p-0 hover:bg-transparent"
                     onClick={() => clearFilter(filter)}
                   >
-                    <X className="h-3 w-3" />
+                    <X className="size-3" />
                   </Button>
                 </Badge>
               ))}

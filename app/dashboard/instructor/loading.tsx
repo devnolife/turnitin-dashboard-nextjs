@@ -13,7 +13,7 @@ export default function Loading() {
           <Card key={i}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-4 rounded" />
+              <Skeleton className="size-4 rounded" />
             </CardHeader>
             <CardContent>
               <Skeleton className="h-7 w-16" />
