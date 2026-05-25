@@ -29,3 +29,6 @@ next-env.d.ts
 
 # Local uploads
 uploads/
+
+# Agent skills (auto-installed dari skills-lock.json, tidak perlu di-commit)
+.agents/skills/
