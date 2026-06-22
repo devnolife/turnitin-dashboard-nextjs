@@ -1,7 +1,7 @@
 # Otomasi Pengecekan Turnitin via Browser Automation (RPA)
 
 **Tanggal:** 2026-06-22
-**Status:** Draft — menunggu review user
+**Status:** Fase 1 TERVALIDASI end-to-end di live Turnitin (2026-06-22) — login headless, Quick Submit, baca skor, tulis hasil ke DB semuanya berhasil.
 **Konteks:** Sistem Perpusmu UNISMUH. Lanjutan dari `2026-05-20-plagiarism-manual-workflow-design.md` — alur manual itu menjadi **fallback**, sementara bot mengotomasi langkah pengecekan Turnitin.
 
 ## Latar Belakang Keputusan
@@ -202,6 +202,20 @@ TURNITIN_POLL_INTERVAL_SEC=30
 - URL login + Quick Submit + selector aktual (di-capture saat bootstrap).
 - Waktu rata-rata report jadi → kalibrasi `TURNITIN_MAX_WAIT_MIN`.
 - Setting repository (no-repository?) sesuai kebijakan institusi.
+
+## Status Verifikasi (2026-06-22, live Turnitin — akun ujicoba)
+
+Dipetakan lewat run discovery nyata + dua test end-to-end:
+
+- ✅ **Login headless berhasil** — tidak ada blok reCAPTCHA pada login bersih (akun instruktur). Selector login terverifikasi: `#email`, `#password` (`name=user_password`), submit `input[value="Log in"]`.
+- ✅ **Quick Submit aktif** untuk akun ini. Alur terverifikasi: `t_home.asp` → `a.sn_quick_submit` → `a.submit_paper_button` → `t_custom_search.asp` (centang `compare_to_database`, `submit_papers_to=0` no-repository) → `t_submit.asp` (`#author_first`/`#author_last`/`#title`/`input[name=userfile]`) → `#upload-btn` → `#confirm-btn`.
+- ✅ **Baca skor** dari inbox via baris yang judulnya mengandung token unik → `span.or-percentage`.
+- ✅ **Test jalur produksi penuh** (queue → worker `processJob` → `applyTurnitinResult` → DB): Submission menjadi `REVIEWED`, `similarityScore` tersimpan, job `SUCCEEDED`.
+- 🔓 **2FA:** akun ujicoba tidak meminta 2FA pada run ini. Bila akun produksi meminta 2FA, pakai `npm run turnitin:bootstrap`.
+- ⏳ **Unduh PDF report:** ditunda ke Fase 2 (skor sudah cukup untuk Fase 1; report dilihat via UI Turnitin bila perlu).
+- ⚠️ **Pagination inbox:** pencocokan baris mengandalkan paper ada di halaman inbox aktif (umumnya terbaru di atas). Handling pagination = Fase 2.
+
+Skrip diagnostik untuk re-kalibrasi bila UI Turnitin berubah: `scripts/turnitin-discover.ts`, `scripts/turnitin-check-row.ts`, `scripts/turnitin-test-submit.ts`, `scripts/turnitin-test-job.ts`.
 
 ## Dampak ke Fitur Lain
 

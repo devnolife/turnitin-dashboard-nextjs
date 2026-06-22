@@ -8,50 +8,50 @@ datasource db {
 }
 
 model User {
-  id                  String          @id @default(cuid())
-  username            String          @unique
+  id                  String        @id @default(cuid())
+  username            String        @unique
   password            String
   passwordHash        String?
   name                String
-  nim                 String?         @unique
+  nim                 String?       @unique
   hp                  String?
   email               String?
   prodi               String?
-  role                Role            @default(STUDENT)
-  hasCompletedPayment Boolean         @default(false)
+  role                Role          @default(STUDENT)
+  hasCompletedPayment Boolean       @default(false)
   whatsappNumber      String?
-  mustChangePassword  Boolean         @default(false)
-  accountStatus       AccountStatus   @default(ACTIVE)
+  mustChangePassword  Boolean       @default(false)
+  accountStatus       AccountStatus @default(ACTIVE)
   graduatedAt         DateTime?
   tourCompletedAt     DateTime?
   studyProgramId      String?
   instructorId        String?
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
-  studyProgram        StudyProgram?   @relation(fields: [studyProgramId], references: [id])
-  instructor          User?           @relation("InstructorStudents", fields: [instructorId], references: [id])
-  students            User[]          @relation("InstructorStudents")
+  studyProgram        StudyProgram? @relation(fields: [studyProgramId], references: [id])
+  instructor          User?         @relation("InstructorStudents", fields: [instructorId], references: [id])
+  students            User[]        @relation("InstructorStudents")
   examDetails         ExamDetail?
-  submissions         Submission[]    @relation("UserSubmissions")
-  reviewedSubmissions Submission[]    @relation("ReviewerSubmissions")
+  submissions         Submission[]  @relation("UserSubmissions")
+  reviewedSubmissions Submission[]  @relation("ReviewerSubmissions")
   payments            Payment[]
   sessions            Session[]
-  complaints          Complaint[]     @relation("UserComplaints")
-  respondedComplaints Complaint[]     @relation("ResponderComplaints")
+  complaints          Complaint[]   @relation("UserComplaints")
+  respondedComplaints Complaint[]   @relation("ResponderComplaints")
 
   @@map("users")
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  jti       String   @unique
+  jti       String    @unique
   expiresAt DateTime
   revokedAt DateTime?
   userAgent String?
   ip        String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -61,11 +61,11 @@ model Session {
 }
 
 model Faculty {
-  id        String         @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  code      String         @unique
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  code      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   programs StudyProgram[]
 
@@ -89,14 +89,14 @@ model StudyProgram {
 }
 
 model SimilarityRule {
-  id              String   @id @default(cuid())
-  studyProgramId  String
-  ruleType        RuleType
-  label           String
-  maxPercentage   Float
-  orderIndex      Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  studyProgramId String
+  ruleType       RuleType
+  label          String
+  maxPercentage  Float
+  orderIndex     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
 
@@ -144,21 +144,57 @@ model Submission {
   rejectionReason    String?
   reviewedBy         String?
   reviewedAt         DateTime?
+  // Turnitin automasi (RPA) — diisi oleh worker bot
+  turnitinPaperId    String?
+  autoCheckError     String?
+  autoCheckedAt      DateTime?
+  // Penyesuaian manual hasil (override + audit) oleh instruktur/admin.
+  // turnitinRawScore = skor ASLI Turnitin (disimpan permanen saat override pertama).
+  turnitinRawScore      Float?
+  scoreAdjustedBy       String?
+  scoreAdjustedByName   String?
+  scoreAdjustedAt       DateTime?
+  scoreAdjustmentReason String?
   // Resubmit history
   version            Int              @default(1)
   parentSubmissionId String?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
-  user     User         @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
-  reviewer User?        @relation("ReviewerSubmissions", fields: [reviewedBy], references: [id], onDelete: SetNull)
-  parent   Submission?  @relation("SubmissionResubmits", fields: [parentSubmissionId], references: [id], onDelete: SetNull)
-  children Submission[] @relation("SubmissionResubmits")
+  user         User          @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  reviewer     User?         @relation("ReviewerSubmissions", fields: [reviewedBy], references: [id], onDelete: SetNull)
+  parent       Submission?   @relation("SubmissionResubmits", fields: [parentSubmissionId], references: [id], onDelete: SetNull)
+  children     Submission[]  @relation("SubmissionResubmits")
+  turnitinJobs TurnitinJob[]
 
   @@index([userId, examType])
   @@index([status])
   @@index([reviewedBy])
   @@map("submissions")
+}
+
+/// Antrian job otomasi Turnitin. Worker (Playwright) mengambil job QUEUED,
+/// submit dokumen ke Turnitin via Quick Submit, lalu menulis hasil ke Submission.
+model TurnitinJob {
+  id              String            @id @default(cuid())
+  submissionId    String
+  status          TurnitinJobStatus @default(QUEUED)
+  attempts        Int               @default(0)
+  maxAttempts     Int               @default(3)
+  turnitinPaperId String?
+  errorCode       String?
+  lastError       String?
+  lockedAt        DateTime?
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([submissionId])
+  @@map("turnitin_jobs")
 }
 
 model PricingTier {
@@ -195,16 +231,16 @@ model RekapArchive {
 }
 
 model Payment {
-  id               String        @id @default(cuid())
-  userId           String
-  amount           Float
-  status           PaymentStatus @default(PENDING)
-  paymentMethod    String?
-  jenisPembayaran  String?
-  periode          String?
-  paidAt           DateTime?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  userId          String
+  amount          Float
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  jenisPembayaran String?
+  periode         String?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -212,16 +248,16 @@ model Payment {
 }
 
 model Complaint {
-  id              String           @id @default(cuid())
-  userId          String
-  subject         String
-  message         String           @db.Text
-  status          ComplaintStatus  @default(OPEN)
-  response        String?          @db.Text
-  respondedById   String?
-  createdAt       DateTime         @default(now())
-  respondedAt     DateTime?
-  updatedAt       DateTime         @updatedAt
+  id            String          @id @default(cuid())
+  userId        String
+  subject       String
+  message       String          @db.Text
+  status        ComplaintStatus @default(OPEN)
+  response      String?         @db.Text
+  respondedById String?
+  createdAt     DateTime        @default(now())
+  respondedAt   DateTime?
+  updatedAt     DateTime        @updatedAt
 
   user        User  @relation("UserComplaints", fields: [userId], references: [id], onDelete: Cascade)
   respondedBy User? @relation("ResponderComplaints", fields: [respondedById], references: [id])
@@ -232,16 +268,16 @@ model Complaint {
 }
 
 model AuditLog {
-  id           String   @id @default(cuid())
-  actorId      String?
-  actorRole    String?
-  action       String
-  targetType   String?
-  targetId     String?
-  ip           String?
-  userAgent    String?  @db.Text
-  metadata     Json?
-  createdAt    DateTime @default(now())
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorRole  String?
+  action     String
+  targetType String?
+  targetId   String?
+  ip         String?
+  userAgent  String?  @db.Text
+  metadata   Json?
+  createdAt  DateTime @default(now())
 
   @@index([actorId])
   @@index([action])
@@ -273,6 +309,15 @@ enum SubmissionStatus {
   PROCESSING
   REVIEWED
   FLAGGED
+}
+
+enum TurnitinJobStatus {
+  QUEUED
+  RUNNING
+  WAITING_REPORT
+  SUCCEEDED
+  FAILED
+  CANCELLED
 }
 
 enum PaymentStatus {

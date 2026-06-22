@@ -12,6 +12,7 @@ import {
   PlayCircle,
   RefreshCw,
   Search,
+  SlidersHorizontal,
   Sparkles,
   Upload,
 } from "lucide-react"
@@ -48,6 +49,10 @@ interface QueueItem {
   examType: string | null
   chapter: string | null
   similarityScore: number | null
+  turnitinRawScore: number | null
+  scoreAdjustedByName: string | null
+  scoreAdjustmentReason: string | null
+  scoreAdjustedAt: string | null
   status: "PENDING" | "PROCESSING" | "REVIEWED" | "FLAGGED"
   rejectionReason: string | null
   reportFileName: string | null
@@ -117,6 +122,7 @@ export default function InstructorSubmissionsClient() {
   const [tab, setTab] = useState<"PENDING" | "PROCESSING" | "REVIEWED" | "FLAGGED">("PENDING")
   const [search, setSearch] = useState("")
   const [resultFor, setResultFor] = useState<QueueItem | null>(null)
+  const [adjustFor, setAdjustFor] = useState<QueueItem | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -246,6 +252,7 @@ export default function InstructorSubmissionsClient() {
                   busy={busyId === item.id}
                   onClaim={() => handleClaim(item.id)}
                   onResult={() => setResultFor(item)}
+                  onAdjust={() => setAdjustFor(item)}
                 />
               ))}
             </div>
@@ -261,6 +268,15 @@ export default function InstructorSubmissionsClient() {
           void load()
         }}
       />
+
+      <AdjustDialog
+        item={adjustFor}
+        onClose={() => setAdjustFor(null)}
+        onDone={() => {
+          setAdjustFor(null)
+          void load()
+        }}
+      />
     </DashboardMainCard>
   )
 }
@@ -270,11 +286,13 @@ function QueueRow({
   busy,
   onClaim,
   onResult,
+  onAdjust,
 }: {
   item: QueueItem
   busy: boolean
   onClaim: () => void
   onResult: () => void
+  onAdjust: () => void
 }) {
   const meta = STATUS_META[item.status]
   const Icon = meta.icon
@@ -302,6 +320,15 @@ function QueueRow({
                   {item.similarityScore.toFixed(1)}%
                 </Badge>
               )}
+              {item.scoreAdjustedByName && item.turnitinRawScore != null && (
+                <Badge
+                  variant="outline"
+                  className="border-amber-300 text-amber-700 line-through dark:text-amber-300"
+                  title="Skor asli Turnitin"
+                >
+                  asli {item.turnitinRawScore.toFixed(1)}%
+                </Badge>
+              )}
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               <span className="font-medium text-foreground/80">{item.user.name}</span>
@@ -313,6 +340,12 @@ function QueueRow({
             {item.rejectionReason && (
               <p className="mt-2 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
                 Catatan: {item.rejectionReason}
+              </p>
+            )}
+            {item.scoreAdjustedByName && item.scoreAdjustmentReason && (
+              <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                <SlidersHorizontal className="mr-1 inline size-3" />
+                Disesuaikan oleh {item.scoreAdjustedByName}: {item.scoreAdjustmentReason}
               </p>
             )}
           </div>
@@ -348,6 +381,12 @@ function QueueRow({
               <a href={`/api/submissions/${item.id}/report`} target="_blank" rel="noreferrer">
                 <Download className="mr-2 size-4" /> Report
               </a>
+            </Button>
+          )}
+
+          {(item.status === "REVIEWED" || item.status === "FLAGGED") && (
+            <Button variant="outline" size="sm" onClick={onAdjust} className="rounded-xl">
+              <SlidersHorizontal className="mr-2 size-4" /> Sesuaikan
             </Button>
           )}
         </div>
@@ -540,6 +579,147 @@ function ResultDialog({
             ) : (
               <>
                 <Upload className="mr-2 size-4" /> Kirim Hasil
+              </>
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function AdjustDialog({
+  item,
+  onClose,
+  onDone,
+}: {
+  item: QueueItem | null
+  onClose: () => void
+  onDone: () => void
+}) {
+  const { toast } = useToast()
+  const [similarity, setSimilarity] = useState("")
+  const [status, setStatus] = useState<"REVIEWED" | "FLAGGED">("REVIEWED")
+  const [reason, setReason] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const rule = useMemo(() => (item ? pickRuleForItem(item) : null), [item])
+  const originalScore = item ? item.turnitinRawScore ?? item.similarityScore : null
+
+  useEffect(() => {
+    if (item) {
+      setSimilarity(item.similarityScore != null ? String(item.similarityScore) : "")
+      setStatus(item.status === "FLAGGED" ? "FLAGGED" : "REVIEWED")
+      setReason("")
+    }
+  }, [item])
+
+  const handleSubmit = async () => {
+    if (!item) return
+    const num = Number(similarity)
+    if (!Number.isFinite(num) || num < 0 || num > 100) {
+      toast({ variant: "destructive", title: "Skor harus 0-100" })
+      return
+    }
+    if (reason.trim().length < 5) {
+      toast({ variant: "destructive", title: "Alasan wajib (minimal 5 karakter)" })
+      return
+    }
+    setSubmitting(true)
+    try {
+      await api.post(`/submissions/${item.id}/adjust`, { similarity: num, status, reason })
+      toast({ title: "Hasil disesuaikan", description: "Skor diperbarui dengan catatan audit." })
+      onDone()
+    } catch (e) {
+      const msg = (e as { response?: { data?: { error?: string } } })?.response?.data?.error
+      toast({ variant: "destructive", title: "Gagal", description: msg || "Coba lagi." })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <Dialog open={!!item} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg rounded-3xl">
+        <DialogHeader>
+          <DialogTitle>Sesuaikan Hasil</DialogTitle>
+          <DialogDescription>
+            {item ? `${item.documentTitle} — ${item.user.name}` : ""}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs dark:border-amber-900/40 dark:bg-amber-950/30">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600" />
+          <p className="leading-relaxed">
+            Skor asli Turnitin{" "}
+            <strong>{originalScore != null ? `${originalScore.toFixed(1)}%` : "—"}</strong>{" "}
+            tetap disimpan & ditampilkan. Penyesuaian tercatat (siapa, kapan, alasan).
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="adj-sim">Skor Baru (%)</Label>
+              <Input
+                id="adj-sim"
+                type="number"
+                min={0}
+                max={100}
+                step={0.1}
+                value={similarity}
+                onChange={(e) => setSimilarity(e.target.value)}
+                className="h-11 rounded-2xl"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Keputusan</Label>
+              <Select value={status} onValueChange={(v) => setStatus(v as "REVIEWED" | "FLAGGED")}>
+                <SelectTrigger className="h-11 rounded-2xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="REVIEWED">Diterima (REVIEWED)</SelectItem>
+                  <SelectItem value="FLAGGED">Perlu Revisi (FLAGGED)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {rule && (
+            <p className="text-xs text-muted-foreground">
+              Aturan prodi: <strong>{rule.label}</strong> ≤ <strong>{rule.maxPercentage}%</strong>
+            </p>
+          )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="adj-reason">Alasan Penyesuaian (wajib)</Label>
+            <Textarea
+              id="adj-reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={3}
+              placeholder="contoh: daftar pustaka & kutipan ber-sitasi dikecualikan sesuai ketentuan fakultas"
+              className="rounded-2xl"
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={submitting}>
+            Batal
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" /> Menyimpan...
+              </>
+            ) : (
+              <>
+                <SlidersHorizontal className="mr-2 size-4" /> Simpan Penyesuaian
               </>
             )}
           </Button>

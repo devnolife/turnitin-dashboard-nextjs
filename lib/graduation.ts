@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { logger } from "@/lib/logger"
+import { ruleMatches } from "@/lib/similarity-rule"
 
 /**
  * Evaluasi apakah seorang mahasiswa layak ditandai LULUS (GRADUATED).
@@ -67,32 +68,4 @@ export async function evaluateGraduation(userId: string): Promise<boolean> {
     logger.warn("evaluateGraduation_failed", { userId, error: String(e) })
     return false
   }
-}
-
-interface RuleLike {
-  ruleType: "PER_CHAPTER" | "PER_EXAM"
-  label: string
-}
-
-interface SubLike {
-  examType: string | null
-  chapter: string | null
-}
-
-function ruleMatches(rule: RuleLike, sub: SubLike): boolean {
-  const labelNorm = rule.label.toLowerCase().trim()
-  if (rule.ruleType === "PER_CHAPTER") {
-    if (!sub.chapter) return false
-    return sub.chapter.toLowerCase().trim() === labelNorm
-  }
-  if (rule.ruleType === "PER_EXAM") {
-    if (!sub.examType) return false
-    const examLabel = sub.examType.replace(/_DEFENSE$/i, "").toLowerCase()
-    return (
-      sub.examType.toLowerCase() === labelNorm ||
-      examLabel === labelNorm ||
-      labelNorm.includes(examLabel)
-    )
-  }
-  return false
 }

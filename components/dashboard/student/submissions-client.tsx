@@ -135,6 +135,7 @@ export default function StudentSubmissionsClient() {
   const [uploadOpen, setUploadOpen] = useState(false)
   const [resubmitFor, setResubmitFor] = useState<Submission | null>(null)
   const [detailFor, setDetailFor] = useState<Submission | null>(null)
+  const [autoChecking, setAutoChecking] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -156,6 +157,39 @@ export default function StudentSubmissionsClient() {
   useEffect(() => {
     void load()
   }, [load])
+
+  // Auto-refresh selama ada dokumen yang sedang diproses (mis. menunggu skor bot).
+  useEffect(() => {
+    const hasActive = submissions.some(
+      (s) => s.rawStatus === "PROCESSING" || s.rawStatus === "PENDING",
+    )
+    if (!hasActive) return
+    const t = setInterval(() => void load(), 20000)
+    return () => clearInterval(t)
+  }, [submissions, load])
+
+  const handleAutoCheck = useCallback(
+    async (s: Submission) => {
+      setAutoChecking(s.id)
+      try {
+        await api.post(`/submissions/${s.id}/auto-check`)
+        toast({
+          title: "Masuk antrian pengecekan",
+          description:
+            "Dokumen sedang dicek otomatis di Turnitin. Skor akan muncul dalam beberapa menit.",
+        })
+        void load()
+      } catch (e) {
+        const msg =
+          (e as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+          "Gagal memulai pengecekan otomatis."
+        toast({ variant: "destructive", title: "Gagal", description: msg })
+      } finally {
+        setAutoChecking(null)
+      }
+    },
+    [toast, load],
+  )
 
   const filtered = useMemo(() => {
     return submissions.filter((s) => {
@@ -336,6 +370,8 @@ export default function StudentSubmissionsClient() {
                 <SubmissionCard
                   key={s.id}
                   s={s}
+                  autoChecking={autoChecking === s.id}
+                  onAutoCheck={() => handleAutoCheck(s)}
                   onResubmit={() => setResubmitFor(s)}
                   onDetail={() => setDetailFor(s)}
                 />
@@ -483,10 +519,14 @@ function StatCard({
 
 function SubmissionCard({
   s,
+  autoChecking,
+  onAutoCheck,
   onResubmit,
   onDetail,
 }: {
   s: Submission
+  autoChecking?: boolean
+  onAutoCheck?: () => void
   onResubmit: () => void
   onDetail: () => void
 }) {
@@ -526,6 +566,24 @@ function SubmissionCard({
           <Button variant="outline" size="sm" onClick={onDetail} className="rounded-xl">
             <FileText className="mr-2 size-4" /> Detail
           </Button>
+          {s.rawStatus === "PENDING" && onAutoCheck && (
+            <Button
+              size="sm"
+              onClick={onAutoCheck}
+              disabled={autoChecking}
+              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
+            >
+              {autoChecking ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" /> Memproses...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 size-4" /> Cek Otomatis
+                </>
+              )}
+            </Button>
+          )}
           {s.hasReport && (
             <Button asChild variant="outline" size="sm" className="rounded-xl">
               <a href={`/api/submissions/${s.id}/report`} target="_blank" rel="noreferrer">

@@ -14,6 +14,10 @@ export type AuditAction =
   | "admin.rule_changed"
   | "admin.rekap_archived"
   | "admin.user_status_changed"
+  | "submission.auto_check_enqueued"
+  | "submission.auto_check_succeeded"
+  | "submission.auto_check_failed"
+  | "submission.score_adjusted"
 
 interface AuditOptions {
   request?: Request

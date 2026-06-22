@@ -30,5 +30,9 @@ next-env.d.ts
 # Local uploads
 uploads/
 
+# Turnitin automation session state (akses penuh ke akun — JANGAN commit)
+.turnitin/
+*.turnitin-state.json
+
 # Agent skills (auto-installed dari skills-lock.json, tidak perlu di-commit)
 .agents/skills/

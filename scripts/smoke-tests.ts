@@ -5,6 +5,7 @@
  * Bukan jest, tapi cukup untuk verifikasi fungsi pure logic sebelum deploy.
  */
 import { normalizeIndonesianPhone, buildWaMeUrl } from "../lib/phone"
+import { ruleMatches, decideSubmissionStatus } from "../lib/similarity-rule"
 
 let passed = 0
 let failed = 0
@@ -49,33 +50,9 @@ expect(
 expect("null phone → null", buildWaMeUrl(null, "x"), null)
 expect("invalid phone → null", buildWaMeUrl("abc", "x"), null)
 
-// Test graduation rule matching by reimplementing the small pure helper.
-// (lib/graduation.ts uses prisma, so we'd need to mock for a real test;
-// here we just spot-check the matching predicate.)
-console.log("\n[graduation] rule matching logic (smoke)")
-
-// Inline copy of ruleMatches semantics from lib/graduation.ts so we can
-// validate the contract without a DB:
-function ruleMatches(
-  rule: { ruleType: "PER_CHAPTER" | "PER_EXAM"; label: string },
-  sub: { examType: string | null; chapter: string | null },
-): boolean {
-  const labelNorm = rule.label.toLowerCase().trim()
-  if (rule.ruleType === "PER_CHAPTER") {
-    if (!sub.chapter) return false
-    return sub.chapter.toLowerCase().trim() === labelNorm
-  }
-  if (rule.ruleType === "PER_EXAM") {
-    if (!sub.examType) return false
-    const examLabel = sub.examType.replace(/_DEFENSE$/i, "").toLowerCase()
-    return (
-      sub.examType.toLowerCase() === labelNorm ||
-      examLabel === labelNorm ||
-      labelNorm.includes(examLabel)
-    )
-  }
-  return false
-}
+// Test rule matching using the REAL shared helper (lib/similarity-rule.ts is
+// pure / DB-free, so it can be imported directly here).
+console.log("\n[similarity-rule] ruleMatches logic (smoke)")
 
 expect(
   "PER_CHAPTER exact",
@@ -116,6 +93,34 @@ expect(
   "PER_EXAM null exam type",
   ruleMatches({ ruleType: "PER_EXAM", label: "Proposal" }, { examType: null, chapter: "Bab 1" }),
   false,
+)
+
+console.log("\n[similarity-rule] decideSubmissionStatus")
+const rulesChapter = [{ ruleType: "PER_CHAPTER" as const, label: "Bab 1", maxPercentage: 25 }]
+expect(
+  "score below threshold → REVIEWED",
+  decideSubmissionStatus(rulesChapter, { examType: null, chapter: "Bab 1" }, 20).status,
+  "REVIEWED",
+)
+expect(
+  "score above threshold → FLAGGED",
+  decideSubmissionStatus(rulesChapter, { examType: null, chapter: "Bab 1" }, 30).status,
+  "FLAGGED",
+)
+expect(
+  "score equal threshold → REVIEWED (strict >)",
+  decideSubmissionStatus(rulesChapter, { examType: null, chapter: "Bab 1" }, 25).status,
+  "REVIEWED",
+)
+expect(
+  "no matching rule → REVIEWED + null threshold",
+  decideSubmissionStatus(rulesChapter, { examType: null, chapter: "Bab 2" }, 90),
+  { status: "REVIEWED", matchedRule: null, threshold: null },
+)
+expect(
+  "matched threshold reported",
+  decideSubmissionStatus(rulesChapter, { examType: null, chapter: "Bab 1" }, 30).threshold,
+  25,
 )
 
 console.log("\n" + "=".repeat(60))

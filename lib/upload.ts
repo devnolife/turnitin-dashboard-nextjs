@@ -132,3 +132,43 @@ export async function readStoredFile(
   const [data, s] = await Promise.all([readFile(absPath), stat(absPath)])
   return { data, size: s.size }
 }
+
+/**
+ * Resolusi path absolut dari relativePath tersimpan, dengan pengecekan keamanan
+ * yang sama seperti `readStoredFile`. Dipakai worker bot untuk memberi file ke
+ * Playwright (`setInputFiles`) tanpa perlu membaca seluruh isi ke memori.
+ * Mengembalikan null bila path tidak valid atau file tidak ada.
+ */
+export function resolveStoredFilePath(relativePath: string): string | null {
+  const safeRel = relativePath.replace(/\\/g, "/")
+  if (safeRel.includes("..") || safeRel.startsWith("/")) return null
+  const absPath = path.join(UPLOAD_DIR, safeRel)
+  if (!absPath.startsWith(UPLOAD_DIR)) return null
+  if (!existsSync(absPath)) return null
+  return absPath
+}
+
+/**
+ * Simpan buffer report (PDF) yang diunduh bot ke REPORTS_DIR. Mirip
+ * `saveUploadedFile` tapi sumbernya Buffer, bukan `File`.
+ */
+export async function saveReportBuffer(
+  buf: Buffer,
+  submissionId: string,
+  originalName: string,
+): Promise<SavedFile> {
+  await ensureDir(REPORTS_DIR)
+  const random = crypto.randomBytes(6).toString("hex")
+  const ext = path.extname(originalName) || ".pdf"
+  const base = safeBaseName(path.basename(originalName, path.extname(originalName)) || "report")
+  const storedName = `${submissionId}-${random}-${base}${ext}`
+  const absPath = path.join(REPORTS_DIR, storedName)
+  await writeFile(absPath, buf)
+  return {
+    storedName,
+    originalName,
+    size: buf.length,
+    mimeType: "application/pdf",
+    relativePath: path.relative(UPLOAD_DIR, absPath).replace(/\\/g, "/"),
+  }
+}
