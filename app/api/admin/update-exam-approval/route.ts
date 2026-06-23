@@ -15,7 +15,7 @@ const examApprovalSchema = z.object({
 // Jika seri, ambil yang paling lama belum dapat mahasiswa (atau terbaru kalau belum punya sama sekali).
 async function pickInstructorForNewStudent(): Promise<string | null> {
   const instructors = await prisma.user.findMany({
-    where: { role: "INSTRUCTOR" },
+    where: { role: "INSTRUCTOR", accountStatus: "ACTIVE" },
     select: {
       id: true,
       createdAt: true,

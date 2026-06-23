@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
 import { hashPassword, md5 } from "@/lib/auth/password"
+import { audit } from "@/lib/audit"
 import { logger } from "@/lib/logger"
 import { z } from "zod"
 
@@ -10,6 +11,7 @@ const updateInstructorSchema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   hp: z.string().optional().or(z.literal("")),
   password: z.string().min(6).optional().or(z.literal("")),
+  accountStatus: z.enum(["ACTIVE", "INACTIVE"]).optional(),
 })
 
 export async function GET(
@@ -162,15 +164,39 @@ export async function PUT(
       data.password = md5(parsed.data.password)
       data.passwordHash = await hashPassword(parsed.data.password)
     }
+    if (parsed.data.accountStatus) data.accountStatus = parsed.data.accountStatus
 
     const updated = await prisma.user.update({
       where: { id },
       data,
-      select: { id: true, name: true, username: true, email: true, hp: true },
+      select: { id: true, name: true, username: true, email: true, hp: true, accountStatus: true },
     })
 
+    // Saat status berubah: jika dinonaktifkan, akhiri semua sesi aktif. Catat audit.
+    if (parsed.data.accountStatus && parsed.data.accountStatus !== existing.accountStatus) {
+      if (parsed.data.accountStatus === "INACTIVE") {
+        await prisma.session.updateMany({
+          where: { userId: id, revokedAt: null },
+          data: { revokedAt: new Date() },
+        })
+      }
+      await audit("admin.user_status_changed", {
+        request,
+        actorId: auth.userId,
+        actorRole: auth.role,
+        targetType: "user",
+        targetId: id,
+        metadata: { role: "INSTRUCTOR", from: existing.accountStatus, to: parsed.data.accountStatus },
+      })
+    }
+
     return NextResponse.json({
-      message: "Instruktur berhasil diperbarui",
+      message:
+        parsed.data.accountStatus === "INACTIVE"
+          ? "Instruktur dinonaktifkan"
+          : parsed.data.accountStatus === "ACTIVE"
+            ? "Instruktur diaktifkan"
+            : "Instruktur berhasil diperbarui",
       instructor: updated,
     })
   } catch (error) {

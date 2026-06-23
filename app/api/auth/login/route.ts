@@ -137,6 +137,13 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      if (localUser.accountStatus === "INACTIVE") {
+        return NextResponse.json(
+          { message: "Akun Anda dinonaktifkan. Silakan hubungi admin." },
+          { status: 403 }
+        )
+      }
+
       const { token, expiresAt } = await createSession(localUser.id, localUser.role, {
         ip,
         userAgent,

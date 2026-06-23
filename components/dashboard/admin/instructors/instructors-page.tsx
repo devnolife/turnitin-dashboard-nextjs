@@ -32,6 +32,8 @@ import {
   Pencil,
   Trash2,
   Loader2,
+  UserCheck,
+  UserX,
 } from "lucide-react"
 
 interface InstructorRow {
@@ -42,6 +44,7 @@ interface InstructorRow {
   hp: string
   prodi: string
   createdAt: string
+  accountStatus: "ACTIVE" | "INACTIVE" | "GRADUATED"
   studentCount: number
   reviewedCount: number
   pendingCount: number
@@ -70,6 +73,10 @@ export function AdminInstructorsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<InstructorRow | null>(null)
   const [deleting, setDeleting] = useState(false)
+
+  // Activate / deactivate state
+  const [statusTarget, setStatusTarget] = useState<InstructorRow | null>(null)
+  const [statusBusy, setStatusBusy] = useState(false)
 
   useEffect(() => {
     fetchInstructors()
@@ -130,6 +137,25 @@ export function AdminInstructorsPage() {
       toast({ variant: "destructive", title: "Gagal menghapus instruktur" })
     } finally {
       setDeleting(false)
+    }
+  }
+
+  const setStatus = async (inst: InstructorRow, accountStatus: "ACTIVE" | "INACTIVE") => {
+    setStatusBusy(true)
+    try {
+      await api.put(`/admin/instructors/${inst.id}`, { accountStatus })
+      toast({
+        title:
+          accountStatus === "INACTIVE"
+            ? `${inst.name} dinonaktifkan`
+            : `${inst.name} diaktifkan kembali`,
+      })
+      setStatusTarget(null)
+      fetchInstructors()
+    } catch {
+      toast({ variant: "destructive", title: "Gagal mengubah status instruktur" })
+    } finally {
+      setStatusBusy(false)
     }
   }
 
@@ -283,7 +309,14 @@ export function AdminInstructorsPage() {
                                 <AvatarFallback className="text-xs bg-primary/10 text-primary">{initials}</AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="font-medium">{inst.name}</p>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-medium">{inst.name}</p>
+                                  {inst.accountStatus === "INACTIVE" && (
+                                    <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
+                                      Nonaktif
+                                    </Badge>
+                                  )}
+                                </div>
                                 <p className="text-xs text-muted-foreground">{inst.username}</p>
                               </div>
                             </div>
@@ -317,6 +350,20 @@ export function AdminInstructorsPage() {
                                     <Pencil className="mr-2 size-4" />
                                     <span>Edit</span>
                                   </DropdownMenuItem>
+                                  {inst.accountStatus === "INACTIVE" ? (
+                                    <DropdownMenuItem onClick={() => setStatus(inst, "ACTIVE")}>
+                                      <UserCheck className="mr-2 size-4" />
+                                      <span>Aktifkan</span>
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      className="text-amber-600 dark:text-amber-500"
+                                      onClick={() => setStatusTarget(inst)}
+                                    >
+                                      <UserX className="mr-2 size-4" />
+                                      <span>Nonaktifkan</span>
+                                    </DropdownMenuItem>
+                                  )}
                                   <DropdownMenuItem
                                     className="text-destructive"
                                     onClick={() => { setDeleteTarget(inst); setDeleteOpen(true) }}
@@ -400,6 +447,31 @@ export function AdminInstructorsPage() {
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
               {deleting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Deactivate Confirmation Dialog */}
+      <Dialog open={!!statusTarget} onOpenChange={(v) => !v && setStatusTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nonaktifkan Instruktur</DialogTitle>
+            <DialogDescription>
+              Nonaktifkan <strong>{statusTarget?.name}</strong>? Instruktur tidak akan bisa login dan
+              sesi aktifnya langsung diakhiri. Mahasiswa yang sudah di-assign tetap, tetapi instruktur
+              ini tidak akan menerima mahasiswa baru. Bisa diaktifkan kembali kapan saja.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStatusTarget(null)}>Batal</Button>
+            <Button
+              className="bg-amber-600 text-white hover:bg-amber-700"
+              onClick={() => statusTarget && setStatus(statusTarget, "INACTIVE")}
+              disabled={statusBusy}
+            >
+              {statusBusy ? <Loader2 className="mr-2 size-4 animate-spin" /> : <UserX className="mr-2 size-4" />}
+              Nonaktifkan
             </Button>
           </DialogFooter>
         </DialogContent>
