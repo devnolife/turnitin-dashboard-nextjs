@@ -167,6 +167,23 @@ export default function InstructorSubmissionsClient() {
     }
   }
 
+  const handleAutoCheck = async (id: string) => {
+    setBusyId(id)
+    try {
+      await api.post(`/submissions/${id}/auto-check`)
+      toast({
+        title: "Masuk antrian Turnitin",
+        description: "Bot akan mengecek dokumen ini. Skor muncul beberapa menit lagi.",
+      })
+      void load()
+    } catch (e) {
+      const msg = (e as { response?: { data?: { error?: string } } })?.response?.data?.error
+      toast({ variant: "destructive", title: "Gagal", description: msg || "Coba lagi." })
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   return (
     <DashboardMainCard
       title="Antrian Pengiriman"
@@ -251,6 +268,7 @@ export default function InstructorSubmissionsClient() {
                   item={item}
                   busy={busyId === item.id}
                   onClaim={() => handleClaim(item.id)}
+                  onAutoCheck={() => handleAutoCheck(item.id)}
                   onResult={() => setResultFor(item)}
                   onAdjust={() => setAdjustFor(item)}
                 />
@@ -285,12 +303,14 @@ function QueueRow({
   item,
   busy,
   onClaim,
+  onAutoCheck,
   onResult,
   onAdjust,
 }: {
   item: QueueItem
   busy: boolean
   onClaim: () => void
+  onAutoCheck: () => void
   onResult: () => void
   onAdjust: () => void
 }) {
@@ -359,15 +379,30 @@ function QueueRow({
           </Button>
 
           {item.status === "PENDING" && (
-            <Button
-              size="sm"
-              onClick={onClaim}
-              disabled={busy}
-              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
-            >
-              {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : <PlayCircle className="mr-2 size-4" />}
-              Mulai Cek
-            </Button>
+            <>
+              <Button
+                size="sm"
+                onClick={onAutoCheck}
+                disabled={busy}
+                className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
+              >
+                {busy ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : (
+                  <Sparkles className="mr-2 size-4" />
+                )}
+                Cek Otomatis
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onClaim}
+                disabled={busy}
+                className="rounded-xl"
+              >
+                <PlayCircle className="mr-2 size-4" /> Cek Manual
+              </Button>
+            </>
           )}
 
           {(item.status === "PENDING" || item.status === "PROCESSING") && (

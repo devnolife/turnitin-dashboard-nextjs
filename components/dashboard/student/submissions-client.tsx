@@ -38,13 +38,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import api from "@/lib/api/client"
-import { buildWaMeUrl } from "@/lib/phone"
-
-interface UploadedInstructor {
-  id: string
-  name: string
-  whatsappNumber: string | null
-}
 
 interface Submission {
   id: string
@@ -135,7 +128,6 @@ export default function StudentSubmissionsClient() {
   const [uploadOpen, setUploadOpen] = useState(false)
   const [resubmitFor, setResubmitFor] = useState<Submission | null>(null)
   const [detailFor, setDetailFor] = useState<Submission | null>(null)
-  const [autoChecking, setAutoChecking] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -167,29 +159,6 @@ export default function StudentSubmissionsClient() {
     const t = setInterval(() => void load(), 20000)
     return () => clearInterval(t)
   }, [submissions, load])
-
-  const handleAutoCheck = useCallback(
-    async (s: Submission) => {
-      setAutoChecking(s.id)
-      try {
-        await api.post(`/submissions/${s.id}/auto-check`)
-        toast({
-          title: "Masuk antrian pengecekan",
-          description:
-            "Dokumen sedang dicek otomatis di Turnitin. Skor akan muncul dalam beberapa menit.",
-        })
-        void load()
-      } catch (e) {
-        const msg =
-          (e as { response?: { data?: { error?: string } } })?.response?.data?.error ||
-          "Gagal memulai pengecekan otomatis."
-        toast({ variant: "destructive", title: "Gagal", description: msg })
-      } finally {
-        setAutoChecking(null)
-      }
-    },
-    [toast, load],
-  )
 
   const filtered = useMemo(() => {
     return submissions.filter((s) => {
@@ -238,16 +207,10 @@ export default function StudentSubmissionsClient() {
     })
   }, [rules, ruleType, submissions])
 
-  const [notifyAfterUpload, setNotifyAfterUpload] = useState<{
-    instructor: UploadedInstructor | null
-    documentTitle: string
-  } | null>(null)
-
-  const handleUploaded = (instructor: UploadedInstructor | null, documentTitle: string) => {
+  const handleUploaded = () => {
     setUploadOpen(false)
     setResubmitFor(null)
     void load()
-    setNotifyAfterUpload({ instructor, documentTitle })
   }
 
   return (
@@ -370,8 +333,6 @@ export default function StudentSubmissionsClient() {
                 <SubmissionCard
                   key={s.id}
                   s={s}
-                  autoChecking={autoChecking === s.id}
-                  onAutoCheck={() => handleAutoCheck(s)}
                   onResubmit={() => setResubmitFor(s)}
                   onDetail={() => setDetailFor(s)}
                 />
@@ -393,11 +354,6 @@ export default function StudentSubmissionsClient() {
         ruleType={ruleType}
         rules={rules}
         onUploaded={handleUploaded}
-      />
-
-      <NotifyInstructorDialog
-        data={notifyAfterUpload}
-        onClose={() => setNotifyAfterUpload(null)}
       />
 
       <DetailDialog
@@ -519,14 +475,10 @@ function StatCard({
 
 function SubmissionCard({
   s,
-  autoChecking,
-  onAutoCheck,
   onResubmit,
   onDetail,
 }: {
   s: Submission
-  autoChecking?: boolean
-  onAutoCheck?: () => void
   onResubmit: () => void
   onDetail: () => void
 }) {
@@ -566,24 +518,6 @@ function SubmissionCard({
           <Button variant="outline" size="sm" onClick={onDetail} className="rounded-xl">
             <FileText className="mr-2 size-4" /> Detail
           </Button>
-          {s.rawStatus === "PENDING" && onAutoCheck && (
-            <Button
-              size="sm"
-              onClick={onAutoCheck}
-              disabled={autoChecking}
-              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
-            >
-              {autoChecking ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" /> Memproses...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 size-4" /> Cek Otomatis
-                </>
-              )}
-            </Button>
-          )}
           {s.hasReport && (
             <Button asChild variant="outline" size="sm" className="rounded-xl">
               <a href={`/api/submissions/${s.id}/report`} target="_blank" rel="noreferrer">
@@ -619,7 +553,7 @@ function UploadDialog({
   resubmitFor: Submission | null
   ruleType: "PER_CHAPTER" | "PER_EXAM" | null
   rules: Rule[]
-  onUploaded: (instructor: UploadedInstructor | null, documentTitle: string) => void
+  onUploaded: () => void
 }) {
   const { toast } = useToast()
   const [title, setTitle] = useState("")
@@ -666,15 +600,14 @@ function UploadDialog({
     if (resubmitFor) fd.append("parentSubmissionId", resubmitFor.id)
 
     try {
-      const res = await api.post<{ submission: { documentTitle: string }; instructor: UploadedInstructor | null }>(
-        "/submissions/upload",
-        fd,
-        { headers: { "Content-Type": "multipart/form-data" } },
-      )
-      toast({ title: "Berhasil", description: "Dokumen Anda terkirim ke instruktur." })
-      const instructor = res.data?.instructor ?? null
-      const docTitle = res.data?.submission?.documentTitle || title
-      onUploaded(instructor, docTitle)
+      await api.post("/submissions/upload", fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      toast({
+        title: "Berhasil",
+        description: "Dokumen Anda terkirim dan sedang menunggu pemeriksaan.",
+      })
+      onUploaded()
     } catch (e) {
       const msg =
         (e as { response?: { data?: { error?: string } } })?.response?.data?.error ||
@@ -893,75 +826,6 @@ function DetailDialog({
           <Button variant="ghost" onClick={onClose}>
             Tutup
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function NotifyInstructorDialog({
-  data,
-  onClose,
-}: {
-  data: { instructor: UploadedInstructor | null; documentTitle: string } | null
-  onClose: () => void
-}) {
-  const open = Boolean(data)
-  const instructor = data?.instructor ?? null
-  const docTitle = data?.documentTitle ?? ""
-  const message = `Halo Kak ${instructor?.name ?? ""}, saya telah upload file turnitin${docTitle ? ` (${docTitle})` : ""}, mohon dicek yah kak 🙏`
-  const waUrl = buildWaMeUrl(instructor?.whatsappNumber, message)
-
-  return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <DialogContent className="sm:max-w-[460px] rounded-3xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <CheckCircle className="size-5 text-emerald-600" />
-            Upload Berhasil
-          </DialogTitle>
-          <DialogDescription>
-            {instructor
-              ? `Beritahu instruktur Anda, ${instructor.name}, agar dokumen segera diperiksa.`
-              : "Dokumen Anda sudah masuk antrian instruktur."}
-          </DialogDescription>
-        </DialogHeader>
-
-        {instructor && waUrl ? (
-          <div className="space-y-3 pt-2">
-            <div className="rounded-2xl border bg-muted/40 p-3 text-sm">
-              <p className="font-medium text-foreground">Pesan yang akan dikirim:</p>
-              <p className="mt-1 text-muted-foreground italic">&ldquo;{message}&rdquo;</p>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              WhatsApp akan terbuka di tab/aplikasi baru. Tinggal tekan kirim.
-            </p>
-          </div>
-        ) : instructor ? (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
-            Instruktur Anda belum mengisi nomor WhatsApp. Silakan hubungi langsung saat di kampus.
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
-            Anda belum memiliki instruktur yang ditugaskan. Hubungi admin bila perlu segera diperiksa.
-          </div>
-        )}
-
-        <DialogFooter className="gap-2 sm:gap-2">
-          <Button variant="ghost" onClick={onClose}>
-            Nanti saja
-          </Button>
-          {waUrl && (
-            <Button
-              asChild
-              className="rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
-            >
-              <a href={waUrl} target="_blank" rel="noopener noreferrer" onClick={onClose}>
-                <Sparkles className="mr-2 size-4" />
-                Hubungi via WhatsApp
-              </a>
-            </Button>
-          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
