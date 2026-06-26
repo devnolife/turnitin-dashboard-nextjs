@@ -158,6 +158,18 @@ export default function InstructorSubmissionsClient() {
     )
   }, [items, search])
 
+  // Kelompokkan per mahasiswa (1 mahasiswa bisa punya banyak dokumen). Urutkan
+  // grup berdasarkan nama mahasiswa; dokumen di tiap grup ikut urutan dari API.
+  const grouped = useMemo(() => {
+    const map = new Map<string, { user: QueueItem["user"]; items: QueueItem[] }>()
+    for (const it of filtered) {
+      const g = map.get(it.user.id)
+      if (g) g.items.push(it)
+      else map.set(it.user.id, { user: it.user, items: [it] })
+    }
+    return Array.from(map.values()).sort((a, b) => a.user.name.localeCompare(b.user.name))
+  }, [filtered])
+
   const handleAutoCheck = async (id: string, threshold?: number | null) => {
     setBusyId(id)
     try {
@@ -255,16 +267,49 @@ export default function InstructorSubmissionsClient() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-3">
-              {filtered.map((item) => (
-                <QueueRow
-                  key={item.id}
-                  item={item}
-                  busy={busyId === item.id}
-                  onAutoCheck={() => setAutoCheckFor(item)}
-                  onAdjust={() => setAdjustFor(item)}
-                  onPreview={() => setPreviewFor(item)}
-                />
+            <div className="space-y-4">
+              {grouped.map((g) => (
+                <div
+                  key={g.user.id}
+                  className="rounded-3xl border border-border bg-muted/30 p-3 sm:p-4"
+                >
+                  {/* Header mahasiswa */}
+                  <div className="mb-3 flex items-center gap-3 px-1">
+                    <div className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary/15 text-sm font-bold text-primary-dark">
+                      {g.user.name
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join("")
+                        .toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold">{g.user.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {g.user.nim ? `NIM ${g.user.nim}` : "NIM -"}
+                        {g.user.studyProgram?.name ? ` · ${g.user.studyProgram.name}` : ""}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="shrink-0 border-primary/30">
+                      {g.items.length} dokumen
+                    </Badge>
+                  </div>
+
+                  {/* Dokumen mahasiswa ini */}
+                  <div className="grid gap-3">
+                    {g.items.map((item) => (
+                      <QueueRow
+                        key={item.id}
+                        item={item}
+                        busy={busyId === item.id}
+                        hideStudent
+                        onAutoCheck={() => setAutoCheckFor(item)}
+                        onAdjust={() => setAdjustFor(item)}
+                        onPreview={() => setPreviewFor(item)}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -300,12 +345,14 @@ export default function InstructorSubmissionsClient() {
 function QueueRow({
   item,
   busy,
+  hideStudent,
   onAutoCheck,
   onAdjust,
   onPreview,
 }: {
   item: QueueItem
   busy: boolean
+  hideStudent?: boolean
   onAutoCheck: () => void
   onAdjust: () => void
   onPreview: () => void
@@ -364,12 +411,29 @@ function QueueRow({
                 </Badge>
               )}
             </div>
-            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-              <span className="font-medium text-foreground/80">{item.user.name}</span>
-              {item.user.nim && <span>· NIM {item.user.nim}</span>}
-              {item.user.studyProgram?.name && <span>· {item.user.studyProgram.name}</span>}
-              {item.examType && <span>· {EXAM_LABELS[item.examType] ?? item.examType}</span>}
-              {item.chapter && <span>· {item.chapter}</span>}
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+              {(
+                [
+                  !hideStudent && (
+                    <span key="name" className="font-medium text-foreground/80">
+                      {item.user.name}
+                    </span>
+                  ),
+                  !hideStudent && item.user.nim ? <span key="nim">NIM {item.user.nim}</span> : null,
+                  !hideStudent && item.user.studyProgram?.name ? (
+                    <span key="prodi">{item.user.studyProgram.name}</span>
+                  ) : null,
+                  item.examType ? (
+                    <span key="exam">{EXAM_LABELS[item.examType] ?? item.examType}</span>
+                  ) : null,
+                  item.chapter ? <span key="chapter">{item.chapter}</span> : null,
+                ].filter(Boolean)
+              ).map((node, i) => (
+                <span key={i} className="flex items-center gap-x-2">
+                  {i > 0 && <span className="text-muted-foreground/50">·</span>}
+                  {node}
+                </span>
+              ))}
             </div>
             {item.rejectionReason && (
               <p className="mt-2 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
