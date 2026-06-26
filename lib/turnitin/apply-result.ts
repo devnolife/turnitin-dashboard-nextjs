@@ -10,12 +10,13 @@ export interface ApplyResultInput {
   similarity: number
   /** Isi PDF report (opsional — bila gagal diunduh, skor tetap disimpan). */
   reportPdf: Buffer | null
+  /** Jumlah Integrity Flags (opsional — null bila tak terbaca). */
+  integrityFlags?: number | null
 }
 
 /**
- * Tulis hasil pengecekan Turnitin ke Submission — setara dengan yang dilakukan
- * endpoint manual `/result`, tetapi status REVIEWED/FLAGGED diputuskan otomatis
- * dari `SimilarityRule` prodi mahasiswa.
+ * Tulis hasil pengecekan Turnitin ke Submission. Status REVIEWED/FLAGGED diputuskan
+ * otomatis dari batas per-dokumen (thresholdOverride) atau `SimilarityRule` prodi.
  */
 export async function applyTurnitinResult(
   input: ApplyResultInput,
@@ -28,17 +29,26 @@ export async function applyTurnitinResult(
     throw new Error(`Submission ${input.submissionId} tidak ditemukan`)
   }
 
-  const rules = submission.user.studyProgramId
-    ? await prisma.similarityRule.findMany({
-        where: { studyProgramId: submission.user.studyProgramId },
-      })
-    : []
-
-  const decision = decideSubmissionStatus(
-    rules.map((r) => ({ ruleType: r.ruleType, label: r.label, maxPercentage: r.maxPercentage })),
-    { examType: submission.examType, chapter: submission.chapter },
-    input.similarity,
-  )
+  // Keputusan REVIEWED/FLAGGED: batas per-dokumen (thresholdOverride) MENGALAHKAN
+  // aturan prodi bila di-set; selain itu pakai SimilarityRule prodi.
+  let decision: { status: "REVIEWED" | "FLAGGED"; threshold: number | null }
+  if (submission.thresholdOverride != null) {
+    decision = {
+      status: input.similarity > submission.thresholdOverride ? "FLAGGED" : "REVIEWED",
+      threshold: submission.thresholdOverride,
+    }
+  } else {
+    const rules = submission.user.studyProgramId
+      ? await prisma.similarityRule.findMany({
+          where: { studyProgramId: submission.user.studyProgramId },
+        })
+      : []
+    decision = decideSubmissionStatus(
+      rules.map((r) => ({ ruleType: r.ruleType, label: r.label, maxPercentage: r.maxPercentage })),
+      { examType: submission.examType, chapter: submission.chapter },
+      input.similarity,
+    )
+  }
 
   let saved: SavedFile | null = null
   if (input.reportPdf) {
@@ -63,6 +73,7 @@ export async function applyTurnitinResult(
       autoCheckedAt: new Date(),
       autoCheckError: null,
       reviewedAt: new Date(),
+      ...(input.integrityFlags != null && { integrityFlags: input.integrityFlags }),
       ...(saved && {
         reportUrl: saved.relativePath,
         reportFileName: saved.originalName,

@@ -6,15 +6,16 @@ import {
   CheckCircle,
   Clock,
   Download,
+  Eye,
   FileCheck2,
   FileText,
   Loader2,
-  PlayCircle,
   RefreshCw,
   Search,
+  ShieldAlert,
+  ShieldCheck,
   SlidersHorizontal,
   Sparkles,
-  Upload,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -55,6 +56,9 @@ interface QueueItem {
   scoreAdjustedAt: string | null
   status: "PENDING" | "PROCESSING" | "REVIEWED" | "FLAGGED"
   rejectionReason: string | null
+  autoCheckError: string | null
+  autoCheckedAt: string | null
+  integrityFlags: number | null
   reportFileName: string | null
   version: number
   createdAt: string
@@ -121,8 +125,9 @@ export default function InstructorSubmissionsClient() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<"PENDING" | "PROCESSING" | "REVIEWED" | "FLAGGED">("PENDING")
   const [search, setSearch] = useState("")
-  const [resultFor, setResultFor] = useState<QueueItem | null>(null)
   const [adjustFor, setAdjustFor] = useState<QueueItem | null>(null)
+  const [previewFor, setPreviewFor] = useState<QueueItem | null>(null)
+  const [autoCheckFor, setAutoCheckFor] = useState<QueueItem | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -153,24 +158,13 @@ export default function InstructorSubmissionsClient() {
     )
   }, [items, search])
 
-  const handleClaim = async (id: string) => {
+  const handleAutoCheck = async (id: string, threshold?: number | null) => {
     setBusyId(id)
     try {
-      await api.post(`/submissions/${id}/claim`)
-      toast({ title: "Klaim berhasil", description: "Status berubah ke Diproses." })
-      void load()
-    } catch (e) {
-      const msg = (e as { response?: { data?: { error?: string } } })?.response?.data?.error
-      toast({ variant: "destructive", title: "Gagal", description: msg || "Coba lagi." })
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  const handleAutoCheck = async (id: string) => {
-    setBusyId(id)
-    try {
-      await api.post(`/submissions/${id}/auto-check`)
+      await api.post(
+        `/submissions/${id}/auto-check`,
+        threshold != null ? { threshold } : {},
+      )
       toast({
         title: "Masuk antrian Turnitin",
         description: "Bot akan mengecek dokumen ini. Skor muncul beberapa menit lagi.",
@@ -187,7 +181,7 @@ export default function InstructorSubmissionsClient() {
   return (
     <DashboardMainCard
       title="Antrian Pengiriman"
-      subtitle="Periksa dokumen mahasiswa di Turnitin, lalu upload hasilnya kembali ke aplikasi."
+      subtitle="Cek dokumen mahasiswa ke Turnitin secara otomatis, lalu pantau skor & hasilnya di sini."
       icon={FileCheck2}
     >
       {/* Counts */}
@@ -202,8 +196,8 @@ export default function InstructorSubmissionsClient() {
               type="button"
               onClick={() => setTab(k)}
               className={`group flex items-center justify-between rounded-3xl border bg-white p-5 text-left shadow-sm transition-all dark:bg-gray-900/80 ${active
-                  ? "border-primary/60 ring-2 ring-primary/20 shadow-md shadow-primary/10"
-                  : "border-border hover:border-primary/40 hover:shadow-md"
+                ? "border-primary/60 ring-2 ring-primary/20 shadow-md shadow-primary/10"
+                : "border-border hover:border-primary/40 hover:shadow-md"
                 }`}
             >
               <div>
@@ -267,25 +261,15 @@ export default function InstructorSubmissionsClient() {
                   key={item.id}
                   item={item}
                   busy={busyId === item.id}
-                  onClaim={() => handleClaim(item.id)}
-                  onAutoCheck={() => handleAutoCheck(item.id)}
-                  onResult={() => setResultFor(item)}
+                  onAutoCheck={() => setAutoCheckFor(item)}
                   onAdjust={() => setAdjustFor(item)}
+                  onPreview={() => setPreviewFor(item)}
                 />
               ))}
             </div>
           )}
         </TabsContent>
       </Tabs>
-
-      <ResultDialog
-        item={resultFor}
-        onClose={() => setResultFor(null)}
-        onDone={() => {
-          setResultFor(null)
-          void load()
-        }}
-      />
 
       <AdjustDialog
         item={adjustFor}
@@ -295,6 +279,20 @@ export default function InstructorSubmissionsClient() {
           void load()
         }}
       />
+
+      <PreviewDialog item={previewFor} onClose={() => setPreviewFor(null)} />
+
+      <AutoCheckDialog
+        item={autoCheckFor}
+        busy={!!autoCheckFor && busyId === autoCheckFor.id}
+        onClose={() => setAutoCheckFor(null)}
+        onConfirm={async (threshold) => {
+          const target = autoCheckFor
+          if (!target) return
+          setAutoCheckFor(null)
+          await handleAutoCheck(target.id, threshold)
+        }}
+      />
     </DashboardMainCard>
   )
 }
@@ -302,17 +300,15 @@ export default function InstructorSubmissionsClient() {
 function QueueRow({
   item,
   busy,
-  onClaim,
   onAutoCheck,
-  onResult,
   onAdjust,
+  onPreview,
 }: {
   item: QueueItem
   busy: boolean
-  onClaim: () => void
   onAutoCheck: () => void
-  onResult: () => void
   onAdjust: () => void
+  onPreview: () => void
 }) {
   const meta = STATUS_META[item.status]
   const Icon = meta.icon
@@ -332,12 +328,30 @@ function QueueRow({
                 </Badge>
               )}
               <Badge variant="outline" className={`gap-1.5 border-transparent ${meta.cls}`}>
-                <Icon className={`size-3 ${item.status === "PROCESSING" ? "animate-spin" : ""}`} />
+                <Icon className="size-3" />
                 {meta.label}
               </Badge>
               {item.similarityScore != null && (
                 <Badge variant="outline" className="border-primary/30">
                   {item.similarityScore.toFixed(1)}%
+                </Badge>
+              )}
+              {item.integrityFlags != null && (
+                <Badge
+                  variant="outline"
+                  title="Integrity Flags dari Turnitin"
+                  className={`gap-1 ${
+                    item.integrityFlags > 0
+                      ? "border-rose-300 text-rose-700 dark:text-rose-300"
+                      : "border-emerald-300 text-emerald-700 dark:text-emerald-300"
+                  }`}
+                >
+                  {item.integrityFlags > 0 ? (
+                    <ShieldAlert className="size-3" />
+                  ) : (
+                    <ShieldCheck className="size-3" />
+                  )}
+                  {item.integrityFlags} flag
                 </Badge>
               )}
               {item.scoreAdjustedByName && item.turnitinRawScore != null && (
@@ -362,6 +376,15 @@ function QueueRow({
                 Catatan: {item.rejectionReason}
               </p>
             )}
+          {item.status === "PROCESSING" && (
+              <p className="mt-2 flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+                <span>
+                  Cek otomatis gagal: {item.autoCheckError}. Klik &quot;Cek Ulang&quot; untuk
+                  menjalankan bot lagi.
+                </span>
+              </p>
+            )}
             {item.scoreAdjustedByName && item.scoreAdjustmentReason && (
               <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
                 <SlidersHorizontal className="mr-1 inline size-3" />
@@ -372,6 +395,10 @@ function QueueRow({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" onClick={onPreview} className="rounded-xl bg-primary/10 text-primary-dark hover:bg-primary/20">
+            <Eye className="mr-2 size-4" /> Lihat
+          </Button>
+
           <Button asChild variant="outline" size="sm" className="rounded-xl">
             <a href={`/api/submissions/${item.id}/file`} target="_blank" rel="noreferrer">
               <Download className="mr-2 size-4" /> File
@@ -379,35 +406,34 @@ function QueueRow({
           </Button>
 
           {item.status === "PENDING" && (
-            <>
-              <Button
-                size="sm"
-                onClick={onAutoCheck}
-                disabled={busy}
-                className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
-              >
-                {busy ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                ) : (
-                  <Sparkles className="mr-2 size-4" />
-                )}
-                Cek Otomatis
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onClaim}
-                disabled={busy}
-                className="rounded-xl"
-              >
-                <PlayCircle className="mr-2 size-4" /> Cek Manual
-              </Button>
-            </>
+            <Button
+              size="sm"
+              onClick={onAutoCheck}
+              disabled={busy}
+              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
+            >
+              {busy ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 size-4" />
+              )}
+              Cek Otomatis
+            </Button>
           )}
 
-          {(item.status === "PENDING" || item.status === "PROCESSING") && (
-            <Button size="sm" onClick={onResult} className="rounded-xl bg-emerald-600 hover:bg-emerald-700">
-              <Upload className="mr-2 size-4" /> Upload Hasil
+          {item.status === "PROCESSING" && item.autoCheckError && (
+            <Button
+              size="sm"
+              onClick={onAutoCheck}
+              disabled={busy}
+              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
+            >
+              {busy ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 size-4" />
+              )}
+              Cek Ulang
             </Button>
           )}
 
@@ -430,194 +456,251 @@ function QueueRow({
   )
 }
 
-function ResultDialog({
+function AutoCheckDialog({
   item,
+  busy,
   onClose,
-  onDone,
+  onConfirm,
 }: {
   item: QueueItem | null
+  busy: boolean
   onClose: () => void
-  onDone: () => void
+  onConfirm: (threshold: number | null) => void
 }) {
-  const { toast } = useToast()
-  const [similarity, setSimilarity] = useState("")
-  const [status, setStatus] = useState<"REVIEWED" | "FLAGGED">("REVIEWED")
-  const [statusTouched, setStatusTouched] = useState(false)
-  const [reason, setReason] = useState("")
-  const [file, setFile] = useState<File | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-
+  const [value, setValue] = useState("")
   const rule = useMemo(() => (item ? pickRuleForItem(item) : null), [item])
 
   useEffect(() => {
-    if (item) {
-      setSimilarity("")
-      setStatus("REVIEWED")
-      setStatusTouched(false)
-      setReason("")
-      setFile(null)
-    }
+    if (item) setValue("")
   }, [item])
 
-  // Auto-suggest status berdasarkan SimilarityRule selama instruktur belum override manual
-  useEffect(() => {
-    if (statusTouched || !rule) return
-    const num = Number(similarity)
-    if (!Number.isFinite(num) || similarity === "") return
-    setStatus(num <= rule.maxPercentage ? "REVIEWED" : "FLAGGED")
-  }, [similarity, rule, statusTouched])
-
-  const handleSubmit = async () => {
-    if (!item) return
-    if (!file) {
-      toast({ variant: "destructive", title: "File report belum dipilih" })
+  const submit = () => {
+    const trimmed = value.trim()
+    if (trimmed === "") {
+      onConfirm(null)
       return
     }
-    const num = Number(similarity)
-    if (!Number.isFinite(num) || num < 0 || num > 100) {
-      toast({ variant: "destructive", title: "Similarity harus 0-100" })
-      return
-    }
-    if (status === "FLAGGED" && reason.trim().length < 3) {
-      toast({ variant: "destructive", title: "Tuliskan alasan revisi" })
-      return
-    }
-
-    setSubmitting(true)
-    const fd = new FormData()
-    fd.append("report", file)
-    fd.append("similarity", String(num))
-    fd.append("status", status)
-    if (status === "FLAGGED") fd.append("rejectionReason", reason)
-
-    try {
-      await api.post(`/submissions/${item.id}/result`, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      toast({ title: "Hasil terkirim", description: "Mahasiswa bisa melihat hasil sekarang." })
-      onDone()
-    } catch (e) {
-      const msg = (e as { response?: { data?: { error?: string } } })?.response?.data?.error
-      toast({ variant: "destructive", title: "Gagal", description: msg || "Coba lagi." })
-    } finally {
-      setSubmitting(false)
-    }
+    const n = Number(trimmed)
+    if (!Number.isFinite(n) || n < 0 || n > 100) return
+    onConfirm(n)
   }
 
   return (
     <Dialog open={!!item} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg rounded-3xl">
+      <DialogContent className="max-w-md rounded-3xl">
         <DialogHeader>
-          <DialogTitle>Upload Hasil Pengecekan</DialogTitle>
+          <DialogTitle>Cek Otomatis ke Turnitin</DialogTitle>
           <DialogDescription>
             {item ? `${item.documentTitle} — ${item.user.name}` : ""}
           </DialogDescription>
         </DialogHeader>
 
-        {rule && (
+        <div className="space-y-4">
           <div className="flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary/5 p-3 text-xs">
             <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="leading-relaxed">
-              Aturan prodi:{" "}
-              <strong>{rule.label}</strong> ≤{" "}
-              <strong>{rule.maxPercentage}%</strong> → REVIEWED. Keputusan akan
-              disarankan otomatis dari skor — Anda tetap bisa mengubahnya.
+              Bot akan mengunggah dokumen ke Turnitin lalu mengambil skor similarity.
+              {rule ? (
+                <>
+                  {" "}
+                  Batas prodi saat ini: <strong>{rule.label} ≤ {rule.maxPercentage}%</strong>.
+                </>
+              ) : null}
             </p>
           </div>
-        )}
-
-        <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="similarity">Skor Similarity (%)</Label>
-              <Input
-                id="similarity"
-                type="number"
-                min={0}
-                max={100}
-                step={0.1}
-                value={similarity}
-                onChange={(e) => setSimilarity(e.target.value)}
-                className="h-11 rounded-2xl"
-                placeholder="contoh: 12.4"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Keputusan</Label>
-              <Select
-                value={status}
-                onValueChange={(v) => {
-                  setStatusTouched(true)
-                  setStatus(v as "REVIEWED" | "FLAGGED")
-                }}
-              >
-                <SelectTrigger className="h-11 rounded-2xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="REVIEWED">Diterima (REVIEWED)</SelectItem>
-                  <SelectItem value="FLAGGED">Perlu Revisi (FLAGGED)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {status === "FLAGGED" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="reason">Alasan Revisi</Label>
-              <Textarea
-                id="reason"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                rows={3}
-                placeholder="Jelaskan apa yang harus diperbaiki mahasiswa..."
-                className="rounded-2xl"
-              />
-            </div>
-          )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="report">File Report Turnitin (PDF)</Label>
-            <label
-              htmlFor="report"
-              className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/40 p-6 text-center hover:border-primary hover:bg-primary/5"
-            >
-              <Upload className="size-6 text-muted-foreground" />
-              <p className="text-sm font-medium">
-                {file ? file.name : "Klik untuk pilih PDF"}
-              </p>
-              <p className="text-xs text-muted-foreground">Maks. 20 MB · hanya PDF</p>
-              <input
-                id="report"
-                type="file"
-                accept="application/pdf,.pdf"
-                className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              />
-            </label>
+            <Label htmlFor="threshold">Batas maksimal similarity untuk dokumen ini (%)</Label>
+            <Input
+              id="threshold"
+              type="number"
+              min={0}
+              max={100}
+              step={0.1}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={
+                rule
+                  ? `Kosongkan = pakai aturan prodi (${rule.maxPercentage}%)`
+                  : "Kosongkan = pakai aturan prodi"
+              }
+              className="h-11 rounded-2xl"
+            />
+            <p className="text-xs text-muted-foreground">
+              Jika diisi, batas ini menggantikan aturan prodi KHUSUS dokumen ini. Skor di
+              atas batas → <strong>Perlu Revisi</strong>.
+            </p>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose} disabled={submitting}>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
             Batal
           </Button>
           <Button
-            onClick={handleSubmit}
-            disabled={submitting}
+            onClick={submit}
+            disabled={busy}
             className="rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white"
           >
-            {submitting ? (
+            {busy ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" /> Mengirim...
+                <Loader2 className="mr-2 size-4 animate-spin" /> Memproses...
               </>
             ) : (
               <>
-                <Upload className="mr-2 size-4" /> Kirim Hasil
+                <Sparkles className="mr-2 size-4" /> Mulai Cek Otomatis
               </>
             )}
           </Button>
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function PreviewDialog({
+  item,
+  onClose,
+}: {
+  item: QueueItem | null
+  onClose: () => void
+}) {
+  const [tab, setTab] = useState<"doc" | "report">("doc")
+  const [doc, setDoc] = useState<{
+    loading: boolean
+    kind?: "pdf" | "html" | "unsupported"
+    html?: string
+    error?: string
+  }>({ loading: false })
+
+  const ext = (item?.fileName || "").toLowerCase().split(".").pop() || ""
+
+  const loadPreview = useCallback(async () => {
+    if (!item) return
+    if (ext === "pdf") {
+      setDoc({ loading: false, kind: "pdf" })
+      return
+    }
+    if (ext !== "docx") {
+      setDoc({ loading: false, kind: "unsupported" })
+      return
+    }
+    setDoc({ loading: true })
+    try {
+      // Konversi DOCX bisa lama (dokumen besar / kompilasi route pertama) — beri
+      // timeout longgar agar tidak keburu putus di 10 dtk default axios.
+      const res = await api.get(`/submissions/${item.id}/preview`, { timeout: 60000 })
+      setDoc({ loading: false, kind: res.data.kind, html: res.data.html })
+    } catch (e) {
+      const code = (e as { code?: string })?.code
+      const serverMsg = (e as { response?: { data?: { error?: string } } })?.response?.data?.error
+      const msg =
+        serverMsg ||
+        (code === "ECONNABORTED"
+          ? "Memuat dokumen terlalu lama. Coba lagi."
+          : "Gagal memuat preview dokumen.")
+      setDoc({ loading: false, error: msg })
+    }
+  }, [item, ext])
+
+  useEffect(() => {
+    if (!item) return
+    setTab("doc")
+    void loadPreview()
+  }, [item, loadPreview])
+
+  if (!item) return null
+  const hasReport = !!item.reportFileName
+
+  return (
+    <Dialog open={!!item} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-4xl overflow-hidden rounded-3xl p-0">
+        <DialogHeader className="px-6 pt-6">
+          <DialogTitle className="truncate pr-8">{item.documentTitle}</DialogTitle>
+          <DialogDescription>
+            {item.user.name}
+            {item.user.nim ? ` · NIM ${item.user.nim}` : ""}
+            {item.similarityScore != null ? ` · Similarity ${item.similarityScore.toFixed(1)}%` : ""}
+            {item.integrityFlags != null ? ` · ${item.integrityFlags} integrity flag` : ""}
+          </DialogDescription>
+        </DialogHeader>
+
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "doc" | "report")} className="px-6 pb-6">
+          <TabsList className="mb-4 rounded-full bg-muted p-1">
+            <TabsTrigger value="doc" className="rounded-full">
+              <FileText className="mr-2 size-4" /> Dokumen
+            </TabsTrigger>
+            <TabsTrigger value="report" className="rounded-full">
+              <FileCheck2 className="mr-2 size-4" /> Report
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="doc" className="mt-0">
+            {doc.loading ? (
+              <div className="grid h-[68vh] place-items-center">
+                <Loader2 className="size-8 animate-spin text-primary" />
+              </div>
+            ) : doc.kind === "pdf" ? (
+              <iframe
+                src={`/api/submissions/${item.id}/file?inline=1`}
+                className="h-[68vh] w-full rounded-2xl border bg-white"
+                title="Dokumen mahasiswa"
+              />
+            ) : doc.kind === "html" ? (
+              <div
+                className="docx-preview h-[68vh] overflow-auto rounded-2xl border bg-white p-8 dark:bg-gray-950"
+                dangerouslySetInnerHTML={{ __html: doc.html || "" }}
+              />
+            ) : (
+              <div className="grid h-[40vh] place-content-center justify-items-center gap-3 rounded-2xl border-2 border-dashed px-6 text-center">
+                <FileText className="size-10 text-muted-foreground/40" />
+                <p className="max-w-md text-sm text-muted-foreground">
+                  {doc.error || "Preview tidak tersedia untuk tipe file ini (mis. .doc lama). Silakan unduh."}
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {doc.error && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl"
+                      onClick={() => void loadPreview()}
+                    >
+                      <RefreshCw className="mr-2 size-4" /> Coba lagi
+                    </Button>
+                  )}
+                  <Button asChild variant="outline" size="sm" className="rounded-xl">
+                    <a href={`/api/submissions/${item.id}/file`} target="_blank" rel="noreferrer">
+                      <Download className="mr-2 size-4" /> Unduh file
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="report" className="mt-0">
+            {hasReport ? (
+              <iframe
+                src={`/api/submissions/${item.id}/report?inline=1`}
+                className="h-[68vh] w-full rounded-2xl border bg-white"
+                title="Report Turnitin"
+              />
+            ) : (
+              <div className="grid h-[40vh] place-content-center justify-items-center gap-2 rounded-2xl border-2 border-dashed p-6 text-center">
+                <FileCheck2 className="size-10 text-muted-foreground/40" />
+                <p className="font-medium">
+                  {item.similarityScore != null
+                    ? `Skor similarity: ${item.similarityScore.toFixed(1)}%`
+                    : "Belum ada skor"}
+                </p>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  PDF report Turnitin belum tersedia. Report akan terunduh otomatis saat
+                  worker dijalankan mode headed (TURNITIN_HEADLESS=false).
+                </p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )

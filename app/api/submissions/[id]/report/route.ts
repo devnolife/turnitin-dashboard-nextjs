@@ -34,12 +34,16 @@ export async function GET(
       return NextResponse.json({ error: "Report hilang dari storage" }, { status: 410 })
     }
 
+    // ?inline=1 → tampil di browser (PDF dalam <iframe>); default = download.
+    const inline = new URL(request.url).searchParams.get("inline") === "1"
+    const disposition = inline ? "inline" : "attachment"
+
     return new NextResponse(file.data as unknown as BodyInit, {
       status: 200,
       headers: {
         "Content-Type": submission.reportMimeType || "application/pdf",
         "Content-Length": String(file.size),
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(submission.reportFileName)}"`,
+        "Content-Disposition": `${disposition}; filename="${encodeURIComponent(submission.reportFileName)}"`,
         "Cache-Control": "private, no-store",
       },
     })

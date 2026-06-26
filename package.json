@@ -11,7 +11,13 @@
     "start": "next start",
     "lint": "next lint",
     "turnitin:bootstrap": "tsx scripts/turnitin-bootstrap.ts",
-    "turnitin:worker": "tsx scripts/turnitin-worker.ts"
+    "turnitin:worker": "tsx scripts/turnitin-worker.ts",
+    "worker:start": "pm2 start ecosystem.config.js",
+    "worker:stop": "pm2 stop turnitin-worker",
+    "worker:restart": "pm2 restart turnitin-worker",
+    "worker:logs": "pm2 logs turnitin-worker",
+    "worker:status": "pm2 status",
+    "worker:delete": "pm2 delete turnitin-worker"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
@@ -59,6 +65,7 @@
     "input-otp": "1.4.1",
     "jose": "^6.2.1",
     "lucide-react": "^0.454.0",
+    "mammoth": "^1.12.0",
     "next": "15.1.0",
     "next-themes": "^0.4.6",
     "playwright": "^1.61.0",
@@ -82,6 +89,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "pm2": "^7.0.1",
     "postcss": "^8",
     "prisma": "^6.19.2",
     "tailwindcss": "^3.4.17",

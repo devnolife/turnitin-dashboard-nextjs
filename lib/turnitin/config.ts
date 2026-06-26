@@ -12,6 +12,10 @@ export interface TurnitinConfig {
   maxWaitMs: number
   pollIntervalMs: number
   jobDelayMs: number
+  /** Unduh PDF Similarity Report dari Feedback Studio (butuh mode headed). */
+  downloadReport: boolean
+  /** Jeda menunggu SPA Feedback Studio render sebelum klik Download (ms). */
+  reportRenderMs: number
 }
 
 function num(value: string | undefined, fallback: number): number {
@@ -29,6 +33,8 @@ export function loadTurnitinConfig(): TurnitinConfig {
     maxWaitMs: num(process.env.TURNITIN_MAX_WAIT_MIN, 15) * 60_000,
     pollIntervalMs: num(process.env.TURNITIN_POLL_INTERVAL_SEC, 30) * 1_000,
     jobDelayMs: num(process.env.TURNITIN_JOB_DELAY_SEC, 10) * 1_000,
+    downloadReport: (process.env.TURNITIN_DOWNLOAD_REPORT ?? "true") !== "false",
+    reportRenderMs: num(process.env.TURNITIN_REPORT_RENDER_SEC, 16) * 1_000,
   }
 }
 

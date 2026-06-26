@@ -48,12 +48,32 @@ export async function POST(
       )
     }
 
+    // Batas % similarity opsional khusus dokumen ini (override aturan prodi).
+    let threshold: number | null = null
+    const body = await request.json().catch(() => null)
+    if (body && body.threshold != null && body.threshold !== "") {
+      const t = Number(body.threshold)
+      if (!Number.isFinite(t) || t < 0 || t > 100) {
+        return NextResponse.json(
+          { error: "Batas similarity harus angka 0-100." },
+          { status: 400 },
+        )
+      }
+      threshold = t
+    }
+
     const { job, created } = await enqueueJob(submission.id)
 
     if (created && submission.status === "PENDING") {
       await prisma.submission.updateMany({
         where: { id: submission.id, status: "PENDING" },
         data: { status: "PROCESSING", autoCheckError: null },
+      })
+    }
+    if (threshold != null) {
+      await prisma.submission.update({
+        where: { id: submission.id },
+        data: { thresholdOverride: threshold },
       })
     }
 

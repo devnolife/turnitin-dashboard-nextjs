@@ -40,6 +40,7 @@ model User {
   complaints          Complaint[]   @relation("UserComplaints")
   respondedComplaints Complaint[]   @relation("ResponderComplaints")
 
+  @@index([instructorId])
   @@map("users")
 }
 
@@ -135,6 +136,8 @@ model Submission {
   chapter            String?
   // Hasil dari instruktur
   similarityScore    Float?
+  // Batas % similarity KHUSUS dokumen ini (override aturan prodi). null = pakai aturan prodi.
+  thresholdOverride  Float?
   status             SubmissionStatus @default(PENDING)
   reportUrl          String?
   reportFileName     String?
@@ -148,6 +151,8 @@ model Submission {
   turnitinPaperId    String?
   autoCheckError     String?
   autoCheckedAt      DateTime?
+  // Integrity Flags dari Turnitin (jumlah; 0 = bersih, null = belum/ tak terbaca).
+  integrityFlags     Int?
   // Penyesuaian manual hasil (override + audit) oleh instruktur/admin.
   // turnitinRawScore = skor ASLI Turnitin (disimpan permanen saat override pertama).
   turnitinRawScore      Float?
@@ -168,7 +173,7 @@ model Submission {
   turnitinJobs TurnitinJob[]
 
   @@index([userId, examType])
-  @@index([status])
+  @@index([status, createdAt(sort: Desc)])
   @@index([reviewedBy])
   @@map("submissions")
 }

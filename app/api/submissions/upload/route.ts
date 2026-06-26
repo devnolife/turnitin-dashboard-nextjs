@@ -29,6 +29,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Anti-spam: mahasiswa hanya boleh punya SATU pengiriman aktif (PENDING/PROCESSING)
+    // dalam satu waktu. Selama masih ada yang belum selesai, tolak upload baru.
+    const active = await prisma.submission.findFirst({
+      where: { userId: auth.userId, status: { in: ["PENDING", "PROCESSING"] } },
+      select: { id: true },
+    })
+    if (active) {
+      return NextResponse.json(
+        {
+          error:
+            "Masih ada dokumen yang sedang diproses. Tunggu sampai selesai (Selesai/Perlu Revisi) sebelum mengirim dokumen baru.",
+        },
+        { status: 409 },
+      )
+    }
+
     const formData = await request.formData()
     const file = formData.get("file")
     if (!(file instanceof File)) {
@@ -52,27 +68,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { documentTitle, examType, chapter, parentSubmissionId } = parsed.data
-
-    // Block duplicates: tidak boleh ada submission aktif (PENDING/PROCESSING)
-    // untuk kombinasi (userId, examType, chapter) yang sama
-    const activeDup = await prisma.submission.findFirst({
-      where: {
-        userId: auth.userId,
-        examType: examType ?? null,
-        chapter: chapter ?? null,
-        status: { in: ["PENDING", "PROCESSING"] },
-      },
-      select: { id: true },
-    })
-    if (activeDup) {
-      return NextResponse.json(
-        {
-          error:
-            "Anda masih memiliki pengiriman aktif untuk bab/ujian ini. Tunggu hasil sebelum mengirim lagi.",
-        },
-        { status: 409 },
-      )
-    }
 
     // Resubmit: validasi parent
     let version = 1

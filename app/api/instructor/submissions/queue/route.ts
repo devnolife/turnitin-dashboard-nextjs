@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       ? { ...baseWhere, status: status as "PENDING" | "PROCESSING" | "REVIEWED" | "FLAGGED" }
       : baseWhere
 
-    const [items, total, counts] = await Promise.all([
+    const [items, counts] = await Promise.all([
       prisma.submission.findMany({
         where,
         include: {
@@ -47,7 +47,6 @@ export async function GET(request: NextRequest) {
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.submission.count({ where }),
       prisma.submission.groupBy({
         by: ["status"],
         where: baseWhere,
@@ -62,6 +61,13 @@ export async function GET(request: NextRequest) {
       FLAGGED: 0,
     } as Record<string, number>
     for (const c of counts) countsMap[c.status] = c._count._all
+
+    // Total diturunkan dari groupBy (hindari query COUNT terpisah):
+    // - status spesifik  -> jumlah pada status itu
+    // - "all"/kosong      -> jumlah semua status dalam scope
+    const total = status && status !== "all"
+      ? countsMap[status] ?? 0
+      : countsMap.PENDING + countsMap.PROCESSING + countsMap.REVIEWED + countsMap.FLAGGED
 
     return NextResponse.json({
       submissions: items,

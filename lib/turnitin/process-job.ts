@@ -5,7 +5,8 @@ import type { TurnitinJob } from "@prisma/client"
 import { loadTurnitinConfig, type TurnitinConfig } from "./config"
 import { openSession, ensureLoggedIn, TurnitinSessionError } from "./session"
 import { submitDocument, TurnitinSubmitError } from "./quick-submit"
-import { waitForReport, TurnitinReportError } from "./report"
+import { waitForReport, inboxHasSubmission, TurnitinReportError } from "./report"
+import { downloadSimilarityReport } from "./download-report"
 import { applyTurnitinResult } from "./apply-result"
 import { markSucceeded, markFailed, markWaitingReport } from "./queue"
 
@@ -41,8 +42,8 @@ async function recordSubmissionError(submissionId: string, message: string): Pro
 
 /**
  * Proses satu job dari awal sampai akhir: login → Quick Submit → tunggu report →
- * simpan hasil. Submission TIDAK diubah ke FAILED — tetap PROCESSING agar instruktur
- * bisa mengambil alih lewat alur manual `/result` bila bot gagal.
+ * simpan hasil. Submission TIDAK diubah ke FAILED — tetap PROCESSING (dengan
+ * autoCheckError terisi) agar instruktur bisa menjalankan ulang lewat "Cek Ulang".
  *
  * Kebijakan retry: HANYA kegagalan SEBELUM submit (sesi/transient) yang boleh
  * di-retry. Setelah submit dipanggil, kegagalan tidak di-retry untuk menghindari
@@ -69,29 +70,71 @@ export async function processJob(
   }
 
   const { first, last } = splitName(submission.user.name)
+  // Token unik diselipkan ke judul agar baris inbox bisa dicocokkan saat baca skor,
+  // sekaligus jadi kunci idempotensi (mendeteksi dokumen yang sudah pernah disubmit).
+  const token = `#${submission.id.slice(-6)}`
+  const uniqueTitle = `${submission.documentTitle} ${token}`.slice(0, 195)
   const session = await openSession(cfg)
   let submitted = false
 
   try {
     await ensureLoggedIn(session, cfg)
 
+    // Idempotensi: bila baris dengan token ini SUDAH ada di inbox Turnitin (mis.
+    // attempt sebelumnya berhasil submit lalu worker mati / lock-nya basi),
+    // JANGAN submit ulang—cukup lanjut menunggu report. Cegah dokumen ganda.
+    // Cek ini berjalan SEBELUM `submitted=true`, jadi kalau cek-nya gagal (transient)
+    // job aman di-retry dan tidak pernah keliru submit dua kali.
+    const existing = await inboxHasSubmission(session.page, cfg, token)
+
     submitted = true // mulai dari sini, hindari retry otomatis (cegah submit ganda)
-    // Token unik diselipkan ke judul agar baris inbox bisa dicocokkan saat baca skor.
-    const token = `#${submission.id.slice(-6)}`
-    const uniqueTitle = `${submission.documentTitle} ${token}`.slice(0, 195)
-    const { paperId } = await submitDocument(session.page, cfg, {
-      filePath,
-      title: uniqueTitle,
-      firstName: first,
-      lastName: last,
-    })
+    let paperId: string | null = null
+    if (existing.found) {
+      // Ambil paper id dari baris inbox supaya report tetap bisa diunduh saat resume.
+      paperId = existing.paperId
+      logger.info("turnitin.resume_existing_submission", {
+        jobId: job.id,
+        submissionId: submission.id,
+        token,
+        paperId,
+      })
+    } else {
+      const res = await submitDocument(session.page, cfg, {
+        filePath,
+        title: uniqueTitle,
+        firstName: first,
+        lastName: last,
+      })
+      paperId = res.paperId
+    }
     await markWaitingReport(job.id, paperId)
 
-    const report = await waitForReport(session.page, cfg, token)
+    const report = await waitForReport(session.page, cfg, token, paperId)
+
+    // Best-effort: unduh PDF Similarity Report + baca Integrity Flags dari Feedback
+    // Studio. Hanya jalan di mode HEADED (FS render kosong di headless) & bila paper
+    // id diketahui. Gagal = null, skor tetap disimpan.
+    let reportPdf = report.reportPdf
+    let integrityFlags: number | null = null
+    if (cfg.downloadReport && !cfg.headless && paperId) {
+      const cap = await downloadSimilarityReport(session.page, session.context, cfg, paperId).catch(
+        () => ({ reportPdf: null, integrityFlags: null }),
+      )
+      reportPdf = cap.reportPdf ?? report.reportPdf
+      integrityFlags = cap.integrityFlags
+      logger.info("turnitin.report_capture", {
+        jobId: job.id,
+        submissionId: submission.id,
+        reportCaptured: !!reportPdf,
+        integrityFlags,
+      })
+    }
+
     const { status } = await applyTurnitinResult({
       submissionId: submission.id,
       similarity: report.similarity,
-      reportPdf: report.reportPdf,
+      reportPdf,
+      integrityFlags,
     })
 
     await markSucceeded(job.id, paperId)

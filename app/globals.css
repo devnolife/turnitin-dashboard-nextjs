@@ -396,3 +396,54 @@
 .stagger-150 { animation-delay: 150ms; }
 .stagger-270 { animation-delay: 270ms; }
 .stagger-390 { animation-delay: 390ms; }
+
+/* === DOCX preview (mammoth HTML) ===
+   Tailwind preflight menghapus margin/format default heading, paragraf, list,
+   tabel. Kelas ini mengembalikan tipografi yang wajar khusus di dalam viewer
+   dokumen (modal "Lihat") tanpa perlu plugin typography. */
+.docx-preview {
+  color: #1f2937;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+}
+.dark .docx-preview { color: #e5e7eb; }
+.docx-preview p { margin: 0 0 0.85em; text-align: justify; }
+.docx-preview h1,
+.docx-preview h2,
+.docx-preview h3,
+.docx-preview h4,
+.docx-preview h5,
+.docx-preview h6 {
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 1.3em 0 0.6em;
+}
+.docx-preview h1 { font-size: 1.5rem; text-align: center; }
+.docx-preview h2 { font-size: 1.3rem; }
+.docx-preview h3 { font-size: 1.15rem; }
+.docx-preview h4 { font-size: 1.02rem; }
+.docx-preview ul,
+.docx-preview ol { margin: 0 0 0.85em 1.5em; }
+.docx-preview ul { list-style: disc; }
+.docx-preview ol { list-style: decimal; }
+.docx-preview li { margin: 0.2em 0; }
+.docx-preview a { color: #2563eb; text-decoration: underline; }
+.docx-preview img { max-width: 100%; height: auto; margin: 0.5em 0; }
+.docx-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.9em;
+}
+.docx-preview th,
+.docx-preview td {
+  border: 1px solid #d1d5db;
+  padding: 0.4em 0.6em;
+  text-align: left;
+  vertical-align: top;
+}
+.dark .docx-preview th,
+.dark .docx-preview td { border-color: #374151; }
+.docx-preview strong { font-weight: 700; }
+.docx-preview em { font-style: italic; }

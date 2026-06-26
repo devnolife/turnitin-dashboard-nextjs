@@ -62,4 +62,12 @@ export const QUICK_SUBMIT = {
    * sehingga polling otomatis menunggu sampai skor benar-benar tersedia.
    */
   originalityLink: "td.or_report_cell .or-percentage, td.or_report_cell a.or-link",
+  /**
+   * Header kolom "Paper ID" (link sort). Inbox Quick Submit ber-PAGINASI & default
+   * sort-nya bukan berdasarkan waktu, sehingga paper yang BARU dikirim sering tidak
+   * ada di halaman 1. Mengklik header ini mengurutkan berdasarkan paper id; karena
+   * paper id monoton naik, urutan DESCENDING menaruh submission terbaru di halaman 1.
+   * Header bersifat toggle (klik=asc, klik lagi=desc).
+   */
+  paperIdSortHeader: 'th a:has-text("Paper ID")',
 } as const

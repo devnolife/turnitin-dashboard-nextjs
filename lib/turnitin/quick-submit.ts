@@ -89,24 +89,56 @@ export async function submitDocument(
     throw new TurnitinSubmitError(`Gagal melampirkan file: ${String(e)}`, "REJECTED")
   }
 
-  // Upload → tunggu state konfirmasi (konversi file bisa lama).
+  // Upload → finalisasi. PENTING (sumber bug utama): untuk file .docx/.doc,
+  // Turnitin mengkonversi dokumen di server lebih dulu, sehingga tombol Confirm
+  // (#confirm-btn) MUNCUL (visible) tapi tetap DISABLED selama puluhan detik
+  // hingga beberapa menit. Karena itu kita TIDAK boleh hanya menunggu "visible"
+  // lalu klik dengan timeout pendek—kalau tombol masih disabled, klik gagal dan
+  // (dulu) ditelan diam-diam sehingga paper tak pernah tersimpan padahal job
+  // terlanjur maju ke WAITING_REPORT (lalu polling report menunggu sia-sia).
   await page.locator(QUICK_SUBMIT.uploadButton).first().click({ timeout: 30_000 }).catch(() => {})
+
+  const confirmBtn = page.locator(QUICK_SUBMIT.confirmButton).first()
   try {
-    await page.locator(QUICK_SUBMIT.confirmButton).first().waitFor({ state: "visible", timeout: 180_000 })
+    await confirmBtn.waitFor({ state: "visible", timeout: 180_000 })
   } catch {
     throw new TurnitinSubmitError(
       "Tombol Confirm tidak muncul — file mungkin ditolak atau konversi gagal.",
       "REJECTED",
     )
   }
-  await page.locator(QUICK_SUBMIT.confirmButton).first().click({ timeout: 30_000 }).catch(() => {})
+  // Playwright .click() otomatis menunggu elemen ENABLED (atribut `disabled`
+  // hilang). Beri anggaran 4 menit untuk konversi dokumen besar. JANGAN ditelan:
+  // kegagalan klik = submission tidak terfinalisasi.
+  try {
+    await confirmBtn.click({ timeout: 240_000 })
+  } catch {
+    throw new TurnitinSubmitError(
+      "Tombol Confirm tidak pernah aktif untuk diklik — konversi file gagal atau terlalu lama.",
+      "REJECTED",
+    )
+  }
 
-  // Tunggu digital receipt (tanda submission tersimpan).
-  await page
-    .locator(QUICK_SUBMIT.digitalReceipt)
-    .first()
-    .waitFor({ state: "visible", timeout: 120_000 })
-    .catch(() => {})
+  // Digital receipt = BUKTI submission benar-benar tersimpan. Wajib muncul; bila
+  // tidak, lempar REJECTED supaya job tidak salah dianggap "sudah disubmit".
+  try {
+    await page
+      .locator(QUICK_SUBMIT.digitalReceipt)
+      .first()
+      .waitFor({ state: "visible", timeout: 120_000 })
+  } catch {
+    throw new TurnitinSubmitError(
+      "Digital receipt tidak muncul setelah Confirm — submission gagal difinalisasi.",
+      "REJECTED",
+    )
+  }
 
-  return { paperId: null, titleUsed: input.title }
+  // Ambil "Submission ID" (paper id) dari digital receipt. Ini kunci paling presisi
+  // untuk menemukan baris paper saat membaca skor (judul bisa berulang/terpaginasi).
+  let paperId: string | null = null
+  const receiptText = await page.locator("body").innerText().catch(() => "")
+  const m = receiptText.match(/Submission ID[:\s]*([0-9]{6,})/i)
+  if (m) paperId = m[1]
+
+  return { paperId, titleUsed: input.title }
 }

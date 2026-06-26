@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Clock,
   Download,
+  Eye,
   FileText,
   Loader2,
   Plus,
@@ -37,6 +38,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import SubmissionPreviewDialog from "@/components/dashboard/submission-preview-dialog"
 import api from "@/lib/api/client"
 
 interface Submission {
@@ -128,6 +130,7 @@ export default function StudentSubmissionsClient() {
   const [uploadOpen, setUploadOpen] = useState(false)
   const [resubmitFor, setResubmitFor] = useState<Submission | null>(null)
   const [detailFor, setDetailFor] = useState<Submission | null>(null)
+  const [previewFor, setPreviewFor] = useState<Submission | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -183,6 +186,10 @@ export default function StudentSubmissionsClient() {
     }),
     [submissions],
   )
+
+  // Anti-spam: selama masih ada dokumen aktif (PENDING/PROCESSING), tombol upload
+  // dinonaktifkan. Mahasiswa harus menunggu hasil dulu.
+  const hasActive = counts.active > 0
 
   // Untuk setiap rule prodi, cari submission terakhir yang relevan.
   // PER_CHAPTER → match rule.label dengan submission.chapter.
@@ -294,12 +301,28 @@ export default function StudentSubmissionsClient() {
           </Button>
           <Button
             onClick={() => setUploadOpen(true)}
-            className="rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/30 hover:shadow-xl"
+            disabled={hasActive}
+            title={
+              hasActive
+                ? "Masih ada dokumen yang sedang diproses. Tunggu sampai selesai."
+                : undefined
+            }
+            className="rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/30 hover:shadow-xl disabled:opacity-60 disabled:shadow-none"
           >
             <Plus className="mr-2 size-4" /> Upload Baru
           </Button>
         </div>
       </div>
+
+      {hasActive && (
+        <div className="mb-4 flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+          <Clock className="mt-0.5 size-4 shrink-0" />
+          <span>
+            Masih ada dokumen yang sedang diproses. Tombol <strong>Upload Baru</strong> akan
+            aktif lagi setelah hasilnya keluar (Selesai atau Perlu Revisi).
+          </span>
+        </div>
+      )}
 
       {/* Tabs + list */}
       <Tabs value={tab} onValueChange={setTab}>
@@ -335,6 +358,7 @@ export default function StudentSubmissionsClient() {
                   s={s}
                   onResubmit={() => setResubmitFor(s)}
                   onDetail={() => setDetailFor(s)}
+                  onPreview={() => setPreviewFor(s)}
                 />
               ))}
             </div>
@@ -363,6 +387,22 @@ export default function StudentSubmissionsClient() {
           setDetailFor(null)
           setResubmitFor(s)
         }}
+      />
+
+      <SubmissionPreviewDialog
+        target={
+          previewFor
+            ? {
+                id: previewFor.id,
+                title: previewFor.title,
+                fileName: previewFor.fileName,
+                hasReport: previewFor.hasReport,
+                subtitle: `Similarity ${previewFor.similarity.toFixed(1)}% · ${previewFor.status}`,
+                similarityScore: previewFor.similarity,
+              }
+            : null
+        }
+        onClose={() => setPreviewFor(null)}
       />
     </DashboardMainCard>
   )
@@ -477,10 +517,12 @@ function SubmissionCard({
   s,
   onResubmit,
   onDetail,
+  onPreview,
 }: {
   s: Submission
   onResubmit: () => void
   onDetail: () => void
+  onPreview: () => void
 }) {
   return (
     <Card className="rounded-3xl border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
@@ -515,6 +557,13 @@ function SubmissionCard({
         <div className="flex flex-wrap items-center gap-2">
           <SimilarityChip value={s.similarity} />
           <StatusBadge status={s.rawStatus} />
+          <Button
+            size="sm"
+            onClick={onPreview}
+            className="rounded-xl bg-primary/10 text-primary-dark hover:bg-primary/20"
+          >
+            <Eye className="mr-2 size-4" /> Lihat
+          </Button>
           <Button variant="outline" size="sm" onClick={onDetail} className="rounded-xl">
             <FileText className="mr-2 size-4" /> Detail
           </Button>

@@ -33,14 +33,17 @@ const nextConfig = {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
       "connect-src 'self' https://sicekcok.if.unismuh.ac.id",
-      "frame-ancestors 'none'",
+      // 'self' agar modal preview bisa meng-embed PDF dokumen/report (same-origin),
+      // tetap blokir framing oleh situs lain (proteksi clickjacking).
+      "frame-ancestors 'self'",
+      "frame-src 'self' blob:",
       "base-uri 'self'",
       "form-action 'self'",
       "object-src 'none'",
     ].join("; ")
 
     const securityHeaders = [
-      { key: "X-Frame-Options", value: "DENY" },
+      { key: "X-Frame-Options", value: "SAMEORIGIN" },
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "X-XSS-Protection", value: "1; mode=block" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
