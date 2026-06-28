@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { Prisma, type User } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { fetchMahasiswaByNim } from "@/lib/auth/graphql-client"
 import { createSession, setSessionCookie } from "@/lib/auth/verify-token"
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { username, password } = body
+    const password = body.password
+    const username = typeof body.username === "string" ? body.username.trim() : body.username
 
     if (!username || !password) {
       return NextResponse.json(
@@ -180,21 +182,56 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Step E: Buat user lokal — simpan MD5 (untuk kompat GraphQL) + bcrypt
+    // Step E: Buat user lokal secara idempoten — simpan MD5 (kompat GraphQL) + bcrypt.
+    // Password sudah diverifikasi terhadap SIMAK (Step D), jadi bila record dengan
+    // username = NIM kanonik sudah ada (request paralel/double-submit, atau input
+    // username dengan format berbeda dari NIM kanonik), perlakukan sebagai login
+    // user tersebut alih-alih menggagalkan dengan unique constraint.
     const bcryptHash = await hashPassword(password)
-    const newUser = await prisma.user.create({
-      data: {
-        username: mahasiswa.nim,
-        password: md5(password),
-        passwordHash: bcryptHash,
-        name: mahasiswa.nama,
-        nim: mahasiswa.nim,
-        hp: mahasiswa.hp,
-        email: mahasiswa.email,
-        prodi: mahasiswa.prodi,
-        role: "STUDENT",
-      },
-    })
+    let newUser: User
+    try {
+      newUser = await prisma.user.create({
+        data: {
+          username: mahasiswa.nim,
+          password: md5(password),
+          passwordHash: bcryptHash,
+          name: mahasiswa.nama,
+          nim: mahasiswa.nim,
+          hp: mahasiswa.hp,
+          email: mahasiswa.email,
+          prodi: mahasiswa.prodi,
+          role: "STUDENT",
+        },
+      })
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        // User sudah ter-provisioning (race condition atau NIM kanonik != input).
+        // Cari via NIM (identitas kanonik SIMAK) dulu, lalu fallback ke username —
+        // keduanya unik dan di Step E di-set ke nilai yang sama.
+        const existing =
+          (await prisma.user.findUnique({ where: { nim: mahasiswa.nim } })) ??
+          (await prisma.user.findUnique({ where: { username: mahasiswa.nim } }))
+        if (!existing) throw e
+        if (existing.accountStatus === "INACTIVE") {
+          return NextResponse.json(
+            { message: "Akun Anda dinonaktifkan. Silakan hubungi admin." },
+            { status: 403 }
+          )
+        }
+        // Sinkronkan hash lokal (best-effort) agar konsisten dengan SIMAK.
+        try {
+          await prisma.user.update({
+            where: { id: existing.id },
+            data: { password: md5(password), passwordHash: bcryptHash },
+          })
+        } catch (updateErr) {
+          logger.warn("Failed to sync password for existing user during login race:", updateErr)
+        }
+        newUser = existing
+      } else {
+        throw e
+      }
+    }
 
     const { token, expiresAt } = await createSession(newUser.id, newUser.role, {
       ip,

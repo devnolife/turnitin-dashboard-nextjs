@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2, CheckCircle2, AlertCircle, RefreshCw, LogOut } from "lucide-react"
+import { Loader2, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -22,11 +22,6 @@ export function PaymentStatusChecker() {
 
   const { user } = useAuthStore()
   const { payment, isLoading, lastChecked, error, checkPaymentStatus } = usePaymentStore()
-
-  const handleLogout = () => {
-    useAuthStore.getState().logout()
-    router.push("/auth/login")
-  }
 
   // Guard to ensure the initial check runs only once per mount
   const hasCheckedRef = useRef(false)
@@ -153,50 +148,50 @@ export function PaymentStatusChecker() {
         <CardDescription>Periksa status pembayaran Anda untuk akses Perpusmu</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {/* Payment Information */}
         <div className="rounded-lg border p-4">
-          <h3 className="text-lg font-medium">Informasi Pembayaran</h3>
-          <div className="mt-4 grid gap-3">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Nama:</span>
-              <span className="font-medium">{payment?.nama || user?.name || "-"}</span>
+          <h3 className="text-sm font-semibold">Informasi Pembayaran</h3>
+          <dl className="mt-3 grid grid-cols-2 gap-x-5 gap-y-2.5 text-sm">
+            <div>
+              <dt className="text-xs text-muted-foreground">Nama</dt>
+              <dd className="font-medium">{payment?.nama || user?.name || "-"}</dd>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">NIM:</span>
-              <span className="font-medium">{payment?.nim || user?.nim || "-"}</span>
+            <div>
+              <dt className="text-xs text-muted-foreground">NIM</dt>
+              <dd className="font-medium">{payment?.nim || user?.nim || "-"}</dd>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Jenis Pembayaran:</span>
-              <span className="font-medium">{payment?.jenisPembayaran || "TURNITIN DIPLOMA S1"}</span>
+            <div>
+              <dt className="text-xs text-muted-foreground">Jenis Pembayaran</dt>
+              <dd className="font-medium">{payment?.jenisPembayaran || "TURNITIN DIPLOMA S1"}</dd>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Jumlah:</span>
-              <span className="font-medium">
+            <div>
+              <dt className="text-xs text-muted-foreground">Jumlah</dt>
+              <dd className="font-medium">
                 {payment?.jumlahPembayaran
                   ? `Rp ${payment.jumlahPembayaran.toLocaleString("id-ID")}`
                   : "-"}
-              </span>
+              </dd>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Periode:</span>
-              <span className="font-medium">{payment?.periode || "-"}</span>
+            <div>
+              <dt className="text-xs text-muted-foreground">Periode</dt>
+              <dd className="font-medium">{payment?.periode || "-"}</dd>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Status Pembayaran:</span>
-              <span className="font-medium">{payment?.statusPembayaran || "Belum ada data"}</span>
+            <div>
+              <dt className="text-xs text-muted-foreground">Status Pembayaran</dt>
+              <dd className="font-medium">{payment?.statusPembayaran || "Belum ada data"}</dd>
             </div>
             {payment?.waktuPembayaran && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Waktu Pembayaran:</span>
-                <span className="font-medium">{payment.waktuPembayaran}</span>
+              <div>
+                <dt className="text-xs text-muted-foreground">Waktu Pembayaran</dt>
+                <dd className="font-medium">{payment.waktuPembayaran}</dd>
               </div>
             )}
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Terakhir Diperiksa:</span>
-              <span className="font-medium">{lastChecked || "Belum diperiksa"}</span>
+            <div>
+              <dt className="text-xs text-muted-foreground">Terakhir Diperiksa</dt>
+              <dd className="font-medium">{lastChecked || "Belum diperiksa"}</dd>
             </div>
-          </div>
+          </dl>
         </div>
 
         {/* Status Visualization */}
@@ -263,47 +258,36 @@ export function PaymentStatusChecker() {
         {/* Payment Instructions */}
         {(status === "pending" || status === "failed") && (
           <div className="rounded-lg border p-4">
-            <h3 className="text-lg font-medium">Informasi Pembayaran</h3>
-            <div className="mt-4 space-y-3 text-sm text-muted-foreground">
-              <p>
-                Pembayaran dilakukan melalui pihak universitas. Silakan hubungi bagian administrasi kampus untuk
-                menyelesaikan pembayaran akses Perpusmu.
-              </p>
-              <p>
-                Setelah pembayaran Anda dikonfirmasi oleh pihak universitas, klik tombol{" "}
-                <span className="font-medium text-foreground">&quot;Perbarui Status&quot;</span> untuk memeriksa status pembayaran Anda.
-              </p>
-            </div>
+            <h3 className="text-sm font-semibold">Cara Pembayaran</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Pembayaran dilakukan melalui pihak universitas. Hubungi bagian administrasi kampus untuk
+              menyelesaikan pembayaran akses Perpusmu, lalu klik{" "}
+              <span className="font-medium text-foreground">&quot;Perbarui Status&quot;</span> untuk memeriksa kembali.
+            </p>
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-4">
+      <CardFooter className="flex flex-col gap-3">
         {status !== "completed" && (
-          <>
-            <Button onClick={handleCheckPayment} disabled={isLoading || status === "checking"} className="w-full">
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  Memeriksa...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="mr-2 size-4" />
-                  Perbarui Status
-                </>
-              )}
-            </Button>
-            <Button variant="outline" onClick={handleLogout} className="w-full">
-              <LogOut className="mr-2 size-4" />
-              Keluar
-            </Button>
-          </>
+          <Button onClick={handleCheckPayment} disabled={isLoading || status === "checking"} className="w-full">
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Memeriksa...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 size-4" />
+                Perbarui Status
+              </>
+            )}
+          </Button>
         )}
 
         <p className="text-xs text-center text-muted-foreground">
-          Jika Anda mengalami masalah dengan pembayaran, silakan hubungi tim dukungan kami di{" "}
-          <span className="font-medium">support@perpusmu.ac.id</span> atau telepon{" "}
+          Ada kendala pembayaran? Hubungi{" "}
+          <span className="font-medium">support@perpusmu.ac.id</span> atau{" "}
           <span className="font-medium">021-1234-5678</span>.
         </p>
       </CardFooter>
