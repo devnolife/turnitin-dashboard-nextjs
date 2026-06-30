@@ -286,9 +286,13 @@
     }
   }
 
-  /* Primary text color */
+  /* Brand gradient text (untuk judul) */
   .gradient-text {
-    color: #5AB2FF;
+    background-image: linear-gradient(90deg, #3A92DF 0%, #5AB2FF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   /* Glassmorphism */

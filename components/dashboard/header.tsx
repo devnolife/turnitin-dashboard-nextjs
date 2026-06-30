@@ -13,36 +13,40 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
   return (
-    <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-3xl p-3 shadow-lg mb-6 theme-transition">
+    <div className="mb-6 flex items-center justify-between gap-2 rounded-2xl border bg-card p-2.5 shadow-sm theme-transition">
       {/* Left: Mobile menu */}
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden rounded-full"
+          className="rounded-xl md:hidden"
           onClick={onMenuClick}
           aria-label="Toggle menu"
         >
           <Menu className="size-5" />
         </Button>
-      </div>
-
-      {/* Center: Search */}
-      <div className="relative hidden md:block">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground" />
-        <Input
-          placeholder="Cari mahasiswa, dokumen..."
-          className="pl-9 w-72 rounded-full border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 theme-transition"
-        />
+        {/* Search (desktop) */}
+        <div className="relative hidden md:block">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Cari mahasiswa, dokumen..."
+            className="w-64 rounded-xl border-border bg-muted/40 pl-9 focus:bg-background focus:ring-2 focus:ring-primary/20 lg:w-80 theme-transition"
+          />
+        </div>
       </div>
 
       {/* Right: Theme + Notifications */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5">
         <ThemeToggle />
 
-        <Button variant="ghost" size="icon" className="rounded-full relative theme-transition" aria-label="Notifikasi">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-xl theme-transition"
+          aria-label="Notifikasi"
+        >
           <Bell className="size-5" />
-          <span className="absolute -top-1 -right-1 size-3 bg-primary rounded-full" />
+          <span className="absolute right-2 top-2 size-2 rounded-full bg-primary ring-2 ring-card" />
         </Button>
       </div>
     </div>

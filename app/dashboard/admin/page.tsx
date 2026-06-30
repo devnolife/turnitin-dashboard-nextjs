@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { AdminUsers } from "@/components/dashboard/admin/users"
 import { AdminPayments } from "@/components/dashboard/admin/payments"
+import { TurnitinInboxBanner } from "@/components/dashboard/admin/turnitin-inbox-banner"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
 import api from "@/lib/api/client"
@@ -60,6 +61,9 @@ export default function AdminDashboardPage() {
       subtitle="Kelola pengguna, pengajuan, dan pengaturan sistem ⚙️"
       icon={ShieldCheck}
     >
+      {/* Peringatan kapasitas inbox Turnitin (akun limit ~25 paper) */}
+      <TurnitinInboxBanner />
+
       {/* Banner notifikasi jika ada akun menunggu persetujuan */}
       {pendingCount > 0 && (
         <Card className="mb-6 border-orange-300 bg-orange-50 dark:border-orange-700 dark:bg-orange-950/30">

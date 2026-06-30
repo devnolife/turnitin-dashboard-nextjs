@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { saveReportBuffer, type SavedFile } from "@/lib/upload"
 import { decideSubmissionStatus } from "@/lib/similarity-rule"
 import { evaluateGraduation } from "@/lib/graduation"
+import { notifyResultViaWhatsapp } from "@/lib/notifications/result-notify"
 import { logger } from "@/lib/logger"
 
 export interface ApplyResultInput {
@@ -88,6 +89,14 @@ export async function applyTurnitinResult(
     submissionId: submission.id,
     similarity: input.similarity,
     status: decision.status,
+  })
+
+  // Notifikasi WhatsApp ke mahasiswa (best-effort, tidak memblokir pipeline).
+  void notifyResultViaWhatsapp({
+    submissionId: submission.id,
+    similarity: input.similarity,
+    status: decision.status,
+    threshold: decision.threshold,
   })
 
   if (decision.status === "REVIEWED") {

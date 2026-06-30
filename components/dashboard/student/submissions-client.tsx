@@ -39,6 +39,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
 import SubmissionPreviewDialog from "@/components/dashboard/submission-preview-dialog"
+import { buildWaMeUrl } from "@/lib/phone"
 import api from "@/lib/api/client"
 
 interface Submission {
@@ -189,7 +190,22 @@ export default function StudentSubmissionsClient() {
 
   // Anti-spam: selama masih ada dokumen aktif (PENDING/PROCESSING), tombol upload
   // dinonaktifkan. Mahasiswa harus menunggu hasil dulu.
+  // Untuk prodi PER_CHAPTER, pembatasan dilakukan PER BAB (lihat activeChapters &
+  // kartu ringkasan per bab), sehingga tombol upload utama tetap aktif — mahasiswa
+  // boleh mengirim bab lain walau ada bab yang masih diproses.
+  const isPerChapter = ruleType === "PER_CHAPTER"
+  const activeChapters = useMemo(() => {
+    const set = new Set<string>()
+    for (const s of submissions) {
+      if ((s.rawStatus === "PENDING" || s.rawStatus === "PROCESSING") && s.chapter) {
+        set.add(s.chapter.toLowerCase())
+      }
+    }
+    return set
+  }, [submissions])
   const hasActive = counts.active > 0
+  // Tombol "Upload Baru" di toolbar hanya dikunci global untuk non-PER_CHAPTER.
+  const uploadButtonDisabled = isPerChapter ? false : hasActive
 
   // Untuk setiap rule prodi, cari submission terakhir yang relevan.
   // PER_CHAPTER → match rule.label dengan submission.chapter.
@@ -263,6 +279,9 @@ export default function StudentSubmissionsClient() {
         </Card>
       )}
 
+      {/* Aktivasi notifikasi WhatsApp gratis (service window) */}
+      <WaActivateBanner />
+
       {/* Ringkasan per Bab/Ujian */}
       {latestByRule.length > 0 && (
         <div className="mb-6">
@@ -275,6 +294,9 @@ export default function StudentSubmissionsClient() {
                 key={rule.id}
                 rule={rule}
                 latest={latest}
+                isActive={
+                  ruleType === "PER_CHAPTER" && activeChapters.has(rule.label.toLowerCase())
+                }
                 onUpload={() => setUploadOpen(true)}
                 onDetail={() => latest && setDetailFor(latest)}
                 onResubmit={() => latest && setResubmitFor(latest)}
@@ -301,9 +323,9 @@ export default function StudentSubmissionsClient() {
           </Button>
           <Button
             onClick={() => setUploadOpen(true)}
-            disabled={hasActive}
+            disabled={uploadButtonDisabled}
             title={
-              hasActive
+              uploadButtonDisabled
                 ? "Masih ada dokumen yang sedang diproses. Tunggu sampai selesai."
                 : undefined
             }
@@ -314,12 +336,22 @@ export default function StudentSubmissionsClient() {
         </div>
       </div>
 
-      {hasActive && (
+      {uploadButtonDisabled && (
         <div className="mb-4 flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
           <Clock className="mt-0.5 size-4 shrink-0" />
           <span>
             Masih ada dokumen yang sedang diproses. Tombol <strong>Upload Baru</strong> akan
             aktif lagi setelah hasilnya keluar (Selesai atau Perlu Revisi).
+          </span>
+        </div>
+      )}
+
+      {isPerChapter && hasActive && (
+        <div className="mb-4 flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary-dark dark:text-primary-lighter">
+          <Clock className="mt-0.5 size-4 shrink-0" />
+          <span>
+            Beberapa bab sedang diproses. Anda tetap bisa mengirim <strong>bab lain</strong>{" "}
+            yang belum dikirim — hanya bab yang sedang diproses yang dikunci sementara.
           </span>
         </div>
       )}
@@ -377,6 +409,7 @@ export default function StudentSubmissionsClient() {
         resubmitFor={resubmitFor}
         ruleType={ruleType}
         rules={rules}
+        activeChapters={activeChapters}
         onUploaded={handleUploaded}
       />
 
@@ -408,15 +441,51 @@ export default function StudentSubmissionsClient() {
   )
 }
 
+function WaActivateBanner() {
+  const url = useMemo(() => {
+    const official = process.env.NEXT_PUBLIC_WA_OFFICIAL_NUMBER
+    if (!official) return null
+    return buildWaMeUrl(
+      official,
+      "Halo Perpusmu, saya ingin menerima notifikasi hasil cek plagiarisme via WhatsApp.",
+    )
+  }, [])
+  if (!url) return null
+  return (
+    <Card className="mb-6 border-emerald-300/70 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/20">
+      <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white">
+            <Sparkles className="size-4" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Aktifkan notifikasi WhatsApp (gratis)</p>
+            <p className="text-sm text-muted-foreground">
+              Chat nomor resmi kami sekali, lalu hasil cek plagiarisme dikirim otomatis ke WhatsApp Anda.
+            </p>
+          </div>
+        </div>
+        <Button asChild className="shrink-0 bg-emerald-600 text-white hover:bg-emerald-700">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            Aktifkan via WhatsApp
+          </a>
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
 function RuleSummaryCard({
   rule,
   latest,
+  isActive = false,
   onUpload,
   onDetail,
   onResubmit,
 }: {
   rule: Rule
   latest: Submission | null
+  isActive?: boolean
   onUpload: () => void
   onDetail: () => void
   onResubmit: () => void
@@ -456,9 +525,19 @@ function RuleSummaryCard({
             <Button
               size="sm"
               onClick={onUpload}
-              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white"
+              disabled={isActive}
+              title={isActive ? "Bab ini sedang diproses." : undefined}
+              className="rounded-xl bg-gradient-to-r from-primary to-primary-dark text-white disabled:opacity-60"
             >
-              <Plus className="mr-1.5 size-3.5" /> Mulai Upload
+              {isActive ? (
+                <>
+                  <Loader2 className="mr-1.5 size-3.5 animate-spin" /> Sedang diproses
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-1.5 size-3.5" /> Mulai Upload
+                </>
+              )}
             </Button>
           )}
           {latest && (
@@ -595,6 +674,7 @@ function UploadDialog({
   resubmitFor,
   ruleType,
   rules,
+  activeChapters,
   onUploaded,
 }: {
   open: boolean
@@ -602,6 +682,7 @@ function UploadDialog({
   resubmitFor: Submission | null
   ruleType: "PER_CHAPTER" | "PER_EXAM" | null
   rules: Rule[]
+  activeChapters: Set<string>
   onUploaded: () => void
 }) {
   const { toast } = useToast()
@@ -620,16 +701,26 @@ function UploadDialog({
       } else {
         setTitle("")
         setExamType("PROPOSAL_DEFENSE")
-        setChapter(ruleType === "PER_CHAPTER" && rules[0] ? rules[0].label : "")
+        // Default ke bab pertama yang BELUM sedang diproses (kalau ada).
+        if (ruleType === "PER_CHAPTER" && rules.length > 0) {
+          const firstFree = rules.find((r) => !activeChapters.has(r.label.toLowerCase()))
+          setChapter((firstFree ?? rules[0]).label)
+        } else {
+          setChapter("")
+        }
       }
       setFile(null)
     }
-  }, [open, resubmitFor, ruleType, rules])
+  }, [open, resubmitFor, ruleType, rules, activeChapters])
 
   const chapterOptions = useMemo(() => {
     if (ruleType !== "PER_CHAPTER") return []
-    return rules.map((r) => r.label)
-  }, [ruleType, rules])
+    return rules.map((r) => ({ label: r.label, busy: activeChapters.has(r.label.toLowerCase()) }))
+  }, [ruleType, rules, activeChapters])
+
+  // Bab yang dipilih sedang diproses → cegah submit (selaras dengan backend).
+  const selectedChapterBusy =
+    ruleType === "PER_CHAPTER" && !resubmitFor && activeChapters.has(chapter.toLowerCase())
 
   const handleSubmit = async () => {
     if (!file) {
@@ -638,6 +729,14 @@ function UploadDialog({
     }
     if (title.trim().length < 3) {
       toast({ variant: "destructive", title: "Judul minimal 3 karakter" })
+      return
+    }
+    if (selectedChapterBusy) {
+      toast({
+        variant: "destructive",
+        title: "Bab sedang diproses",
+        description: `Bab "${chapter}" masih diproses. Pilih bab lain atau tunggu hasilnya.`,
+      })
       return
     }
     setSubmitting(true)
@@ -717,8 +816,9 @@ function UploadDialog({
                   </SelectTrigger>
                   <SelectContent>
                     {chapterOptions.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {c}
+                      <SelectItem key={c.label} value={c.label} disabled={c.busy && !resubmitFor}>
+                        {c.label}
+                        {c.busy && !resubmitFor ? " (sedang diproses)" : ""}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -726,6 +826,16 @@ function UploadDialog({
               </div>
             )}
           </div>
+
+          {selectedChapterBusy && (
+            <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+              <Clock className="mt-0.5 size-3.5 shrink-0" />
+              <span>
+                Bab <strong>{chapter}</strong> masih diproses. Pilih bab lain, atau tunggu hasilnya
+                sebelum mengirim ulang bab ini.
+              </span>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label htmlFor="file">File Dokumen</Label>
@@ -755,7 +865,7 @@ function UploadDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={submitting}
+            disabled={submitting || selectedChapterBusy}
             className="rounded-2xl bg-gradient-to-r from-primary to-primary-dark text-white"
           >
             {submitting ? (

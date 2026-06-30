@@ -90,11 +90,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen bg-primary-lighter/20 dark:bg-gray-900 transition-colors duration-300">
+    <div className="flex h-screen bg-gradient-to-br from-primary-lighter/25 via-background to-secondary/10 dark:from-gray-950 dark:via-gray-900 dark:to-gray-900 transition-colors duration-300">
       <Sidebar mobileOpen={mobileOpen} onMobileOpenChange={handleMobileOpenChange} />
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
-        <DashboardHeader user={user} onMenuClick={() => setMobileOpen(true)} />
-        {children}
+        <div className="mx-auto max-w-7xl">
+          <DashboardHeader user={user} onMenuClick={() => setMobileOpen(true)} />
+          {children}
+        </div>
         <ThemeIndicator />
         <OnboardingTour />
       </main>

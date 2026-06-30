@@ -130,6 +130,48 @@ export async function fetchMahasiswaPembayaran(
   return items[0]
 }
 
+/**
+ * Ambil SEMUA tagihan/pembayaran mahasiswa (tanpa filter jenis). SIMAK
+ * mengembalikan seluruh array bila `jenisPembayaran` dikirim string kosong.
+ * Dipakai agar pencocokan label bisa fleksibel (mis. SIMAK kadang menyimpan
+ * "TURNITIN DIPLOMA  S1" dengan spasi ganda yang meleset dari query exact-match).
+ */
+export async function fetchMahasiswaPembayaranAll(nim: string): Promise<MahasiswaPembayaran[]> {
+  const graphqlUrl = getGraphQLUrl()
+
+  const query = `
+    query MahasiswaPembayaran($nim: String!, $jenisPembayaran: String!) {
+      mahasiswaPembayaran(nim: $nim, jenisPembayaran: $jenisPembayaran) {
+        nim
+        nama
+        periode
+        jenisPembayaran
+        waktuPembayaran
+        jumlahPembayaran
+        statusPembayaran
+      }
+    }
+  `
+
+  const response = await fetch(graphqlUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, variables: { nim, jenisPembayaran: "" } }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`GraphQL request failed: ${response.status}`)
+  }
+
+  const result: GraphQLPembayaranResponse = await response.json()
+
+  if (result.errors && result.errors.length > 0) {
+    throw new Error(`GraphQL error: ${result.errors[0].message}`)
+  }
+
+  return result.data?.mahasiswaPembayaran ?? []
+}
+
 // Mapping kodeFakultas ke nama fakultas
 export const FAKULTAS_MAP: Record<string, string> = {
   "01": "Fakultas Keguruan dan Ilmu Pendidikan",

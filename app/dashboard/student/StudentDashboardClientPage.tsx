@@ -6,14 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { StudentOverview } from "@/components/dashboard/student/overview"
-import { StudentSubmissions } from "@/components/dashboard/student/submissions"
 import { StudentFeedback } from "@/components/dashboard/student/feedback"
 import { ExamDetailsForm } from "@/components/dashboard/student/exam-details-form"
 import { PendingApproval } from "@/components/dashboard/student/pending-approval"
 import { useAuthStore } from "@/lib/store/auth-store"
-import { PageTransition } from "@/components/ui/motion"
-import { StaggerContainer, StaggerItem, AnimatedCounter } from "@/components/ui/motion"
+import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/motion"
 import { DashboardMainCard } from "@/components/dashboard/main-card"
+import { StatCard } from "@/components/dashboard/stat-card"
 
 interface SimilarityRuleData {
   label: string
@@ -83,7 +82,7 @@ export default function StudentDashboardClientPage() {
               <ExamDetailsForm />
             </div>
             <div className="lg:col-span-2 space-y-6">
-              <Card className="rounded-3xl border border-border shadow-sm">
+              <Card className="border-border/70 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📋 Cara Kerja</CardTitle>
                 </CardHeader>
@@ -119,7 +118,7 @@ export default function StudentDashboardClientPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-3xl border border-border shadow-sm">
+              <Card className="border-border/70 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">💡 Tips</CardTitle>
                 </CardHeader>
@@ -156,7 +155,7 @@ export default function StudentDashboardClientPage() {
               <PendingApproval />
             </div>
             <div className="space-y-6">
-              <Card className="rounded-3xl border border-border shadow-sm">
+              <Card className="border-border/70 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📊 Status Anda</CardTitle>
                 </CardHeader>
@@ -180,7 +179,7 @@ export default function StudentDashboardClientPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-3xl border border-border shadow-sm">
+              <Card className="border-border/70 shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-lg gradient-text">📞 Butuh Bantuan?</CardTitle>
                 </CardHeader>
@@ -214,73 +213,53 @@ export default function StudentDashboardClientPage() {
         subtitle="Kelola pengiriman dokumen dan lihat hasil Perpusmu 📄"
         icon={BookOpen}
       >
-        <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <StaggerContainer className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StaggerItem>
-            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Pengiriman</CardTitle>
-                <FileText className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <AnimatedCounter value={totalSubmissions} />
-                </div>
-                <p className="text-xs text-muted-foreground">Dokumen terkirim</p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Total Pengiriman"
+              icon={FileText}
+              countTo={totalSubmissions}
+              caption="Dokumen terkirim"
+              tone="primary"
+            />
           </StaggerItem>
-
           <StaggerItem>
-            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Rata-rata Similarity</CardTitle>
-                <BarChart3 className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <AnimatedCounter value={avgSimilarity} />%
-                </div>
-                <p className="text-xs text-muted-foreground">Dari semua pengiriman</p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Rata-rata Similarity"
+              icon={BarChart3}
+              countTo={avgSimilarity}
+              suffix="%"
+              caption="Dari semua pengiriman"
+              tone="violet"
+            />
           </StaggerItem>
-
           <StaggerItem>
-            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Menunggu Hasil</CardTitle>
-                <Clock className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <AnimatedCounter value={pendingCount} />
-                </div>
-                <p className="text-xs text-muted-foreground">Pengiriman menunggu hasil</p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Menunggu Hasil"
+              icon={Clock}
+              countTo={pendingCount}
+              caption="Pengiriman menunggu hasil"
+              tone="amber"
+            />
           </StaggerItem>
-
           <StaggerItem>
-            <Card className="rounded-3xl border border-border shadow-sm hover-lift">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Status Pembayaran</CardTitle>
-                <CheckCircle className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className={`text-2xl font-bold ${paymentActive ? "text-green-600" : "text-yellow-600"}`}>
+            <StatCard
+              title="Status Pembayaran"
+              icon={CheckCircle}
+              tone={paymentActive ? "emerald" : "amber"}
+              value={
+                <span className={paymentActive ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}>
                   {paymentActive ? "Lunas" : "Belum"}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {paymentActive ? "Pembayaran sudah lunas" : "Menunggu pembayaran"}
-                </p>
-              </CardContent>
-            </Card>
+                </span>
+              }
+              caption={paymentActive ? "Pembayaran sudah lunas" : "Menunggu pembayaran"}
+            />
           </StaggerItem>
         </StaggerContainer>
 
         {/* Similarity Rules Card */}
         {myRules && myRules.rules.length > 0 && (
-          <Card className="rounded-3xl border-2 border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/10 mb-8">
+          <Card className="mb-8 border-primary/20 bg-primary/[0.04] dark:border-primary/20 dark:bg-primary/10">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <FileCheck className="size-5 text-blue-600 dark:text-blue-400" />
@@ -322,18 +301,12 @@ export default function StudentDashboardClientPage() {
         )}
 
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="bg-gray-100 dark:bg-gray-700 p-1.5 rounded-full">
+          <TabsList className="rounded-full bg-muted p-1.5">
             <TabsTrigger
               value="overview"
               className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
             >
               Ringkasan
-            </TabsTrigger>
-            <TabsTrigger
-              value="submissions"
-              className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-white"
-            >
-              Pengiriman Terbaru
             </TabsTrigger>
             <TabsTrigger
               value="feedback"
@@ -344,9 +317,6 @@ export default function StudentDashboardClientPage() {
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <StudentOverview stats={stats} />
-          </TabsContent>
-          <TabsContent value="submissions" className="space-y-4">
-            <StudentSubmissions />
           </TabsContent>
           <TabsContent value="feedback" className="space-y-4">
             <StudentFeedback />

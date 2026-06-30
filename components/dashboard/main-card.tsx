@@ -12,24 +12,25 @@ interface DashboardMainCardProps {
 
 export function DashboardMainCard({ title, subtitle, icon: Icon, children }: DashboardMainCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 via-white to-primary-lighter/30 p-6 shadow-lg ring-1 ring-black/[0.04] dark:from-gray-900 dark:via-gray-900 dark:to-gray-900/80 dark:ring-white/[0.06] theme-transition">
-      {/* Decorative blob shapes */}
-      <div className="absolute -right-20 -top-20 size-64 gen-z-blob bg-primary-lighter/40 dark:bg-primary/10 pointer-events-none" style={{ transform: "translateZ(0)" }} />
-      <div className="absolute -left-20 -bottom-20 size-64 gen-z-blob-alt bg-secondary/40 dark:bg-secondary/10 pointer-events-none" style={{ transform: "translateZ(0)" }} />
-
-      {/* Header */}
-      <div className="relative z-10 mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="bg-primary text-white p-2 rounded-2xl shadow-md shadow-primary/25">
+    <div className="space-y-6">
+      {/* Page header banner */}
+      <div className="relative overflow-hidden rounded-2xl border bg-card p-5 shadow-sm sm:p-6">
+        {/* Left brand accent + soft glow */}
+        <span className="pointer-events-none absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-primary to-primary-dark" />
+        <div className="pointer-events-none absolute -right-10 -top-14 size-44 rounded-full bg-primary/5 blur-2xl dark:bg-primary/10" />
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-white shadow-md shadow-primary/25">
             <Icon className="size-6" />
           </div>
-          <h1 className="text-3xl font-bold">{title}</h1>
+          <div className="min-w-0">
+            <h1 className="truncate text-2xl font-bold leading-tight tracking-tight">{title}</h1>
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">{subtitle}</p>
+          </div>
         </div>
-        <p className="text-muted-foreground text-lg ml-14">{subtitle}</p>
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 space-y-6">{children}</div>
+      {/* Page content */}
+      <div className="space-y-6">{children}</div>
     </div>
   )
 }

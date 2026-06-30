@@ -94,11 +94,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="h-full flex flex-col relative z-10">
-      {/* Header */}
-      <div className="p-6 flex justify-center bg-[#63A6DD] rounded-tr-[2rem]">
-        <div className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="Logo Perpusmu - Universitas Muhammadiyah Makassar" className="size-10 rounded-full shadow-md" />
-          <h1 className="text-2xl font-bold text-white">Perpusmu</h1>
+      {/* Brand */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-[#2E81CB] px-5 py-5">
+        <div className="pointer-events-none absolute -right-8 -top-10 size-28 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative z-10 flex items-center gap-3">
+          <img
+            src="/logo.jpg"
+            alt="Logo Perpusmu - Universitas Muhammadiyah Makassar"
+            className="size-10 rounded-full shadow-md ring-2 ring-white/40"
+          />
+          <div className="leading-tight">
+            <h1 className="text-xl font-bold text-white">Perpusmu</h1>
+            <p className="text-[11px] text-white/70">Sistem Cek Plagiarisme</p>
+          </div>
         </div>
       </div>
 
@@ -119,31 +127,32 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 px-4 py-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4">
         <nav className="space-y-1">
-          {routes.map((route) => (
-            <Link key={route.href} href={route.href} onClick={onNavigate}>
-              <Button
-                variant={pathname === route.href ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start rounded-2xl h-11 text-sm font-normal mb-1",
-                  pathname === route.href &&
-                  "bg-primary-lighter/50 text-primary-dark font-medium dark:bg-primary/20 dark:text-primary-lighter",
-                )}
-              >
-                <route.icon className="mr-3 h-[18px] w-[18px] shrink-0" />
-                {route.title}
-                {"badge" in route && route.badge && (
-                  <span
-                    className={`ml-auto px-2 py-0.5 rounded-full text-xs ${route.badge === "New" ? "bg-[#63A6DD]" : "bg-primary"
-                      } text-white animate-pulse-light`}
-                  >
-                    {route.badge}
-                  </span>
-                )}
-              </Button>
-            </Link>
-          ))}
+          {routes.map((route) => {
+            const isActive = pathname === route.href
+            return (
+              <Link key={route.href} href={route.href} onClick={onNavigate}>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "mb-0.5 h-11 w-full justify-start rounded-xl text-sm font-medium text-muted-foreground transition-colors",
+                    "hover:bg-primary/5 hover:text-primary-dark dark:hover:bg-primary/10 dark:hover:text-primary-light",
+                    isActive &&
+                      "bg-gradient-to-r from-primary to-primary-dark text-white shadow-sm shadow-primary/25 hover:from-primary hover:to-primary-dark hover:text-white",
+                  )}
+                >
+                  <route.icon className="mr-3 h-[18px] w-[18px] shrink-0" />
+                  {route.title}
+                  {"badge" in route && route.badge && (
+                    <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-white">
+                      {route.badge}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )
+          })}
         </nav>
       </div>
 
@@ -177,7 +186,7 @@ export function Sidebar({ className, mobileOpen, onMobileOpenChange }: SidebarPr
       {/* Desktop sidebar */}
       <div
         className={cn(
-          "hidden md:block w-64 xl:w-72 shrink-0 bg-white dark:bg-gray-800 h-screen rounded-r-[2rem] shadow-lg theme-transition relative z-20",
+          "relative z-20 hidden h-screen w-64 shrink-0 overflow-hidden border-r bg-card shadow-sm theme-transition md:block xl:w-72",
           className,
         )}
       >
@@ -188,7 +197,7 @@ export function Sidebar({ className, mobileOpen, onMobileOpenChange }: SidebarPr
       <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
         <SheetContent
           side="left"
-          className="w-72 p-0 rounded-r-[2rem] [&>button]:hidden"
+          className="w-72 overflow-hidden p-0 [&>button]:hidden"
           aria-describedby={undefined}
         >
           <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>

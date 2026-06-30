@@ -29,22 +29,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Anti-spam: mahasiswa hanya boleh punya SATU pengiriman aktif (PENDING/PROCESSING)
-    // dalam satu waktu. Selama masih ada yang belum selesai, tolak upload baru.
-    const active = await prisma.submission.findFirst({
-      where: { userId: auth.userId, status: { in: ["PENDING", "PROCESSING"] } },
-      select: { id: true },
-    })
-    if (active) {
-      return NextResponse.json(
-        {
-          error:
-            "Masih ada dokumen yang sedang diproses. Tunggu sampai selesai (Selesai/Perlu Revisi) sebelum mengirim dokumen baru.",
-        },
-        { status: 409 },
-      )
-    }
-
     const formData = await request.formData()
     const file = formData.get("file")
     if (!(file instanceof File)) {
@@ -68,6 +52,37 @@ export async function POST(request: NextRequest) {
     }
 
     const { documentTitle, examType, chapter, parentSubmissionId } = parsed.data
+
+    // Anti-spam: cegah mahasiswa membanjiri antrian.
+    // - Prodi PER_CHAPTER (upload per bab): tiap bab adalah file terpisah, jadi
+    //   batasi hanya per BAB — boleh kirim bab lain walau ada bab lain diproses,
+    //   tapi cegah dobel pada bab yang SAMA.
+    // - Selain itu (PER_EXAM / tanpa rule): hanya boleh SATU pengiriman aktif.
+    const ruleType = await resolveRuleType(auth.userId)
+    const isPerChapter = ruleType === "PER_CHAPTER" && !!chapter
+
+    const activeWhere = isPerChapter
+      ? {
+          userId: auth.userId,
+          status: { in: ["PENDING", "PROCESSING"] as const },
+          chapter: { equals: chapter, mode: "insensitive" as const },
+        }
+      : { userId: auth.userId, status: { in: ["PENDING", "PROCESSING"] as const } }
+
+    const active = await prisma.submission.findFirst({
+      where: activeWhere,
+      select: { id: true },
+    })
+    if (active) {
+      return NextResponse.json(
+        {
+          error: isPerChapter
+            ? `Bab "${chapter}" masih sedang diproses. Tunggu hasilnya sebelum mengirim ulang bab ini. Anda tetap bisa mengirim bab lain.`
+            : "Masih ada dokumen yang sedang diproses. Tunggu sampai selesai (Selesai/Perlu Revisi) sebelum mengirim dokumen baru.",
+        },
+        { status: 409 },
+      )
+    }
 
     // Resubmit: validasi parent
     let version = 1
@@ -142,5 +157,28 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logger.error("Submission upload failed", { error })
     return handleAuthError(error)
+  }
+}
+
+/**
+ * Ambil ruleType prodi mahasiswa (PER_CHAPTER / PER_EXAM) untuk menentukan cakupan
+ * anti-spam. Mengembalikan null bila prodi tidak punya aturan. Best-effort: error
+ * apa pun dianggap null (anti-spam default ketat = satu pengiriman aktif).
+ */
+async function resolveRuleType(userId: string): Promise<string | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { studyProgramId: true },
+    })
+    if (!user?.studyProgramId) return null
+    const rule = await prisma.similarityRule.findFirst({
+      where: { studyProgramId: user.studyProgramId },
+      orderBy: { orderIndex: "asc" },
+      select: { ruleType: true },
+    })
+    return rule?.ruleType ?? null
+  } catch {
+    return null
   }
 }

@@ -25,9 +25,47 @@ async function main(): Promise<void> {
   const { claimNextJob } = await import("../lib/turnitin/queue")
   const { processJob } = await import("../lib/turnitin/process-job")
   const { prisma } = await import("../lib/prisma")
+  const { openSession, ensureLoggedIn } = await import("../lib/turnitin/session")
+  const { countInboxPapers } = await import("../lib/turnitin/inbox-count")
+  const { writeInboxStatus, computeLevel } = await import("../lib/turnitin/inbox-status")
 
   const cfg = loadTurnitinConfig()
   console.log("[turnitin-worker] mulai. Base URL:", cfg.baseUrl, "| headless:", cfg.headless)
+
+  // Snapshot jumlah paper inbox Turnitin → file JSON (dibaca API admin). Best-effort:
+  // tidak pernah menggagalkan/menghentikan pemrosesan job. Dipakai untuk deteksi
+  // "inbox hampir penuh" (akun limit ~25) lalu memperingatkan admin.
+  let lastInboxCheck = 0
+  const INBOX_CHECK_INTERVAL_MS = 10 * 60_000 // saat idle, paling sering tiap 10 menit
+  const refreshInboxStatus = async (force: boolean) => {
+    if (!force && Date.now() - lastInboxCheck < INBOX_CHECK_INTERVAL_MS) return
+    lastInboxCheck = Date.now()
+    const warnAt = Math.max(1, Math.floor(cfg.inboxCapacity * cfg.inboxWarnRatio))
+    const session = await openSession(cfg)
+    try {
+      await ensureLoggedIn(session, cfg)
+      const count = await countInboxPapers(session.page, cfg)
+      await writeInboxStatus({
+        count,
+        capacity: cfg.inboxCapacity,
+        warnAt,
+        level: computeLevel(count, cfg.inboxCapacity, warnAt),
+        checkedAt: new Date().toISOString(),
+      })
+      console.log(`[turnitin-worker] inbox Turnitin: ${count}/${cfg.inboxCapacity} paper`)
+    } catch (e) {
+      await writeInboxStatus({
+        count: -1,
+        capacity: cfg.inboxCapacity,
+        warnAt,
+        level: "unknown",
+        checkedAt: new Date().toISOString(),
+        note: e instanceof Error ? e.message.slice(0, 200) : String(e),
+      })
+    } finally {
+      await session.close()
+    }
+  }
 
   let running = true
   const stop = (sig: string) => {
@@ -48,6 +86,8 @@ async function main(): Promise<void> {
     }
 
     if (!job) {
+      // Idle: perbarui status inbox sesekali (rate-limited internal).
+      await refreshInboxStatus(false)
       await sleep(cfg.pollIntervalMs)
       continue
     }
@@ -61,6 +101,9 @@ async function main(): Promise<void> {
     } catch (e) {
       console.error(`[turnitin-worker] job ${job.id} crash tak terduga:`, e)
     }
+
+    // Setelah tiap job, perbarui jumlah inbox (paper baru bertambah → kuota berkurang).
+    await refreshInboxStatus(true)
 
     await sleep(cfg.jobDelayMs) // pacing antar job
   }

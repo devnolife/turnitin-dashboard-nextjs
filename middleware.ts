@@ -5,6 +5,7 @@ const PUBLIC_ROUTES = new Set<string>([
   "/",
   "/auth/login",
   "/api/auth/login",
+  "/api/whatsapp/webhook",
   "/payment",
   "/privacy",
   "/terms",
