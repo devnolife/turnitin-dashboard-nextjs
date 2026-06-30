@@ -3,7 +3,7 @@ import { Prisma, type User } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { fetchMahasiswaByNim } from "@/lib/auth/graphql-client"
 import { createSession, setSessionCookie } from "@/lib/auth/verify-token"
-import { hashPassword, md5, verifyBcrypt, verifyMd5 } from "@/lib/auth/password"
+import { hashPassword, md5, verifyBcrypt, verifyMd5, PASSWORD_PLACEHOLDER } from "@/lib/auth/password"
 import { rateLimit, getClientIp } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 
@@ -23,6 +23,12 @@ function sanitizeUser(user: {
   graduatedAt?: Date | null
   tourCompletedAt?: Date | null
   createdAt?: Date | null
+  examDetails?: {
+    thesisTitle: string
+    examType: string
+    submittedAt: Date
+    approvalStatus: string
+  } | null
 }) {
   return {
     id: user.id,
@@ -40,6 +46,16 @@ function sanitizeUser(user: {
     graduatedAt: user.graduatedAt ? user.graduatedAt.toISOString() : null,
     tourCompletedAt: user.tourCompletedAt ? user.tourCompletedAt.toISOString() : null,
     createdAt: user.createdAt ? user.createdAt.toISOString() : undefined,
+    examDetails: user.examDetails
+      ? {
+          thesisTitle: user.examDetails.thesisTitle,
+          examType: user.examDetails.examType.toLowerCase(),
+          submittedAt: user.examDetails.submittedAt
+            ? user.examDetails.submittedAt.toISOString()
+            : null,
+          approvalStatus: user.examDetails.approvalStatus.toLowerCase(),
+        }
+      : null,
   }
 }
 
@@ -74,6 +90,7 @@ export async function POST(request: NextRequest) {
     // Step A: Check local database first
     const localUser = await prisma.user.findUnique({
       where: { username },
+      include: { examDetails: true },
     })
 
     if (localUser) {
@@ -112,13 +129,14 @@ export async function POST(request: NextRequest) {
       }
 
       if (syncedFromSimak) {
-        // Password SIMAK berubah → tulis ulang MD5 + bcrypt lokal.
+        // Password SIMAK berubah → tulis ulang bcrypt lokal. MD5 asli TIDAK disimpan
+        // (cukup bcrypt); kolom `password` diisi sentinel non-rahasia.
         try {
           const newHash = await hashPassword(password)
           await prisma.user.update({
             where: { id: localUser.id },
             data: {
-              password: md5(password),
+              password: PASSWORD_PLACEHOLDER,
               passwordHash: newHash,
             },
           })
@@ -127,12 +145,13 @@ export async function POST(request: NextRequest) {
           logger.warn("Failed to persist resynced SIMAK password:", e)
         }
       } else if (!bcryptOk) {
-        // Upgrade password MD5-only ke bcrypt secara transparan.
+        // Upgrade user MD5-only ke bcrypt secara transparan, sekaligus menghapus
+        // MD5 lama dari kolom `password` (scrub) agar tidak tersimpan permanen.
         try {
           const newHash = await hashPassword(password)
           await prisma.user.update({
             where: { id: localUser.id },
-            data: { passwordHash: newHash },
+            data: { passwordHash: newHash, password: PASSWORD_PLACEHOLDER },
           })
         } catch (e) {
           logger.warn("Failed to upgrade password to bcrypt:", e)
@@ -182,7 +201,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Step E: Buat user lokal secara idempoten — simpan MD5 (kompat GraphQL) + bcrypt.
+    // Step E: Buat user lokal secara idempoten — simpan bcrypt saja (kolom `password`
+    // legacy diisi sentinel; MD5 asli tidak pernah disimpan).
     // Password sudah diverifikasi terhadap SIMAK (Step D), jadi bila record dengan
     // username = NIM kanonik sudah ada (request paralel/double-submit, atau input
     // username dengan format berbeda dari NIM kanonik), perlakukan sebagai login
@@ -193,7 +213,7 @@ export async function POST(request: NextRequest) {
       newUser = await prisma.user.create({
         data: {
           username: mahasiswa.nim,
-          password: md5(password),
+          password: PASSWORD_PLACEHOLDER,
           passwordHash: bcryptHash,
           name: mahasiswa.nama,
           nim: mahasiswa.nim,
@@ -222,7 +242,7 @@ export async function POST(request: NextRequest) {
         try {
           await prisma.user.update({
             where: { id: existing.id },
-            data: { password: md5(password), passwordHash: bcryptHash },
+            data: { password: PASSWORD_PLACEHOLDER, passwordHash: bcryptHash },
           })
         } catch (updateErr) {
           logger.warn("Failed to sync password for existing user during login race:", updateErr)

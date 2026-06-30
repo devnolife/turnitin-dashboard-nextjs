@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, handleAuthError, AuthError } from "@/lib/auth/verify-token"
-import { hashPassword, md5, verifyBcrypt, verifyMd5 } from "@/lib/auth/password"
+import { hashPassword, verifyBcrypt, verifyMd5, PASSWORD_PLACEHOLDER } from "@/lib/auth/password"
 import { rateLimit } from "@/lib/rate-limit"
 import { audit } from "@/lib/audit"
 import { logger } from "@/lib/logger"
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        password: md5(newPassword),
+        password: PASSWORD_PLACEHOLDER,
         passwordHash: newHash,
         mustChangePassword: false,
       },

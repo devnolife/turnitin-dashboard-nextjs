@@ -49,9 +49,20 @@ export async function POST(
     }
 
     // Batas % similarity opsional khusus dokumen ini (override aturan prodi).
+    // PRIVILEGED: hanya instruktur pembimbing / admin yang boleh menetapkan batas ini.
+    // Mahasiswa (owner) TIDAK boleh — tanpa pembatasan ini, mahasiswa dapat mengirim
+    // threshold=100 dan meloloskan dokumennya sendiri (bypass total aturan prodi via
+    // thresholdOverride; lihat lib/turnitin/apply-result.ts).
+    // Catatan: loadAuthorized() sudah memastikan instruktur = pembimbing submission ini.
     let threshold: number | null = null
     const body = await request.json().catch(() => null)
     if (body && body.threshold != null && body.threshold !== "") {
+      if (auth.role !== "INSTRUCTOR" && auth.role !== "ADMIN") {
+        return NextResponse.json(
+          { error: "Hanya dosen pembimbing atau admin yang dapat menetapkan batas similarity." },
+          { status: 403 },
+        )
+      }
       const t = Number(body.threshold)
       if (!Number.isFinite(t) || t < 0 || t > 100) {
         return NextResponse.json(

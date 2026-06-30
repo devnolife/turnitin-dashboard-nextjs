@@ -22,9 +22,25 @@ export interface SubLike {
 }
 
 /**
+ * Kata kunci kanonik per jenis ujian untuk mencocokkan label rule PER_EXAM.
+ * Mendukung label Bahasa Indonesia (default editor: "Ujian Proposal/Hasil/Tutup ...")
+ * maupun label berbahasa Inggris / enum mentah. Sebuah rule cocok bila labelnya
+ * (lowercase) mengandung salah satu kata kunci jenis ujian submission.
+ *
+ * Penting: kata kunci tiap jenis ujian sengaja tidak saling tumpang tindih agar
+ * submission proposal tidak keliru cocok dengan rule "hasil"/"tutup", dst.
+ */
+const EXAM_TYPE_KEYWORDS: Record<string, string[]> = {
+  proposal_defense: ["proposal"],
+  results_defense: ["hasil", "result"],
+  final_defense: ["tutup", "akhir", "final", "munaqasyah", "meja"],
+}
+
+/**
  * Apakah sebuah SimilarityRule berlaku untuk submission tertentu.
  * - PER_CHAPTER: cocok bila `chapter` submission sama dengan label rule.
- * - PER_EXAM: cocok bila `examType` submission sama/serupa dengan label rule.
+ * - PER_EXAM: cocok bila `examType` submission sama/serupa dengan label rule
+ *   (lewat enum/stem Inggris ATAU kata kunci kanonik Bahasa Indonesia).
  */
 export function ruleMatches(
   rule: { ruleType: RuleType; label: string },
@@ -37,12 +53,21 @@ export function ruleMatches(
   }
   if (rule.ruleType === "PER_EXAM") {
     if (!sub.examType) return false
-    const examLabel = sub.examType.replace(/_DEFENSE$/i, "").toLowerCase()
-    return (
-      sub.examType.toLowerCase() === labelNorm ||
-      examLabel === labelNorm ||
-      labelNorm.includes(examLabel)
-    )
+    const examNorm = sub.examType.toLowerCase().trim() // mis. "results_defense"
+    const examStem = examNorm.replace(/_defense$/i, "") // mis. "results"
+    // 1) Kecocokan enum/stem langsung (label berbahasa Inggris atau enum mentah).
+    if (
+      examNorm === labelNorm ||
+      examStem === labelNorm ||
+      labelNorm.includes(examStem)
+    ) {
+      return true
+    }
+    // 2) Kata kunci kanonik — menutup label Bahasa Indonesia default editor,
+    //    mis. "Ujian Hasil" (results) & "Ujian Tutup / Sidang Akhir" (final)
+    //    yang TIDAK mengandung stem Inggris sehingga sebelumnya tak pernah cocok.
+    const keywords = EXAM_TYPE_KEYWORDS[examNorm] ?? []
+    return keywords.some((kw) => labelNorm.includes(kw))
   }
   return false
 }

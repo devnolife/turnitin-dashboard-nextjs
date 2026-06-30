@@ -27,6 +27,14 @@ export async function GET(request: NextRequest) {
         graduatedAt: true,
         tourCompletedAt: true,
         createdAt: true,
+        examDetails: {
+          select: {
+            thesisTitle: true,
+            examType: true,
+            submittedAt: true,
+            approvalStatus: true,
+          },
+        },
       },
     })
 
@@ -51,6 +59,16 @@ export async function GET(request: NextRequest) {
         graduatedAt: user.graduatedAt ? user.graduatedAt.toISOString() : null,
         tourCompletedAt: user.tourCompletedAt ? user.tourCompletedAt.toISOString() : null,
         createdAt: user.createdAt.toISOString(),
+        examDetails: user.examDetails
+          ? {
+              thesisTitle: user.examDetails.thesisTitle,
+              examType: user.examDetails.examType.toLowerCase(),
+              submittedAt: user.examDetails.submittedAt
+                ? user.examDetails.submittedAt.toISOString()
+                : null,
+              approvalStatus: user.examDetails.approvalStatus.toLowerCase(),
+            }
+          : null,
       },
     })
   } catch (error) {

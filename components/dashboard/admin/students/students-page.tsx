@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -59,14 +59,36 @@ interface InstructorOption {
   studentCount: number
 }
 
+interface StudentSummary {
+  totalStudents: number
+  totalSubmissions: number
+  totalReviewed: number
+  totalFlagged: number
+  paidCount: number
+  graduatedCount: number
+}
+
+const EMPTY_SUMMARY: StudentSummary = {
+  totalStudents: 0,
+  totalSubmissions: 0,
+  totalReviewed: 0,
+  totalFlagged: 0,
+  paidCount: 0,
+  graduatedCount: 0,
+}
+
+const ITEMS_PER_PAGE = 10
+
 export function AdminStudentsPage() {
   const [students, setStudents] = useState<StudentRow[]>([])
-  const [filtered, setFiltered] = useState<StudentRow[]>([])
+  const [summary, setSummary] = useState<StudentSummary>(EMPTY_SUMMARY)
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
-  const [search, setSearch] = useState("")
+  const [searchInput, setSearchInput] = useState("")
+  const [search, setSearch] = useState("") // debounced; dikirim ke server
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
   const router = useRouter()
   const { toast } = useToast()
 
@@ -77,22 +99,47 @@ export function AdminStudentsPage() {
   const [instructors, setInstructors] = useState<InstructorOption[]>([])
   const [assigning, setAssigning] = useState(false)
 
-  useEffect(() => {
-    fetchStudents()
-  }, [])
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     setIsLoading(true)
     try {
-      const res = await api.get("/admin/students")
+      const params = new URLSearchParams({
+        page: String(currentPage),
+        limit: String(ITEMS_PER_PAGE),
+      })
+      if (search) params.set("search", search)
+      if (statusFilter !== "all") params.set("status", statusFilter)
+
+      const res = await api.get(`/admin/students?${params.toString()}`)
       const data = res.data
       setStudents(data.students || [])
-      setFiltered(data.students || [])
+      if (data.summary) setSummary(data.summary)
+      setTotal(data.pagination?.total ?? (data.students?.length || 0))
+      setTotalPages(data.pagination?.totalPages ?? 1)
     } catch {
       console.error("Gagal mengambil data mahasiswa")
+      setStudents([])
     } finally {
       setIsLoading(false)
     }
+  }, [currentPage, search, statusFilter])
+
+  // Debounce input pencarian → reset ke halaman 1 (pencarian dilakukan server-side).
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setCurrentPage(1)
+    }, 350)
+    return () => clearTimeout(t)
+  }, [searchInput])
+
+  // Ambil ulang data tiap halaman / kata kunci / filter berubah.
+  useEffect(() => {
+    fetchStudents()
+  }, [fetchStudents])
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value)
+    setCurrentPage(1)
   }
 
   const openAssign = async (student: StudentRow) => {
@@ -129,37 +176,7 @@ export function AdminStudentsPage() {
     }
   }
 
-  useEffect(() => {
-    const q = search.trim().toLowerCase()
-    let next = students
-    if (q) {
-      next = next.filter(
-        (s) =>
-          s.name.toLowerCase().includes(q) ||
-          s.nim.toLowerCase().includes(q) ||
-          s.prodi.toLowerCase().includes(q) ||
-          (s.email && s.email.toLowerCase().includes(q))
-      )
-    }
-    if (statusFilter !== "all") {
-      next = next.filter((s) => (s.accountStatus ?? "ACTIVE") === statusFilter)
-    }
-    setFiltered(next)
-    setCurrentPage(1)
-  }, [search, statusFilter, students])
-
-  const totalStudents = students.length
-  const totalSubmissions = students.reduce((a, s) => a + s.submissionsCount, 0)
-  const totalReviewed = students.reduce((a, s) => a + s.reviewedCount, 0)
-  const totalFlagged = students.reduce((a, s) => a + s.flaggedCount, 0)
-  const paidCount = students.filter((s) => s.hasCompletedPayment).length
-  const graduatedCount = students.filter((s) => s.accountStatus === "GRADUATED").length
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage)
-  const currentItems = filtered.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const { totalStudents, totalSubmissions, totalReviewed, totalFlagged, paidCount } = summary
 
   const examTypeLabel = (type: string) => {
     switch (type) {
@@ -260,12 +277,12 @@ export function AdminStudentsPage() {
                 <Search className="size-4 text-muted-foreground" />
                 <Input
                   placeholder="Cari nama, NIM, prodi, atau email..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   className="h-9"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={handleStatusChange}>
                 <SelectTrigger className="h-9 w-full sm:w-[180px]">
                   <SelectValue placeholder="Status akun" />
                 </SelectTrigger>
@@ -285,7 +302,7 @@ export function AdminStudentsPage() {
                     <Skeleton key={i} className="h-12 w-full" />
                   ))}
                 </div>
-              ) : filtered.length === 0 ? (
+              ) : students.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-8 text-center">
                   <Users className="size-12 text-muted-foreground/40" />
                   <h3 className="mt-4 text-lg font-medium">Tidak Ada Mahasiswa</h3>
@@ -310,7 +327,7 @@ export function AdminStudentsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {currentItems.map((s) => (
+                    {students.map((s) => (
                       <TableRow key={s.id}>
                         <TableCell className="font-medium">{s.name}</TableCell>
                         <TableCell>{s.nim}</TableCell>
@@ -382,8 +399,8 @@ export function AdminStudentsPage() {
               <DataPagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                totalItems={filtered.length}
-                itemsPerPage={itemsPerPage}
+                totalItems={total}
+                itemsPerPage={ITEMS_PER_PAGE}
                 onPageChange={setCurrentPage}
                 showPageNumbers={false}
                 className="pt-2"

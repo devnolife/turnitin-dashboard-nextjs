@@ -86,6 +86,27 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where }),
     ])
 
+    // Ringkasan GLOBAL untuk kartu statistik — independen dari filter & paginasi
+    // (sebelumnya dihitung dari array ter-load yang dibatasi 50, jadi keliru).
+    const [totalStudentsAll, paidCountAll, graduatedCountAll, submissionAgg] =
+      await Promise.all([
+        prisma.user.count({ where: { role: "STUDENT" } }),
+        prisma.user.count({ where: { role: "STUDENT", hasCompletedPayment: true } }),
+        prisma.user.count({ where: { role: "STUDENT", accountStatus: "GRADUATED" } }),
+        prisma.submission.groupBy({ by: ["status"], _count: { _all: true } }),
+      ])
+    const submissionByStatus = Object.fromEntries(
+      submissionAgg.map((g) => [g.status, g._count._all]),
+    ) as Record<string, number>
+    const summary = {
+      totalStudents: totalStudentsAll,
+      totalSubmissions: submissionAgg.reduce((a, g) => a + g._count._all, 0),
+      totalReviewed: submissionByStatus.REVIEWED ?? 0,
+      totalFlagged: submissionByStatus.FLAGGED ?? 0,
+      paidCount: paidCountAll,
+      graduatedCount: graduatedCountAll,
+    }
+
     const formatted = students.map((s) => {
       const submissionsCount = s.submissions.length
       const reviewedCount = s.submissions.filter((sub) => sub.status === "REVIEWED").length
@@ -125,6 +146,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       students: formatted,
+      summary,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {

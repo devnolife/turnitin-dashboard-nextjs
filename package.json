@@ -12,6 +12,7 @@
     "lint": "next lint",
     "turnitin:bootstrap": "tsx scripts/turnitin-bootstrap.ts",
     "turnitin:worker": "tsx scripts/turnitin-worker.ts",
+    "scrub:md5": "tsx scripts/scrub-legacy-md5.ts",
     "worker:start": "pm2 start ecosystem.config.js",
     "worker:stop": "pm2 stop turnitin-worker",
     "worker:restart": "pm2 restart turnitin-worker",

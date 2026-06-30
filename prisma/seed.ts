@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client"
-import { createHash } from "crypto"
 import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
-function md5(input: string): string {
-  return createHash("md5").update(input).digest("hex")
-}
+// Sentinel untuk kolom `password` (legacy MD5). Hanya bcrypt (`passwordHash`) yang
+// disimpan; MD5 password asli tidak pernah ditulis. Samakan dengan
+// PASSWORD_PLACEHOLDER di lib/auth/password.ts.
+const PASSWORD_PLACEHOLDER = "managed-by-bcrypt"
 
 // Mapping kodeFakultas ke nama fakultas Unismuh Makassar
 const FAKULTAS_MAP: Record<string, string> = {
@@ -295,9 +295,8 @@ async function seedProdiFromFallback() {
 async function main() {
   console.log("Seeding database...")
 
-  // Password disimpan dual: kolom `password` (MD5) untuk kompatibilitas dengan
-  // GraphQL UNISMUH, dan `passwordHash` (bcrypt) sebagai sumber kebenaran utama
-  // dipakai login route.
+  // Password disimpan sebagai bcrypt di `passwordHash` (sumber kebenaran login).
+  // Kolom `password` (legacy MD5) hanya diisi sentinel — MD5 asli tidak disimpan.
   const adminPassword = process.env.ADMIN_SEED_PASSWORD || "admin123"
   const instructorPassword = process.env.INSTRUCTOR_SEED_PASSWORD || "instruktur123"
   const adminHash = await bcrypt.hash(adminPassword, 12)
@@ -309,7 +308,7 @@ async function main() {
     update: { passwordHash: adminHash },
     create: {
       username: "admin",
-      password: md5(adminPassword),
+      password: PASSWORD_PLACEHOLDER,
       passwordHash: adminHash,
       name: "Administrator",
       role: "ADMIN",
@@ -324,7 +323,7 @@ async function main() {
     update: { passwordHash: instructorHash },
     create: {
       username: "instruktur",
-      password: md5(instructorPassword),
+      password: PASSWORD_PLACEHOLDER,
       passwordHash: instructorHash,
       name: "Instruktur Perpusmu",
       role: "INSTRUCTOR",

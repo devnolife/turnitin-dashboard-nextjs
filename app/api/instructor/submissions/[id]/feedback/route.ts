@@ -32,13 +32,24 @@ export async function POST(
 
     const submission = await prisma.submission.findUnique({
       where: { id: submissionId },
+      include: { user: { select: { instructorId: true } } },
     })
 
     if (!submission) {
       return NextResponse.json({ message: "Pengiriman tidak ditemukan" }, { status: 404 })
     }
 
-    // Ownership check: prevent different instructor from overwriting
+    // Authorization (IDOR guard): instruktur hanya boleh mereview submission milik
+    // mahasiswa bimbingannya sendiri. Tanpa cek ini, dosen mana pun dapat menilai,
+    // mengubah skor, dan meloloskan skripsi mahasiswa siapa pun yang belum direview.
+    if (submission.user.instructorId !== auth.userId) {
+      return NextResponse.json(
+        { message: "Pengiriman ini bukan milik mahasiswa bimbingan Anda" },
+        { status: 403 }
+      )
+    }
+
+    // Cegah menimpa review dosen lain (mis. setelah pembimbing direassign).
     if (submission.reviewedBy && submission.reviewedBy !== auth.userId) {
       return NextResponse.json(
         { message: "Pengiriman ini sudah direview oleh dosen lain" },

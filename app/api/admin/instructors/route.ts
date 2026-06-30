@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth, requireRole, handleAuthError, AuthError } from "@/lib/auth/verify-token"
-import { hashPassword, md5 } from "@/lib/auth/password"
+import { hashPassword, PASSWORD_PLACEHOLDER } from "@/lib/auth/password"
 import { logger } from "@/lib/logger"
 import { z } from "zod"
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const instructor = await prisma.user.create({
       data: {
         username,
-        password: md5(password),
+        password: PASSWORD_PLACEHOLDER,
         passwordHash: await hashPassword(password),
         name,
         email: email || null,
